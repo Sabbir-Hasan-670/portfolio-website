@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Sabbir Hasan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="index.html" class="logo">SH.</a>
+                <div id="live-clock" class="live-clock">Loading time...</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="blog.html" class="highlight">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="section-padding fade-in" style="padding-top: 120px; min-height: 80vh;">
+        <h2 class="section-title">Latest Articles</h2>
+        
+        <div id="public-blog-grid" class="card-grid">
+            <p style="color: #94a3b8; text-align: center; width: 100%;">Loading articles from database...</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; <span id="year"></span> Sabbir Hasan. Engineered with Node.js & MySQL.</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

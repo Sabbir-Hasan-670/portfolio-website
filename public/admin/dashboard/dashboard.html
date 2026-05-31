@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Portfolio</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dashboard-body" id="main-body">
+
+    <div class="dashboard-wrapper">
+        
+        <aside class="dash-nav">
+            <h2 id="dash-title">Control Panel</h2>
+
+            <div id="admin-clock" class="admin-clock">--:--:--</div>
+            
+            <ul class="tab-list">
+                <li class="tab-btn active" data-target="tab-overview">📊 Dashboard Home</li>
+                <li class="tab-btn" data-target="tab-experience">💼 Experience</li>
+                <li class="tab-btn" data-target="tab-projects">🚀 Projects</li>
+                <li class="tab-btn" data-target="tab-education">🎓 Education</li>
+                <li class="tab-btn" data-target="tab-certificates">📜 Certificates</li>
+                <li class="tab-btn" data-target="tab-socials">👤 Profile & Socials</li>
+                <li class="tab-btn" data-target="tab-inbox">📬 Inbox</li>
+                <li class="tab-btn" data-target="tab-blog">📝 Blog</li>
+            </ul>
+            
+            <div class="nav-actions">
+                <a href="/" target="_blank" class="action-btn view-site-btn">🌐 View Live Site</a>
+
+                <button id="theme-btn" class="theme-btn">🎨 Theme</button>
+                <button id="logout-btn" class="logout-btn">Disconnect</button>
+            </div>
+        </aside>
+
+        <main class="dash-content">
+            
+            <section id="tab-overview" class="tab-pane active">
+                <div class="dash-card">
+                    <h2 style="margin-bottom: 20px;">System Command Center</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        
+                        <!-- 1. RAM Usage -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">Memory (RAM) Usage</h4>
+                            <h2 id="sys-ram-percent" style="color: #38bdf8; font-size: 2rem; margin-bottom: 10px;">--%</h2>
+                            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px;">
+                                <div id="sys-ram-bar" style="width: 0%; height: 100%; background: #38bdf8; transition: width 0.5s ease;"></div>
+                            </div>
+                            <p id="sys-ram-text" style="font-size: 0.85rem; color: #94a3b8;">-- GB / -- GB</p>
+                        </div>
+
+                        <!-- 2. Processor Info -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">Processor</h4>
+                            <h3 id="sys-cpu-cores" style="color: #2ecc71; font-size: 1.8rem; margin-bottom: 5px;">-- Cores</h3>
+                            <p id="sys-cpu-model" style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">Loading CPU details...</p>
+                        </div>
+
+                        <!-- 3. Server Uptime -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">Server Uptime</h4>
+                            <h2 id="sys-uptime" style="color: #f1c40f; font-size: 2rem; margin-bottom: 10px;">--h --m</h2>
+                            <p id="sys-os" style="font-size: 0.85rem; color: #94a3b8;">OS: Loading...</p>
+                        </div>
+
+                        <!-- 4. NEW: CPU Live Load -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">CPU Load</h4>
+                            <h2 id="sys-cpu-percent" style="color: #2ecc71; font-size: 2rem; margin-bottom: 10px;">--%</h2>
+                            <p style="font-size: 0.85rem; color: #94a3b8;">Real-time usage</p>
+                        </div>
+
+                        <!-- 5. NEW: Disk Storage -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">Disk Storage</h4>
+                            <h2 id="sys-disk-percent" style="color: #e74c3c; font-size: 2rem; margin-bottom: 10px;">--%</h2>
+                            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px;">
+                                <div id="sys-disk-bar" style="width: 0%; height: 100%; background: #e74c3c; transition: width 0.5s ease;"></div>
+                            </div>
+                            <p id="sys-disk-text" style="font-size: 0.85rem; color: #94a3b8;">-- GB / -- GB Used</p>
+                        </div>
+
+                        <!-- 6. NEW: Network Speed -->
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 style="color: #94a3b8; margin-bottom: 10px;">Network Speed</h4>
+                            <div style="margin-top: 10px;">
+                                <p style="margin-bottom: 5px; font-size: 1.1rem;">⬇ <span id="sys-net-down" style="color: #2ecc71; font-weight: bold;">0.00</span> <span style="font-size: 0.8rem; color:#94a3b8;">MB/s</span></p>
+                                <p style="font-size: 1.1rem;">⬆ <span id="sys-net-up" style="color: #38bdf8; font-weight: bold;">0.00</span> <span style="font-size: 0.8rem; color:#94a3b8;">MB/s</span></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-experience" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Add New Experience</h3>
+                    <form id="exp-form">
+                        
+                        <div class="input-group">
+                            <input type="text" id="role" required autocomplete="off">
+                            <label>Role</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="company" required autocomplete="off">
+                            <label>Company / Project Name</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="duration" required autocomplete="off">
+                            <label>Duration</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <textarea id="desc" required rows="3" placeholder="Describe responsibilities..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="action-btn">Save Experience ⚡</button>
+                    </form>
+                </div>
+                
+                <div class="dash-card list-card">
+                    <h3>Manage Experience</h3>
+                    <ul id="experience-list-admin" class="admin-list"></ul>
+                </div>
+            </section>
+
+            <section id="tab-projects" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Add New Project</h3>
+                    <form id="project-form">
+                        
+                        <div class="input-group">
+                            <input type="text" id="proj-title" required autocomplete="off">
+                            <label>Project Title</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <textarea id="proj-desc" required rows="3" placeholder="Project Description..."></textarea>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="proj-github" autocomplete="off">
+                            <label>GitHub URL (Optional)</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="proj-live" autocomplete="off">
+                            <label>Live Preview URL (Optional)</label>
+                        </div>
+                        
+                        <div class="input-group file-group">
+                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Project Thumbnail (Required)</label>
+                            <input type="file" id="proj-image" accept="image/*" required class="file-input">
+                        </div>
+                        
+                        <button type="submit" class="action-btn">Upload Project 🚀</button>
+                    </form>
+                </div>
+                
+                <div class="dash-card list-card">
+                    <h3>Manage Projects</h3>
+                    <ul id="projects-list-admin" class="admin-list"></ul>
+                </div>
+            </section>
+
+            <section id="tab-education" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Add New Education</h3>
+                    <form id="admin-education-form">
+                        
+                        <div class="input-group">
+                            <input type="text" id="edu-degree" required autocomplete="off">
+                            <label>Degree / Qualification</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="edu-institution" required autocomplete="off">
+                            <label>Institution / University</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="edu-duration" required autocomplete="off">
+                            <label>Duration / Years</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <textarea id="edu-description" rows="3" placeholder="Achievements, CGPA, major focus..."></textarea>
+                        </div>
+                        
+                        
+                        <button type="submit" class="action-btn">Add Education Entry 🎓</button>
+                    </form>
+                </div>
+                
+                <div class="dash-card list-card">
+                    <h3>Current Education Entries</h3>
+                    <div id="admin-education-list"></div>
+                </div>
+            </section>
+
+            <section id="tab-certificates" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Add New Certificate</h3>
+                    <form id="admin-certificates-form" enctype="multipart/form-data">
+                        
+                        <div class="input-group">
+                            <input type="text" id="cert-title" required autocomplete="off">
+                            <label>Certification Title</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="cert-issuer" required autocomplete="off">
+                            <label>Issuing Organization</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="url" id="cert-link" autocomplete="off" placeholder="https://credly.com/...">
+                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Verification Link (Optional)</label>
+                        </div>
+                        
+                        <div class="input-group file-group">
+                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Certificate Badge/Image</label>
+                            <input type="file" id="cert-image" accept="image/*" required class="file-input">
+                        </div>
+                        
+                        <button type="submit" class="action-btn">Add Certificate 📜</button>
+                    </form>
+                </div>
+                
+                <div class="dash-card list-card">
+                    <h3>Current Certificates</h3>
+                    <div id="admin-certificates-list" class="admin-list" style="display: grid; gap: 15px;"></div>
+                </div>
+            </section>
+
+            <section id="tab-socials" class="tab-pane">
+                <div class="dashboard-grid">
+                    
+                    <div class="dash-card">
+                        <h3>Update Social Links</h3>
+                        <form id="socials-form">
+                            <div class="input-group">
+                                <input type="text" id="social-github" autocomplete="off">
+                                <label>GitHub Profile URL</label>
+                            </div>
+                            
+                            <div class="input-group">
+                                <input type="text" id="social-linkedin" autocomplete="off">
+                                <label>LinkedIn URL</label>
+                            </div>
+                            
+                            <div class="input-group">
+                                <input type="text" id="social-facebook" autocomplete="off">
+                                <label>Facebook URL</label>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="text" id="social-fiverr" autocomplete="off">
+                                <label>Fiverr URL</label>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="text" id="social-pinterest" autocomplete="off">
+                                <label>Pinterest URL</label>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="text" id="social-adobe" autocomplete="off">
+                                <label>Adobe Stock URL</label>
+                            </div>
+                            
+                            <button type="submit" class="action-btn">Save Links 🔗</button>
+                        </form>
+                    </div>
+
+                    <div class="uploads-column">
+                        
+                        <div class="dash-card">
+                            <h3>Update Avatar</h3>
+                            <form id="pic-form">
+                                <label style="display:block; margin-bottom: 5px; opacity: 0.8;">Select image to crop and upload:</label>
+                                <input type="file" id="profile_image" accept="image/*" required class="file-input">
+                                <button type="submit" class="action-btn">Upload Avatar 🖼️</button>
+                            </form>
+                        </div>
+                        
+                        <div class="dash-card">
+                            <h3>Update CV Document</h3>
+                            <form id="cv-form">
+                                <input type="file" id="cv_document" accept="application/pdf" required class="file-input">
+                                <button type="submit" class="action-btn">Upload PDF 📄</button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-inbox" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Message Inbox</h3>
+                    <div id="messages-container" class="messages-container">
+                        <p>Loading messages...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-blog" class="tab-pane">
+                <div class="dash-card">
+                    <h2>Write New Article</h2>
+                    <form id="blog-form">
+                        
+                        <div class="input-group">
+                            <input type="text" id="blog-title" required autocomplete="off">
+                            <label>Article Title</label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" id="blog-category" required autocomplete="off">
+                            <label>Category (e.g., Cybersecurity)</label>
+                        </div>
+                        
+                        <div class="input-group file-group">
+                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Cover Image</label>
+                            <input type="file" id="blog-image" accept="image/*" class="file-input">
+                        </div>
+                        
+                        <div class="input-group">
+                            <textarea id="blog-content" rows="12" required placeholder="Write your full article here..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="action-btn">Publish Article 🚀</button>
+                    </form>
+                </div>
+
+                <div class="dash-card list-card">
+                    <h2>Published Articles</h2>
+                    <ul id="blog-list" class="admin-list">
+                        <p style="color: #94a3b8;">Loading articles...</p>
+                    </ul>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <div id="cropper-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Crop Your Image</h3>
+            <div class="img-container">
+                <img id="cropper-image" src="" alt="Image to crop">
+            </div>
+            <div class="modal-actions">
+                <button id="crop-cancel" class="logout-btn">Cancel</button>
+                <button id="crop-confirm" class="action-btn">Apply Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="dashboard.js"></script>
+    
+</body>
+</html>

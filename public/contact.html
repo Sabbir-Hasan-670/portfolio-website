@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Sabbir Hasan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="index.html" class="logo">SH.</a>
+                <div id="live-clock" class="live-clock">Loading time...</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html" class="highlight">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="section-padding fade-in" style="padding-top: 120px; min-height: 80vh;">
+        <h2 class="section-title">Let's Connect</h2>
+        
+        <div class="split-grid">
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Get In Touch</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">I am currently available for freelance projects, open-source collaborations, and full-time opportunities. Reach out and let's build something great.</p>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: var(--primary);">📍 Location:</strong><br>
+                    Faridpur, Dhaka Division, Bangladesh
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: var(--primary);">✉️ Email:</strong><br>
+                    <a href="mailto:your.email@example.com" style="color: var(--text-main); text-decoration: none;">sabbirhasan800@gmail.com</a>
+                </div>
+                <div>
+                    <strong style="color: var(--primary);">📱 Phone:</strong><br>
+                    +880 1234-567890
+                </div>
+            </div>
+
+            <div class="glass-card form-container" style="margin: 0; max-width: 100%;">
+                <form id="public-contact-form">
+                    <div class="input-group">
+                        <label>Your Name</label>
+                        <input type="text" id="contact-name" required placeholder="John Doe">
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="contact-email" required placeholder="john@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number (Optional)</label>
+                        <input type="tel" id="contact-phone" placeholder="+880 1234-567890">
+                    </div>
+                    <div class="input-group">
+                        <label>Message</label>
+                        <textarea id="contact-message" rows="4" required placeholder="How can I help you?"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message 🚀</button>
+                    <p id="contact-status" style="margin-top: 15px; font-weight: 600; text-align: center;"></p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; <span id="year"></span> Sabbir Hasan. Engineered with Node.js & MySQL.</p>
+    </footer>
+    
+    <div id="rocket-animation" class="rocket">🚀</div>
+
+    <script src="main.js"></script>
+</body>
+</html>

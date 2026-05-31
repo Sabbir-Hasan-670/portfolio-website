@@ -1,0 +1,650 @@
+/* ========================================= */
+/* --- VARIABLES & BASE SETUP ---            */
+/* ========================================= */
+:root {
+    --bg-color: #0f172a;
+    --surface-color: rgba(30, 41, 59, 0.7);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #38bdf8;
+    --primary-hover: #0284c7;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ========================================= */
+/* --- NAVIGATION ---                        */
+/* ========================================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 0;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+/* ========================================= */
+/* --- LAYOUT & TYPOGRAPHY ---               */
+/* ========================================= */
+.section-padding {
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    font-weight: 800;
+}
+
+.highlight {
+    color: var(--primary);
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ========================================= */
+/* --- HERO SECTION ---                      */
+/* ========================================= */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 80px;
+}
+
+.hero-image-wrapper img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary);
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+.hero-bio {
+    max-width: 600px;
+    margin: 0 auto 2.5rem auto;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ========================================= */
+/* --- GLASS CARDS (For grids) ---           */
+/* ========================================= */
+.glass-card {
+    background: var(--surface-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Grids */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.split-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+}
+
+.vertical-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Card Internals */
+.card-img-container img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.cert-img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+    color: var(--primary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* ========================================= */
+/* --- CONTACT FORM ---                      */
+/* ========================================= */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    border-color: var(--primary);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* ========================================= */
+/* --- ANIMATIONS & ROCKET ---               */
+/* ========================================= */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rocket {
+    position: fixed;
+    bottom: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    z-index: 9999;
+    visibility: hidden;
+}
+
+.launch {
+    visibility: visible;
+    animation: blastOff 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes blastOff {
+    0% {
+        bottom: -150px;
+        transform: translateX(-50%) scale(1);
+    }
+    30% {
+        bottom: 10%;
+        transform: translateX(-50%) scale(1.2);
+    }
+    100% {
+        bottom: 120vh;
+        transform: translateX(-50%) scale(0.3);
+    }
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    margin-top: 3rem;
+    
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .split-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+}
+
+/* ========================================= */
+/* --- AURORA BACKGROUND ANIMATION ---       */
+/* ========================================= */
+.bg-animation {
+    position: fixed; 
+    top: 0;
+    left: 0; 
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden; 
+    background: var(--bg-color);
+}
+
+.orb {
+    position: absolute; 
+    border-radius: 50%; 
+    filter: blur(100px);
+    opacity: 0.5; 
+    animation: floatOrb 12s infinite ease-in-out alternate;
+}
+
+/* Primary Blue Orb (Top Left) */
+.orb-1 { 
+    width: 50vw;
+    height: 50vw; 
+    background: #0284c7; 
+    top: -20%;
+    left: -10%; 
+}
+
+/* Purple Orb (Bottom Right) */
+.orb-2 { 
+    width: 40vw;
+    height: 40vw; 
+    background: #6366f1; 
+    bottom: -20%;
+    right: -10%; 
+    animation-delay: -6s;
+}
+
+/* Cyan Orb (Middle) */
+.orb-3 { 
+    width: 30vw;
+    height: 30vw; 
+    background: #38bdf8; 
+    top: 30%;
+    left: 40%; 
+    animation-delay: -3s; 
+}
+
+@keyframes floatOrb {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(50px, 80px) scale(1.1);
+    }
+}
+
+/* ========================================= */
+/* --- LIVE CLOCK BADGE ---                  */
+/* ========================================= */
+.live-clock {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(56, 189, 248, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================= */
+/* --- GITHUB LANGUAGE BADGES ---            */
+/* ========================================= */
+.lang-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.lang-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.github-card {
+    border-top: 3px solid #6366f1; /* Adds a purple accent to auto-imported cards */
+}
+
+/* ========================================== */
+/* SKILLS MARQUEE ANIMATION                   */
+/* ========================================== */
+
+.skills-marquee-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 3rem 0;
+    position: relative;
+    /* This creates the dark blue background color */
+    background: transparent; 
+}
+
+/* Fades the left and right edges so it blends into your background */
+.skills-marquee-container::before,
+.skills-marquee-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Change 'var(--bg-main)' to '#0f172a' if the fade color looks wrong */
+.skills-marquee-container::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-main) 0%, transparent 100%);
+}
+.skills-marquee-container::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-main) 0%, transparent 100%);
+}
+
+.skills-marquee-track {
+    display: flex;
+    width: max-content;
+    /* 30s controls the speed. Make it lower (e.g. 20s) to go faster! */
+    animation: scrollLeft 30s linear infinite;
+}
+
+.reverse-track {
+    animation: scrollRight 35s linear infinite; /* Slightly slower than row 1 for depth effect */
+}
+
+/* Pauses the scrolling when someone hovers over it to read! */
+.skills-marquee-track:hover {
+    animation-play-state: paused; 
+}
+
+.marquee-group {
+    display: flex;
+    gap: 1.5rem;
+    padding-right: 1.5rem; /* Ensures the gap is consistent when looping */
+}
+
+
+
+/* The sleek glassmorphism pill design */
+.skill-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px;
+    border-radius: 50px;
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.skill-pill:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: #6366f1;
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.skill-pill img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* The actual engine making it move */
+@keyframes scrollLeft {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+@keyframes scrollRight {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}
+
+
+/* ========================================= */
+/* --- MOBILE HAMBURGER MENU STYLING ---     */
+/* ========================================= */
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 6px;
+    z-index: 1001; /* Stays on top of the sliding menu */
+}
+
+.hamburger span {
+    width: 30px;
+    height: 3px;
+    background-color: var(--primary);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .split-grid, .experience-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    /* Show the 3 bars on mobile */
+    .hamburger {
+        display: flex;
+    }
+
+    /* Style the sliding menu */
+    .nav-links {
+        position: absolute;
+        top: 100%; /* Drops it right below the navbar */
+        left: 0;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.98); 
+        backdrop-filter: blur(15px);
+        
+        /* 🌟 THE FIX: Force display to override any old 'display: none' */
+        display: flex !important; 
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 0;
+        gap: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        
+        /* Hide it by pulling it UP and making it invisible */
+        transform: translateY(-150%);
+        opacity: 0;
+        visibility: hidden; /* Better than pointer-events */
+        transition: all 0.4s ease;
+        z-index: -1; /* Ensures it slides from BEHIND the navbar */
+    }
+
+    /* When JavaScript adds the 'active' class, slide it down! */
+    .nav-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Animate the 3 bars into an 'X' */
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
+}

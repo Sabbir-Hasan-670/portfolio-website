@@ -1,0 +1,441 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Inter', sans-serif; 
+}
+
+/* Dynamic Background */
+body {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #020617, #334155);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #f8fafc;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+@keyframes gradientBG {
+    0% { 
+        background-position: 0% 50%; 
+    }
+    50% { 
+        background-position: 100% 50%; 
+    }
+    100% { 
+        background-position: 0% 50%; 
+    }
+}
+
+/* ========================================= */
+/* --- LIGHT THEME OVERRIDES ---             */
+/* ========================================= */
+
+body.light-theme {
+    background-color: #f4f6f8; /* Light grey background */
+    color: #2c3e50; /* Dark text */
+}
+
+body.light-theme .dash-nav {
+    background-color: #ffffff; /* White sidebar */
+    border-right: 1px solid #e2e8f0;
+}
+
+body.light-theme #dash-title {
+    color: #2c3e50;
+}
+
+body.light-theme .dash-card {
+    background-color: #ffffff; /* White cards */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    color: #2c3e50;
+}
+
+/* Light mode form inputs */
+body.light-theme input, 
+body.light-theme textarea {
+    background-color: #f8fafc;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-theme input:focus, 
+body.light-theme textarea:focus {
+    background-color: #ffffff;
+    border-color: #3498db;
+}
+
+/* Sidebar button colors */
+body.light-theme .tab-btn {
+    color: #64748b;
+}
+
+body.light-theme .tab-btn:hover {
+    background-color: #f1f5f9;
+}
+
+body.light-theme .tab-btn.active {
+    background-color: #e0f2fe;
+    color: #0284c7;
+    font-weight: bold;
+}
+
+/* List item backgrounds */
+body.light-theme .admin-list li,
+body.light-theme .dash-card > div[style*="background: rgba(0,0,0,0.2)"] {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0;
+}
+
+/* The Theme Button itself */
+body.light-theme .theme-btn {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+body.light-theme .theme-btn:hover {
+    background-color: #e2e8f0;
+}
+
+/* Dashboard Layout (Sidebar + Main) */
+.dashboard-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.dash-nav {
+    width: 280px;
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-nav h2 { 
+    margin-bottom: 2rem; 
+    font-weight: 300; 
+    letter-spacing: 1px; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    padding-bottom: 1rem; 
+}
+
+.tab-list { 
+    list-style: none; 
+    flex-grow: 1; 
+}
+
+.tab-btn {
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.7;
+}
+
+.tab-btn:hover { 
+    background: rgba(255, 255, 255, 0.05); 
+    opacity: 1; 
+}
+
+.tab-btn.active { 
+    background: #38bdf8; 
+    color: #0f172a; 
+    opacity: 1; 
+    font-weight: bold; 
+}
+
+.nav-actions { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+/* Main Content Area */
+.dash-content {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+    overflow-y: auto;
+}
+
+.tab-pane { 
+    display: none; 
+    animation: fadeIn 0.4s ease forwards; 
+}
+
+.tab-pane.active { 
+    display: block; 
+}
+
+@keyframes fadeIn { 
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    } 
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    } 
+}
+
+/* Cards & Inputs */
+.dash-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.dash-card h3 { 
+    margin-bottom: 1.5rem; 
+    font-weight: 600; 
+    border-bottom: 1px solid currentColor; 
+    padding-bottom: 5px; 
+    opacity: 0.8; 
+}
+
+.dashboard-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 2rem; 
+}
+
+.uploads-column { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2rem; 
+}
+
+.dash-card.uploads-column { 
+    margin-bottom: 0; 
+}
+
+.input-group { 
+    position: relative; 
+    margin-bottom: 1.5rem; 
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%; 
+    padding: 10px 0; 
+    font-size: 1rem; 
+    color: inherit; 
+    border: none;
+    border-bottom: 2px solid currentColor; 
+    outline: none; 
+    background: transparent; 
+    transition: 0.3s; 
+    opacity: 0.7;
+}
+
+.input-group textarea { 
+    border: 1px solid currentColor; 
+    border-radius: 8px; 
+    padding: 10px; 
+}
+
+.input-group label {
+    position: absolute; 
+    top: 10px; 
+    left: 0; 
+    font-size: 1rem; 
+    color: inherit; 
+    opacity: 0.6; 
+    pointer-events: none; 
+    transition: 0.3s ease all;
+}
+
+.input-group input:focus, 
+.input-group input:valid, 
+.input-group textarea:focus, 
+.input-group textarea:valid { 
+    opacity: 1; 
+    border-color: #38bdf8; 
+}
+
+.input-group input:focus ~ label, 
+.input-group input:valid ~ label { 
+    top: -20px; 
+    font-size: 0.8rem; 
+    color: #38bdf8; 
+    opacity: 1; 
+}
+
+.file-input { 
+    width: 100%; 
+    padding: 10px; 
+    background: rgba(0,0,0,0.1); 
+    border: 1px dashed currentColor; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    opacity: 0.7; 
+}
+
+/* Buttons */
+.action-btn { 
+    width: 100%; 
+    padding: 12px; 
+    background: #38bdf8; 
+    color: #0f172a; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.3s; 
+}
+
+.action-btn:hover { 
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); 
+}
+
+.theme-btn { 
+    background: transparent; 
+    color: inherit; 
+    border: 1px solid currentColor; 
+    padding: 10px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold; 
+}
+
+.logout-btn { 
+    background: #f87171; 
+    color: #fff; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold; 
+}
+
+/* Dynamic Lists (Admin DB View) */
+.admin-list { 
+    list-style: none; 
+}
+
+.admin-list li {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #38bdf8;
+}
+
+.admin-list li .info h4 { 
+    margin-bottom: 5px; 
+    font-size: 1.1rem; 
+}
+
+.admin-list li .info p { 
+    opacity: 0.7; 
+    font-size: 0.9rem; 
+}
+
+.delete-btn { 
+    background: #ef4444; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+
+.delete-btn:hover { 
+    background: #dc2626; 
+}
+
+/* Cropper Modal */
+.modal {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.8); 
+    backdrop-filter: blur(5px);
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000;
+}
+
+.modal.hidden { 
+    display: none; 
+}
+
+.modal-content { 
+    background: #1e293b; 
+    padding: 20px; 
+    border-radius: 12px; 
+    width: 90%; 
+    max-width: 800px; 
+    color: white; 
+}
+
+.img-container { 
+    max-height: 60vh; 
+    margin: 20px 0; 
+    background: #000; 
+}
+
+.img-container img { 
+    display: block; 
+    max-width: 100%; 
+}
+
+.modal-actions { 
+    display: flex; 
+    gap: 10px; 
+    justify-content: flex-end; 
+}
+
+.modal-actions button { 
+    width: auto; 
+}
+
+/* ========================================= */
+/* --- NEW: CLOCK & VIEW SITE BUTTON ---     */
+/* ========================================= */
+
+.admin-clock {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #38bdf8;
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+body.light-theme .admin-clock {
+    background: #f1f5f9;
+    color: #0284c7;
+    border-color: #e2e8f0;
+}
+
+.view-site-btn {
+    text-decoration: none;
+    text-align: center;
+    background: #2ecc71; /* Green color so it stands out */
+    color: #ffffff !important;
+}
+
+.view-site-btn:hover {
+    background: #27ae60;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}

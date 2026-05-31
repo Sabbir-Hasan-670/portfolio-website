@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Sabbir Hasan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="index.html" class="logo">SH.</a>
+                <div id="live-clock" class="live-clock">Loading time...</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html" class="highlight">About</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="section-padding fade-in" style="padding-top: 120px; min-height: 80vh;">
+        <h2 class="section-title">About Me</h2>
+        <div class="split-grid" style="align-items: center;">
+            <div class="glass-card">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">My Journey</h3>
+                <p style="margin-bottom: 1rem;">I am a Computer Science graduate with strong skills in Networking, Cybersecurity, and Full Stack Development. I have completed CCNA 200-301 training, gaining hands-on experience with routing, switching, VLANs, ACLs, NAT, and network troubleshooting using Packet Tracer and GNS3.
+In addition to networking, I possess knowledge of cybersecurity tools such as Metasploit, Nmap, and The Harvester, as well as programming languages including Python, Java, C/C++, and SQL. I have also built projects like a Restaurant Management System in Python and a Java-based Currency Converter.
+
+I hold certifications and training from Google, Udemy, and TCM Security in various areas, including Ethical Hacking, Penetration Testing, Digital Marketing, and Malware Analysis.
+
+Fluent in English, Bangla, and Hindi, I bring strong communication skills, teamwork, and a problem-solving mindset. I am seeking entry-level opportunities as a Network Engineer, Cybersecurity Analyst, or IT Support Engineer, where I can contribute my skills and continue learning.</p>
+                <p>Whether I am configuring network infrastructure, building dynamic web applications with Node.js and SQL, or designing corporate branding assets in Adobe Illustrator, my focus is always on delivering high-performance, secure, and visually striking experiences.</p>
+            </div>
+            <div class="glass-card text-center">
+                <h3 style="margin-bottom: 1rem;">Core Competencies</h3>
+                <div class="lang-container" style="justify-content: center; margin-bottom: 0;">
+                    <span class="lang-badge">Network Engineering (CCNA)</span>
+                    <span class="lang-badge">Full-Stack Web Dev</span>
+                    <span class="lang-badge">Graphic Design</span>
+                    <span class="lang-badge">Cybersecurity</span>
+                    <span class="lang-badge">SEO</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; <span id="year"></span> Sabbir Hasan. Engineered with Node.js & MySQL.</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
