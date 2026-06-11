@@ -18,15 +18,9 @@ body {
 }
 
 @keyframes gradientBG {
-    0% { 
-        background-position: 0% 50%; 
-    }
-    50% { 
-        background-position: 100% 50%; 
-    }
-    100% { 
-        background-position: 0% 50%; 
-    }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* ========================================= */
@@ -34,12 +28,12 @@ body {
 /* ========================================= */
 
 body.light-theme {
-    background-color: #f4f6f8; /* Light grey background */
-    color: #2c3e50; /* Dark text */
+    background-color: #f4f6f8; 
+    color: #2c3e50; 
 }
 
 body.light-theme .dash-nav {
-    background-color: #ffffff; /* White sidebar */
+    background-color: #ffffff; 
     border-right: 1px solid #e2e8f0;
 }
 
@@ -48,12 +42,11 @@ body.light-theme #dash-title {
 }
 
 body.light-theme .dash-card {
-    background-color: #ffffff; /* White cards */
+    background-color: #ffffff; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     color: #2c3e50;
 }
 
-/* Light mode form inputs */
 body.light-theme input, 
 body.light-theme textarea {
     background-color: #f8fafc;
@@ -67,7 +60,6 @@ body.light-theme textarea:focus {
     border-color: #3498db;
 }
 
-/* Sidebar button colors */
 body.light-theme .tab-btn {
     color: #64748b;
 }
@@ -82,14 +74,12 @@ body.light-theme .tab-btn.active {
     font-weight: bold;
 }
 
-/* List item backgrounds */
 body.light-theme .admin-list li,
 body.light-theme .dash-card > div[style*="background: rgba(0,0,0,0.2)"] {
     background-color: #f8fafc !important;
     border: 1px solid #e2e8f0;
 }
 
-/* The Theme Button itself */
 body.light-theme .theme-btn {
     background-color: #f1f5f9;
     color: #475569;
@@ -113,7 +103,17 @@ body.light-theme .theme-btn:hover {
     padding: 2rem;
     display: flex;
     flex-direction: column;
+    
+    /* 🌟 DESKTOP FIX: Make sidebar scrollable */
+    height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 30px; 
 }
+
+/* Custom Scrollbar for Sidebar */
+.dash-nav::-webkit-scrollbar { width: 6px; }
+.dash-nav::-webkit-scrollbar-track { background: transparent; }
+.dash-nav::-webkit-scrollbar-thumb { background-color: #38bdf8; border-radius: 10px; }
 
 .dash-nav h2 { 
     margin-bottom: 2rem; 
@@ -172,14 +172,8 @@ body.light-theme .theme-btn:hover {
 }
 
 @keyframes fadeIn { 
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
-    } 
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    } 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }
 
 /* Cards & Inputs */
@@ -406,7 +400,7 @@ body.light-theme .theme-btn:hover {
 }
 
 /* ========================================= */
-/* --- NEW: CLOCK & VIEW SITE BUTTON ---     */
+/* --- CLOCK & VIEW SITE BUTTON ---          */
 /* ========================================= */
 
 .admin-clock {
@@ -431,11 +425,74 @@ body.light-theme .admin-clock {
 .view-site-btn {
     text-decoration: none;
     text-align: center;
-    background: #2ecc71; /* Green color so it stands out */
+    background: #2ecc71; 
     color: #ffffff !important;
 }
 
 .view-site-btn:hover {
     background: #27ae60;
     box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}
+
+/* ========================================= */
+/* --- 🌟 ADMIN MOBILE RESPONSIVENESS ---    */
+/* ========================================= */
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .dash-nav {
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        gap: 15px;
+    }
+
+    .dash-nav h2,
+    .admin-clock {
+        display: none; /* Hide title and clock to save space on small screens */
+    }
+
+    .tab-list {
+        display: flex;
+        flex-direction: row;
+        margin: 0;
+        padding: 0;
+        gap: 10px;
+    }
+
+    .tab-btn {
+        margin-bottom: 0; 
+        white-space: nowrap;
+    }
+
+    .nav-actions {
+        flex-direction: row;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    .nav-actions button, 
+    .nav-actions a {
+        white-space: nowrap;
+    }
+
+    .dash-content {
+        padding: 1.5rem; /* Less padding on mobile */
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Stack dashboard cards */
+    }
 }

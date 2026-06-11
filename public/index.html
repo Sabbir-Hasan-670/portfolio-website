@@ -3,193 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabbir Hasan | Portfolio</title>
+    <title>Sabbir Hasan | Cosmic Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="starCanvas"></canvas>
 
-    <div class="bg-animation">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
+    <div class="main-content">
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="#home" class="nav-logo">SH.</a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#home" class="nav-visible-btn">Home</a>
+                    <a href="blog.html" class="nav-visible-btn">Blog</a>
+
+                    <button class="hamburger" id="hamburger" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="nav-menu-dropdown" id="navDropdown">
+                        <a href="#about">About</a>
+                        <a href="#projects">Projects</a>
+                        <a href="#experience">Experience</a>
+                        <a href="#education">Education</a>
+                        <a href="#contact" class="nav-cta">Let's Talk</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero" id="home">
+            <div class="hero-inner">
+                <p class="hero-greeting">👋 Hello, I'm</p>
+                <h1 class="hero-name"><span class="highlight">Sabbir Hasan</span></h1>
+                <div class="hero-title-wrapper">
+                    <span id="typingText"></span><span class="typing-cursor"></span>
+                </div>
+                <p class="hero-bio-text" id="hero-bio">
+                    Aspiring Network Engineer | CCNA 200-301 Trained | SEO Certified | Passionate about Cybersecurity
+                </p>
+                <div class="hero-buttons" id="hero-buttons">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+                </div>
+            </div>
+
+            <div class="hero-marquee-wrap">
+                <div class="hero-marquee-track">
+                    <div class="marquee-group">
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg"> HTML5</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg"> CSS3</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"> JavaScript</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg"> Node.js</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" style="filter:invert(1);"> Express.js</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"> MySQL</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg"> React</div>
+                        <div class="skill-pill">🌐 Networking</div>
+                        <div class="skill-pill">🛡️ Cyber Security</div>
+                        <div class="skill-pill">📈 Digital Marketing</div>
+                        <div class="skill-pill">🎨 Graphic Design</div>
+                    </div>
+                    <div class="marquee-group">
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg"> HTML5</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg"> CSS3</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"> JavaScript</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg"> Node.js</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" style="filter:invert(1);"> Express.js</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"> MySQL</div>
+                        <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg"> React</div>
+                        <div class="skill-pill">🌐 Networking</div>
+                        <div class="skill-pill">🛡️ Cyber Security</div>
+                        <div class="skill-pill">📈 Digital Marketing</div>
+                        <div class="skill-pill">🎨 Graphic Design</div>
+                    </div>
+                </div>
+                <div class="hero-marquee-track hero-marquee-reverse">
+                    <div class="marquee-group">
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/fiverr/1DBF73"> Fiverr</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/upwork/14A800"> Upwork</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/freelancer/29B2FE"> Freelancer</div>
+                        <div class="skill-pill">Adobe Stock</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/pinterest/E60023"> Pinterest</div>
+                        <div class="skill-pill">💼 Kwork</div>
+                        <div class="skill-pill">🌲 Pngtree</div>
+                        <div class="skill-pill">🌍 Microworker</div>
+                        <div class="skill-pill">🏢 Local Office</div>
+                        <div class="skill-pill">🤝 Local Client</div>
+                    </div>
+                    <div class="marquee-group">
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/fiverr/1DBF73"> Fiverr</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/upwork/14A800"> Upwork</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/freelancer/29B2FE"> Freelancer</div>
+                        <div class="skill-pill">Adobe Stock</div>
+                        <div class="skill-pill"><img src="https://cdn.simpleicons.org/pinterest/E60023"> Pinterest</div>
+                        <div class="skill-pill">💼 Kwork</div>
+                        <div class="skill-pill">🌲 Pngtree</div>
+                        <div class="skill-pill">🌍 Microworker</div>
+                        <div class="skill-pill">🏢 Local Office</div>
+                        <div class="skill-pill">🤝 Local Client</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="#" id="link-github" target="_blank" class="btn">
+                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.24 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <a href="#" id="link-linkedin" target="_blank" class="btn">
+                    <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    LinkedIn
+                </a>
+                <a href="#" id="link-facebook" target="_blank" class="btn">
+                    <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+                    Facebook
+                </a>
+                <a href="#" id="link-fiverr" target="_blank" class="btn">
+                    <img src="https://cdn.simpleicons.org/fiverr/CBD5E1" alt="Fiverr">
+                    Fiverr
+                </a>
+                <a href="#" id="link-pinterest" target="_blank" class="btn">
+                    <svg viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.951-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.367 18.633 0 12.017 0z"/></svg>
+                    Pinterest
+                </a>
+            </div>
+        </section>
+
+        <section class="section" id="about">
+            <div class="section-header reveal">
+                <p class="section-label">About Me</p>
+                <h2 class="section-title">Get To Know Me</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image-wrapper reveal">
+                    <div class="about-image-glow"></div>
+                    <div class="about-image">
+                        <div class="about-image-inner" id="about-image">
+                            <span style="font-size:4rem;">🧑‍💻</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-text reveal">
+                    <h3>Computer Science Graduate &amp; CCNA‑Trained Professional</h3>
+                    <p>
+                        Computer Science graduate and CCNA‑trained professional bridging the gap between secure network engineering and full‑stack development. From configuring robust network topologies to building dynamic software solutions, I thrive on solving complex technical problems. Ready to contribute to high‑performing IT and security teams.
+                    </p>
+                    <div class="github-mini-card">
+                        <p style="font-size:0.75rem;color:var(--text2);margin-bottom:0.4rem;">📊 GitHub Activity</p>
+                        <img id="github-graph-mini" src="" alt="GitHub Contributions">
+                        <p id="github-loading" style="color:var(--text2);font-size:0.75rem;">Loading graph...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="projects">
+            <div class="section-header reveal">
+                <p class="section-label">My Work</p>
+                <h2 class="section-title">Featured Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-grid" id="projects-grid">
+                </div>
+        </section>
+
+        <section class="section" id="experience">
+            <div class="section-header reveal">
+                <p class="section-label">Career</p>
+                <h2 class="section-title">Work Experience</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="electric-timeline" id="experience-timeline">
+                </div>
+        </section>
+
+        <section class="section" id="education">
+            <div class="section-header reveal">
+                <p class="section-label">Education</p>
+                <h2 class="section-title">My Studies</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="electric-timeline" id="education-timeline">
+                </div>
+        </section>
+
+        <section class="section" id="contact">
+            <div class="section-header reveal">
+                <p class="section-label">Contact</p>
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-info reveal">
+                    <h3>Let's Build Something Great</h3>
+                    <p>Open to new projects, creative ideas, and opportunities.</p>
+                    <div class="contact-item"><div class="contact-icon">📧</div><span>sabbirhasan800@gmail.com</span></div>
+                    <div class="contact-item"><div class="contact-icon">📍</div><span>Faridpur,Dhaka, Bangladesh</span></div>
+                </div>
+                <form class="contact-form reveal" id="contactForm">
+                    <div class="form-group"><label>Your Name</label><input type="text" id="contact-name" required placeholder="John Doe"></div>
+                    <div class="form-group"><label>Email Address</label><input type="email" id="contact-email" required placeholder="john@example.com"></div>
+                    <div class="form-group"><label>Phone (Optional)</label><input type="tel" id="contact-phone" placeholder="+880 1234-567890"></div>
+                    <div class="form-group"><label>Message</label><textarea id="contact-message" rows="4" required placeholder="Tell me about your project..."></textarea></div>
+                    <button type="submit" class="btn btn-primary form-submit">Send Message 🚀</button>
+                    <div class="form-feedback" id="formFeedback"></div>
+                </form>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; <span id="year">2026</span> 
+                <a href="/admin/login.html" style="text-decoration: none; color: var(--text2);">Sabbir Hasan</a>. 
+                Built with ❤️
+            </p>
+        </footer>
     </div>
-
-    <nav class="navbar">
-        <div class="nav-content">
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                <a href="#hero" class="logo">SH.</a>
-                <div id="live-clock" class="live-clock">Loading time...</div>
-            </div>
-            
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            
-            <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <section id="hero" class="hero-section">
-        <div class="hero-container fade-in">
-            <div class="hero-image-wrapper">
-                <img id="public-profile-pic" src="https://placehold.co/150/0f172a/38bdf8?text=SH" alt="Profile Picture">
-            </div>
-            <h1 class="hero-title">Hi, I'm <span class="highlight">Sabbir Hasan</span></h1>
-            <h2 class="hero-subtitle">Multidisciplinary IT Specialist</h2>
-            <p id="hero-bio" class="hero-bio">Passionate about Graphic Design, Web Development, and Network Security. Building high-performance, secure digital experiences.</p>
-            
-            <div id="social-icons-header" class="social-links">
-                </div>
-        </div>
-    </section>
-    
-    <!-- ------------------------------------------------------------------------------------------------------ -->
-     <div class="skills-marquee-container">
-        
-        <div class="skills-marquee-track">
-            <div class="marquee-group">
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML"> HTML5</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS"> CSS3</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JS"> JavaScript</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node"> Node.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" alt="Express" style="filter: invert(1);"> Express.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" alt="MySQL"> MySQL</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React"> React</div>
-                <div class="skill-pill">🌐 Networking</div>
-                <div class="skill-pill">🛡️ Cyber Security</div>
-                <div class="skill-pill">📈 Digital Marketing</div>
-                <div class="skill-pill">🎨 Graphic Design</div>
-            </div>
-            <div class="marquee-group">
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML"> HTML5</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS"> CSS3</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JS"> JavaScript</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node"> Node.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" alt="Express" style="filter: invert(1);"> Express.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" alt="MySQL"> MySQL</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React"> React</div>
-                <div class="skill-pill">🌐 Networking</div>
-                <div class="skill-pill">🛡️ Cyber Security</div>
-                <div class="skill-pill">📈 Digital Marketing</div>
-                <div class="skill-pill">🎨 Graphic Design</div>
-            </div>
-        </div>
-
-        <div class="skills-marquee-track reverse-track" style="margin-top: 1.5rem;">
-            <div class="marquee-group">
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/fiverr/1DBF73" alt="Fiverr"> Fiverr</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/upwork/14A800" alt="Upwork"> Upwork</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/freelancer/29B2FE" alt="Freelancer"> Freelancer</div>
-                <div class="skill-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="#cbd5e1" style="margin-right: 8px;"><path d="M15.1 2H24v20L15.1 2zM8.9 2H0v20L8.9 2zM12 9.4L17.6 22h-3.8l-1.6-4H8.1L12 9.4z"/></svg> Adobe Stock</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/pinterest/E60023" alt="Pinterest"> Pinterest</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">💼</span> Kwork</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🌲</span> Pngtree</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🌍</span> Microworker</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🏢</span> Local Office</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🤝</span> Local Client</div>
-            </div>
-            <div class="marquee-group">
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/fiverr/1DBF73" alt="Fiverr"> Fiverr</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/upwork/14A800" alt="Upwork"> Upwork</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/freelancer/29B2FE" alt="Freelancer"> Freelancer</div>
-                <div class="skill-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="#cbd5e1" style="margin-right: 8px;"><path d="M15.1 2H24v20L15.1 2zM8.9 2H0v20L8.9 2zM12 9.4L17.6 22h-3.8l-1.6-4H8.1L12 9.4z"/></svg> Adobe Stock</div>
-                <div class="skill-pill"><img src="https://cdn.simpleicons.org/pinterest/E60023" alt="Pinterest"> Pinterest</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">💼</span> Kwork</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🌲</span> Pngtree</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🌍</span> Microworker</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🏢</span> Local Office</div>
-                <div class="skill-pill"><span style="font-size: 1.2rem;">🤝</span> Local Client</div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ----------------------------------------------------------------------------------------------------------------- -->
-
-    <section id="github-activity" class="section-padding fade-in">
-        <h2 class="section-title">Coding Activity</h2>
-        <div class="glass-card text-center" style="overflow-x: auto;">
-            <img id="github-graph-img" src="" alt="GitHub Contributions" style="width: 100%; min-width: 600px; display: none; margin: 0 auto;">
-            <p id="github-loading-text" style="color: #94a3b8;">Loading GitHub Activity...</p>
-        </div>
-    </section>
-
-    <section id="experience" class="section-padding fade-in">
-        <h2 class="section-title">Experience</h2>
-        <div id="public-experience-grid" class="card-grid">
-            <p style="color: #94a3b8;">Loading experience...</p>
-        </div>
-    </section>
-
-    <section id="projects" class="section-padding fade-in">
-        <h2 class="section-title">Featured Projects</h2>
-        <div id="public-projects-grid" class="card-grid">
-            <p style="color: #94a3b8;">Loading projects...</p>
-        </div>
-    </section>
-
-    <section id="education" class="section-padding fade-in">
-        <div class="split-grid">
-            <div>
-                <h2 class="section-title">Education</h2>
-                <div id="public-education-grid" class="vertical-grid">
-                    <p style="color: #94a3b8;">Loading education...</p>
-                </div>
-            </div>
-            <div>
-                <h2 class="section-title">Certifications</h2>
-                <div id="public-certificates-grid" class="cert-grid">
-                    <p style="color: #94a3b8;">Loading certificates...</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="section-padding fade-in">
-        <h2 class="section-title">Let's Connect</h2>
-        <div class="glass-card form-container">
-            <form id="public-contact-form">
-                <div class="input-group">
-                    <label>Your Name</label>
-                    <input type="text" id="contact-name" required placeholder="John Doe">
-                </div>
-                <div class="input-group">
-                    <label>Email Address</label>
-                    <input type="email" id="contact-email" required placeholder="john@example.com">
-                </div>
-                <div class="input-group">
-                    <label>Phone Number (Optional)</label>
-                    <input type="tel" id="contact-phone" placeholder="+880 1234-567890">
-                </div>
-                <div class="input-group">
-                    <label>Message</label>
-                    <textarea id="contact-message" rows="4" required placeholder="How can I help you?"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">Send Message 🚀</button>
-                <p id="contact-status" style="margin-top: 15px; font-weight: 600; text-align: center;"></p>
-            </form>
-        </div>
-    </section>
-
-    <footer style="margin-top: 2rem; text-align: center;">
-        <p>
-            &copy; <span id="year">2026</span> 
-            <a href="/admin/login.html" style="text-decoration: none; color: inherit; cursor: default;">Sabbir Hasan</a>.
-        </p>
-    </footer>
-
-    <div id="rocket-animation" class="rocket">🚀</div>
-
-
-    
 
     <script src="main.js"></script>
 </body>

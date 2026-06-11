@@ -8,6 +8,7 @@ const session = require('express-session');
 const fs = require('fs');
 const os = require('os');
 const si = require('systeminformation');
+const cron = require('node-cron'); // ⏰ ক্রন জব প্যাকেজ রিকোয়ার করা হলো
 
 dotenv.config();
 
@@ -49,6 +50,69 @@ const db = mysql.createPool({
 });
 
 // ==========================================
+// 🚀 GITHUB CACHE SYSTEM & AUTOMATIC CRON JOB
+// ==========================================
+let cachedGithubProjects = []; // সার্ভারের মেমরিতে গিটহাব প্রজেক্ট জমা রাখার ক্যাশ বক্স
+
+// গিটহাব থেকে ব্যাকগ্রাউন্ডে ডেটা ফেচ করার কোর ফাংশন
+async function updateGithubCache() {
+    if (!process.env.GITHUB_USERNAME) return;
+    console.log("⏳ Fetching fresh data from GitHub API...");
+    try {
+        const headers = process.env.GITHUB_TOKEN ? { Authorization: `token ${process.env.GITHUB_TOKEN}` } : {};
+        const ghRes = await fetch(`https://api.github.com/users/${process.env.GITHUB_USERNAME}/repos?sort=updated&per_page=6`, { headers });
+        
+        if (ghRes.ok) {
+            const repos = await ghRes.json();
+            const activeRepos = repos.filter(repo => !repo.fork);
+            
+            // Promise.all দিয়ে সব রেপোর ল্যাঙ্গুয়েজ ডেটা একসাথে প্যারালাল ফেচ হবে (সুপার ফাস্ট)
+            cachedGithubProjects = await Promise.all(activeRepos.map(async (repo) => {
+                let languageHTML = '';
+                try {
+                    const langRes = await fetch(repo.languages_url, { headers });
+                    if (langRes.ok) {
+                        const languages = await langRes.json();
+                        const totalBytes = Object.values(languages).reduce((sum, bytes) => sum + bytes, 0);
+                        
+                        if (totalBytes > 0) {
+                            languageHTML = '<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 15px;">';
+                            for (const [lang, bytes] of Object.entries(languages)) {
+                                const percentage = ((bytes / totalBytes) * 100).toFixed(1);
+                                languageHTML += `<span style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.1); color: #818cf8; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; letter-spacing: 0.5px;">${lang} ${percentage}%</span>`;
+                            }
+                            languageHTML += '</div>';
+                        }
+                    }
+                } catch(e) {}
+
+                return {
+                    id: 'gh-' + repo.id,
+                    title: repo.name.replace(/-/g, ' ').replace(/_/g, ' '),
+                    description: repo.description || 'A project hosted on GitHub.',
+                    github_url: repo.html_url,
+                    live_url: repo.homepage || '',
+                    image_path: '', 
+                    languages: languageHTML
+                };
+            }));
+            console.log("✅ GitHub Cache updated successfully!");
+        }
+    } catch (ghErr) {
+        console.error("❌ GitHub cron fetch failed:", ghErr.message);
+    }
+}
+
+// ⏰ [CRON JOB]: প্রতিদিন সকাল ৬টা, দুপুর ১২টা, সন্ধ্যা ৬টা এবং রাত ১২টায় অটো রান হবে
+cron.schedule('0 0,6,12,18 * * *', () => {
+    updateGithubCache();
+});
+
+// ⚡ সার্ভার যখনই প্রথমবার চালু (Start) হবে, তখনই ব্যাকগ্রাউন্ডে একবার ক্যাশ লোড করে নেবে
+updateGithubCache();
+
+
+// ==========================================
 // PUBLIC API ROUTES
 // ==========================================
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
@@ -68,58 +132,14 @@ app.get('/api/experience', async (req, res) => {
 });
 
 // ==========================================
-// HYBRID PROJECTS API (DB + GitHub + Languages)
+// HYBRID PROJECTS API (১ মিলিসেকেন্ডে ইনস্ট্যান্ট লোড)
 // ==========================================
 app.get('/api/projects', async (req, res) => {
     try {
         const [dbProjects] = await db.query('SELECT * FROM projects ORDER BY id DESC');
 
-        let githubProjects = [];
-        if (process.env.GITHUB_USERNAME) {
-            try {
-                const headers = process.env.GITHUB_TOKEN ? { Authorization: `token ${process.env.GITHUB_TOKEN}` } : {};
-                const ghRes = await fetch(`https://api.github.com/users/${process.env.GITHUB_USERNAME}/repos?sort=updated&per_page=6`, { headers });
-                
-                if (ghRes.ok) {
-                    const repos = await ghRes.json();
-                    const activeRepos = repos.filter(repo => !repo.fork);
-                    
-                    for (const repo of activeRepos) {
-                        let languageHTML = '';
-                        try {
-                            const langRes = await fetch(repo.languages_url, { headers });
-                            if (langRes.ok) {
-                                const languages = await langRes.json();
-                                const totalBytes = Object.values(languages).reduce((sum, bytes) => sum + bytes, 0);
-                                
-                                if (totalBytes > 0) {
-                                    languageHTML = '<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 15px;">';
-                                    for (const [lang, bytes] of Object.entries(languages)) {
-                                        const percentage = ((bytes / totalBytes) * 100).toFixed(1);
-                                        languageHTML += `<span style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #818cf8; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; letter-spacing: 0.5px;">${lang} ${percentage}%</span>`;
-                                    }
-                                    languageHTML += '</div>';
-                                }
-                            }
-                        } catch(e) {}
-
-                        githubProjects.push({
-                            id: 'gh-' + repo.id,
-                            title: repo.name.replace(/-/g, ' ').replace(/_/g, ' '),
-                            description: repo.description || 'A project hosted on GitHub.',
-                            github_url: repo.html_url,
-                            live_url: repo.homepage || '',
-                            image_path: '', 
-                            languages: languageHTML
-                        });
-                    }
-                }
-            } catch (ghErr) {
-                console.log("GitHub fetch failed.");
-            }
-        }
-
-        res.json([...dbProjects, ...githubProjects]);
+        // 🚀 কোনো লাইভ গিটহাব কল নেই! মেমরি থেকে সরাসরি সেভড ক্যাশ ডেটা রিটার্ন করবে
+        res.json([...dbProjects, ...cachedGithubProjects]);
         
     } catch (err) { 
         res.status(500).json({ error: 'Failed to fetch projects' }); 
@@ -408,5 +428,102 @@ app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed to delete blog' }); }
 });
 
+
+// ==========================================
+// N8N AUTOMATION ROUTE (FIXED IMAGE TIMEOUT & TELEGRAM)
+// ==========================================
+app.post('/api/n8n/blog', async (req, res) => {
+    try {
+        const { secret, title, category, content, imageUrl } = req.body;
+        
+        // ১. পাসওয়ার্ড সিকিউরিটি চেক
+        const expectedSecret = process.env.N8N_SECRET_KEY || 'S.abbir@670#613';
+        if (secret !== expectedSecret) {
+            console.log(`⚠️ [AUTH FAILED] Incoming secret: ${secret} does not match.`);
+            return res.status(403).json({ error: 'Unauthorized n8n request' });
+        }
+
+        // ⭐ n8n কে সাথে সাথে রেসপন্স পাঠিয়ে দিন যাতে নোড ১ সেকেন্ডে সবুজ হয়ে ক্লোজ হয়ে যায়
+        res.json({ success: true, message: 'Blog data received! Processing in background.' });
+
+        // ২. বাকি ভারী কাজগুলো সার্ভার এখন ব্যাকগ্রাউন্ডে করবে
+        let imagePath = '';
+        
+        // 🔒 [CRITICAL FIX]: ইউআরএল যদি আসলেই একটি সঠিক লাইভ লিংক হয়, কেবল তখনই ইমেজ ডাউনলোড প্রসেস রান হবে
+        if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+            const imageName = 'blog_' + Date.now() + '.png';
+            const absolutePath = path.join(__dirname, 'public/uploads', imageName);
+            
+            try {
+                // ইমেজের জন্য সর্বোচ্চ ১০ সেকেন্ডের সেфটি টাইম-আউট বাফার
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                const response = await fetch(imageUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const buffer = await response.arrayBuffer();
+                    fs.writeFileSync(absolutePath, Buffer.from(buffer));
+                    imagePath = '/uploads/' + imageName;
+                    console.log("📸 Image downloaded and saved successfully!");
+                }
+            } catch (imgErr) {
+                console.error("❌ Background image download failed or timed out:", imgErr.message);
+                imagePath = ''; // ফেইল করলে ইমেজ ছাড়াই পোস্ট হবে
+            }
+        } else {
+            console.log("ℹ️ No valid image URL received from Gemini/n8n. Skipping image step safely.");
+        }
+
+        // ৩. ডাটাবেজে ব্লগ পোস্ট ইনসার্ট করা
+        try {
+            await db.query(
+                'INSERT INTO blog_posts (title, category, content, image_path) VALUES (?, ?, ?, ?)', 
+                [
+                    title || 'Untitled AI Post', 
+                    category || 'Cybersecurity', 
+                    content || 'No Content Provided', 
+                    imagePath || ''
+                ]
+            );
+            console.log("🚀 [DATABASE SUCCESS] Blog post saved successfully!");
+
+            // ⚡ [TELEGRAM ALERT IMPLEMENTATION] 
+            const botToken = process.env.TELEGRAM_BOT_TOKEN;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+
+            if (botToken && chatId) {
+                const cleanTitle = (title || 'Untitled AI Post').replace(/[_*`\[\]]/g, '\\$&');
+                const cleanCategory = (category || 'Cybersecurity').replace(/[_*`\[\]]/g, '\\$&');
+                
+                const telegramMessage = `🚀 *New Blog Published Automatically!*\n\n📌 *Title:* ${cleanTitle}\n📁 *Category:* ${cleanCategory}\n\n✅ Saved successfully to your VPS database!`;
+
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown'
+                    })
+                })
+                .then(telRes => {
+                    if (!telRes.ok) console.error(`⚠️ Telegram API responded with status: ${telRes.status}`);
+                })
+                .catch(telErr => console.error("❌ Telegram notification dispatch failed:", telErr.message));
+            } else {
+                console.log("ℹ️ Telegram credentials missing in .env. Skipping alert.");
+            }
+
+        } catch (dbErr) {
+            console.error("❌ [MYSQL QUERY FAILED]:", dbErr.message);
+        }
+
+    } catch (err) {
+        console.error("❌ n8n background global error:", err.message);
+    }
+});
+
 const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log("🚀 Server running on http://localhost:" + PORT));
