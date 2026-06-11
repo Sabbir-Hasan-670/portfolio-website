@@ -77,7 +77,7 @@
     animate();
 })();
 
-// ⌨️ Typing Effect (🔴 FIXED: Null Safety Added)
+// ⌨️ Typing Effect
 (function() {
     const el = document.getElementById('typingText');
     if (!el) return; 
@@ -113,7 +113,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// 📱 Navbar & Mobile Menu (🔴 FIXED: Hybrid Menu Logic for Home/Blog + Hamburger)
+// 📱 Navbar & Mobile Menu
 const navbar = document.getElementById('navbar');
 if (navbar) {
     window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
@@ -123,14 +123,12 @@ const hamburger = document.getElementById('hamburger');
 const navDropdown = document.getElementById('navDropdown');
 
 if (hamburger && navDropdown) {
-    // ৩-বার আইকনে ক্লিক করলে মেনু টগল হবে
     hamburger.addEventListener('click', (e) => {
-        e.stopPropagation(); // গ্লোবাল ক্লিকের সাথে ওভারল্যাপ বন্ধ করতে
+        e.stopPropagation(); 
         hamburger.classList.toggle('active');
         navDropdown.classList.toggle('active');
     });
 
-    // ড্রপডাউনের ভেতরের কোনো লিংকে ক্লিক করলে মেনু বন্ধ হয়ে যাবে
     navDropdown.querySelectorAll('a').forEach(a => {
         a.addEventListener('click', () => {
             hamburger.classList.remove('active');
@@ -138,7 +136,6 @@ if (hamburger && navDropdown) {
         });
     });
 
-    // মেনুর বাইরে কোথাও ক্লিক করলে ড্রপডাউন অটোমেটিক বন্ধ হবে
     document.addEventListener('click', (e) => {
         if (!hamburger.contains(e.target) && !navDropdown.contains(e.target)) {
             hamburger.classList.remove('active');
@@ -147,7 +144,7 @@ if (hamburger && navDropdown) {
     });
 }
 
-// 📅 Footer Year (🔴 FIXED: Null Safety Added)
+// 📅 Footer Year (Null Safety Added)
 const yearEl = document.getElementById('year');
 if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
@@ -157,20 +154,17 @@ if (yearEl) {
 // 🔗 BACKEND API INTEGRATION
 // ═══════════════════════════════════════════
 
-// Fetch profile – builds social links, profile picture, GitHub graph
 async function fetchProfile() {
+    const heroBtns = document.getElementById('hero-buttons');
+    const githubBtn = document.getElementById('link-github');
+    if (!heroBtns && !githubBtn) return; 
+
     try {
         const res = await fetch('/api/profile');
-        if (!res.ok) {
-            console.log('Backend server error. Showing fallback buttons.');
-            return;
-        }
-
+        if (!res.ok) return;
         const data = await res.json();
         if (!data) return;
 
-        // Hero buttons (CV + Contact)
-        const heroBtns = document.getElementById('hero-buttons');
         if (heroBtns) {
             heroBtns.innerHTML = '';
             if (data.cv_file_path) {
@@ -179,51 +173,36 @@ async function fetchProfile() {
             heroBtns.innerHTML += `<a href="#contact" class="btn btn-primary">✉️ Contact Me</a>`;
         }
 
-        // বাটন এলিমেন্টগুলো সিলেক্ট করা
-        const githubBtn = document.getElementById('link-github');
         const linkedinBtn = document.getElementById('link-linkedin');
         const facebookBtn = document.getElementById('link-facebook');
         const fiverrBtn = document.getElementById('link-fiverr');
         const pinterestBtn = document.getElementById('link-pinterest');
 
-        // 🛠️ কন্ডিশন চেক: লিংক থাকলে href বসবে, না থাকলে বাটন ডিলিট হয়ে যাবে (নিরাপদ রিমুভ)
         if (data.github_link && data.github_link.trim() !== "") {
             if (githubBtn) githubBtn.href = data.github_link;
-        } else if (githubBtn) {
-            githubBtn.remove();
-        }
+        } else if (githubBtn) { githubBtn.remove(); }
 
         if (data.linkedin_link && data.linkedin_link.trim() !== "") {
             if (linkedinBtn) linkedinBtn.href = data.linkedin_link;
-        } else if (linkedinBtn) {
-            linkedinBtn.remove();
-        }
+        } else if (linkedinBtn) { linkedinBtn.remove(); }
 
         if (data.facebook_link && data.facebook_link.trim() !== "") {
             if (facebookBtn) facebookBtn.href = data.facebook_link;
-        } else if (facebookBtn) {
-            facebookBtn.remove();
-        }
+        } else if (facebookBtn) { facebookBtn.remove(); }
 
         if (data.fiverr_link && data.fiverr_link.trim() !== "") {
             if (fiverrBtn) fiverrBtn.href = data.fiverr_link;
-        } else if (fiverrBtn) {
-            fiverrBtn.remove();
-        }
+        } else if (fiverrBtn) { fiverrBtn.remove(); }
 
         if (data.pinterest_link && data.pinterest_link.trim() !== "") {
             if (pinterestBtn) pinterestBtn.href = data.pinterest_link;
-        } else if (pinterestBtn) {
-            pinterestBtn.remove();
-        }
+        } else if (pinterestBtn) { pinterestBtn.remove(); }
 
-        // গিটহাব প্রোফাইল পিকচার ও গ্রাফ লোড করা
         if (data.github_link && data.github_link.trim() !== "") {
             const username = data.github_link.replace(/\/$/, '').split('/').pop();
-            
             const aboutImgContainer = document.getElementById('about-image');
             if (aboutImgContainer) {
-                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" style="width:100%; height:100%; object-fit:cover; object-position:top center; display:block; border-radius:50%;">`;
+                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
             }
             
             const graphImg = document.getElementById('github-graph-mini');
@@ -234,12 +213,9 @@ async function fetchProfile() {
                 graphImg.onerror = () => { graphLoading.textContent = 'Could not load graph.'; };
             }
         }
-    } catch (e) {
-        console.log('Profile fetch skipped or network error encountered:', e);
-    }
+    } catch (e) { console.log(e); }
 }
 
-// Fetch projects (includes GitHub auto-imported)
 async function fetchProjects() {
     const grid = document.getElementById('projects-grid');
     if (!grid) return;
@@ -257,9 +233,7 @@ async function fetchProjects() {
             card.className = 'project-card reveal';
             card.innerHTML = `
                 ${isGithub ? '<div style="color:#6366f1; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">⚡ Auto-Imported</div>' : ''}
-                <div class="project-image">
-                    ${proj.image_path ? `<img src="${proj.image_path}" alt="${proj.title}">` : '🚀'}
-                </div>
+                <div class="project-image">${proj.image_path ? `<img src="${proj.image_path}" alt="${proj.title}">` : '🚀'}</div>
                 <div class="project-body">
                     <h3>${proj.title}</h3>
                     <p>${proj.description || ''}</p>
@@ -271,12 +245,9 @@ async function fetchProjects() {
                 </div>`;
             grid.appendChild(card);
         });
-    } catch (e) {
-        console.log('Projects fetch error');
-    }
+    } catch (e) { console.log(e); }
 }
 
-// Fetch experience
 async function fetchExperience() {
     const timeline = document.getElementById('experience-timeline');
     if (!timeline) return;
@@ -296,10 +267,9 @@ async function fetchExperience() {
                     <div class="timeline-desc">${exp.description}</div>
                 </div>`;
         });
-    } catch (e) { console.log('Experience fetch error'); }
+    } catch (e) { console.log(e); }
 }
 
-// Fetch education
 async function fetchEducation() {
     const timeline = document.getElementById('education-timeline');
     if (!timeline) return;
@@ -319,77 +289,12 @@ async function fetchEducation() {
                     <div class="timeline-desc">${edu.description || ''}</div>
                 </div>`;
         });
-    } catch (e) { console.log('Education fetch error'); }
+    } catch (e) { console.log(e); }
 }
 
-// Contact form submission (🔴 FIXED: Null Safety Added)
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const fb = document.getElementById('formFeedback');
-        if (fb) {
-            fb.className = 'form-feedback';
-            fb.style.display = 'none';
-        }
-
-        const payload = {
-            sender_name: document.getElementById('contact-name').value,
-            sender_email: document.getElementById('contact-email').value,
-            sender_phone: document.getElementById('contact-phone').value,
-            message: document.getElementById('contact-message').value
-        };
-
-        try {
-            const res = await fetch('/api/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (res.ok && fb) {
-                fb.className = 'form-feedback success';
-                fb.textContent = '✅ Message sent successfully!';
-                contactForm.reset();
-            } else if (fb) {
-                fb.className = 'form-feedback error';
-                fb.textContent = data.error || 'Something went wrong.';
-            }
-            if (fb) fb.style.display = 'block';
-        } catch (err) {
-            if (fb) {
-                fb.className = 'form-feedback error';
-                fb.textContent = 'Network error. Please try again.';
-                fb.style.display = 'block';
-            }
-        }
-    });
-}
-
-// Load everything on page start
-fetchProfile();
-fetchProjects();
-fetchExperience();
-fetchEducation();
-
-// 🎯 Project Card Tilt Effect
-document.addEventListener('mousemove', (e) => {
-    document.querySelectorAll('.project-card').forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left, y = e.clientY - rect.top;
-        const cx = rect.width / 2, cy = rect.height / 2;
-        card.style.transform = `perspective(800px) rotateX(${(y - cy) / cy * -6}deg) rotateY(${(x - cx) / cx * 6}deg)`;
-    });
-});
-document.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.project-card').forEach(card => {
-        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
-    });
-});
-
-// ==========================================================================
-// 9. BLOG PAGE EXCLUSIVE LOGIC (আপনার নতুন ব্লগের সম্পূর্ণ জাভাস্ক্রিপ্ট)
-// ==========================================================================
+// ==========================================
+// 9. BLOG PAGE EXCLUSIVE LOGIC
+// ==========================================
 let allPosts = [];
 let currentPage = 0;
 const POSTS_PER_PAGE = 10;
@@ -399,21 +304,18 @@ const blogGrid = document.getElementById('blogGrid');
 const loadMoreBtn = document.getElementById('loadMoreBtn');
 const categoryFilters = document.getElementById('categoryFilters');
 
-// Fetch all posts from your backend
 async function fetchAllPosts() {
     if (!blogGrid) return; 
     try {
         const res = await fetch('/api/blog');
-        const posts = await res.json();
-        allPosts = posts;
-        buildCategoryButtons(posts);
+        allPosts = await res.json();
+        buildCategoryButtons(allPosts);
         applyFilter();
     } catch (e) {
         blogGrid.innerHTML = '<p style="color:#e74c3c;">Failed to load blog posts.</p>';
     }
 }
 
-// Build category buttons from unique categories
 function buildCategoryButtons(posts) {
     if (!categoryFilters) return;
     const categories = [...new Set(posts.map(p => p.category || 'Uncategorized'))];
@@ -434,7 +336,6 @@ function buildCategoryButtons(posts) {
     });
 }
 
-// Filter posts by category and show page 0
 function applyFilter() {
     const filtered = selectedCategory === 'all'
         ? allPosts
@@ -445,7 +346,6 @@ function applyFilter() {
     updateLoadMoreButton(filtered);
 }
 
-// Render posts for a specific page
 function renderPage(filteredPosts, page) {
     if (!blogGrid) return;
     const start = page * POSTS_PER_PAGE;
@@ -462,19 +362,21 @@ function renderPage(filteredPosts, page) {
         const excerpt = post.content ? post.content.substring(0, 120) + '...' : '';
         const card = document.createElement('div');
         card.className = 'blog-card';
+        
+        // 🔴 [SEO FIXED URL LINK]: আইডির জায়গায় ডাইনামিক স্ল্যাগ দিয়ে রিড লিংক জেনারেশন
+        const postSlug = post.slug || post.id;
         card.innerHTML = `
             ${post.image_path ? `<img src="${post.image_path}" class="blog-img" alt="${post.title}">` : ''}
             <div class="blog-body">
                 <span class="blog-category">${post.category || 'General'}</span>
                 <h3 class="blog-title">${post.title}</h3>
                 <div class="blog-excerpt">${excerpt}</div>
-                <a href="article.html?id=${post.id}" class="read-more">Read Article →</a>
+                <a href="article.html?slug=${postSlug}" class="read-more">Read Article →</a>
             </div>`;
         blogGrid.appendChild(card);
     });
 }
 
-// Show/hide load more button
 function updateLoadMoreButton(filteredPosts) {
     if (!loadMoreBtn) return;
     const remaining = filteredPosts.length - (currentPage + 1) * POSTS_PER_PAGE;
@@ -487,7 +389,6 @@ function updateLoadMoreButton(filteredPosts) {
     }
 }
 
-// Load more button click
 if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', () => {
         const filtered = selectedCategory === 'all'
@@ -500,5 +401,56 @@ if (loadMoreBtn) {
     });
 }
 
-// Start
+// ═══════════════════════════════════════════
+// 🔗 SINGLE ARTICLE PAGE EXCLUSIVE LOGIC (🎯 BULLETPROOF HYBRID FIX)
+// ═══════════════════════════════════════════
+(async function fetchSingleArticle() {
+    const articleContainer = document.getElementById('article-content');
+    if (!articleContainer) return; // শুধু article.html পেজেই রান হবে
+
+    const params = new URLSearchParams(window.location.search);
+    
+    // 🛠️ ইউআরএল-এ যদি ভুল করে ?id=3 অথবা ?slug=3 অথবা ?slug=how-to-learn-english যেকোনোটা থাকে, সে রিড করবে
+    const articleIdentifier = params.get('slug') || params.get('id'); 
+
+    if (!articleIdentifier) {
+        articleContainer.innerHTML = '<p style="color:var(--text2); text-align:center;">Article identifier is missing in URL!</p>';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/blog/${articleIdentifier}`);
+        if (!res.ok) throw new Error('Not found');
+        
+        const data = await res.json();
+        const article = data.post ? data.post : data;
+
+        // ফলব্যাক ভেরিয়েবল ম্যাপিং
+        const title = article.title || article.blog_title || 'Untitled Post';
+        const category = article.category || article.blog_category || 'General';
+        const content = article.content || article.description || article.body || article.text || 'No content available.';
+        const image = article.image_path || article.img_path || '';
+
+        document.title = `${title} | Blog`;
+        
+        // সেন্টারিং লেআউট রেন্ডারিং
+        articleContainer.innerHTML = `
+            <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <span class="blog-category" style="margin-bottom: 1.5rem; display: inline-block;">${category}</span>
+                <h1 class="blog-title" style="margin-bottom: 2rem; text-align: center; background: linear-gradient(135deg, #fff, var(--text2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; line-height: 1.3; width: 100%;">${title}</h1>
+                ${image ? `<img src="${image}" class="blog-img" style="display: block; margin: 0 auto 2rem auto; max-width: 100%; height: auto; max-height: 450px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" alt="${title}">` : ''}
+                <div class="blog-excerpt" style="color: var(--text); font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; text-align: left; width: 100%; max-width: 750px; letter-spacing: 0.3px; margin-top: 1rem;">${content}</div>
+            </div>
+        `;
+    } catch (e) {
+        console.error("Fetch Error:", e);
+        articleContainer.innerHTML = '<p style="color:#e74c3c; text-align:center;">⚠️ Failed to load the article. Please check your database data or URL.</p>';
+    }
+})();
+
+// Initialize 
+fetchProfile();
+fetchProjects();
+fetchExperience();
+fetchEducation();
 fetchAllPosts();

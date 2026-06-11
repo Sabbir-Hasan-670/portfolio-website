@@ -164,7 +164,6 @@ body {
     display: none !important; 
 }
 
-/* হ্যামবার্গার ৩-বার বাটন ডিফল্ট লুক */
 .hamburger {
     display: none; 
     flex-direction: column; 
@@ -184,7 +183,6 @@ body {
     transition: var(--transition);
 }
 
-/* ডেস্কটপে ড্রপডাউন মেনু পাশাপাশি থাকবে */
 .nav-menu-dropdown {
     display: flex;
     align-items: center;
@@ -233,14 +231,13 @@ body {
    3. HERO SECTION & SOCIAL LINKS
    ========================================== */
 .hero {
-    min-height: 100vh; 
+    padding-top: 2rem; 
     display: flex; 
+    gap: 1rem;
     flex-direction: column;
     align-items: center; 
     justify-content: center; 
     text-align: center;
-    padding-top: 6rem; 
-    gap: 1rem;
 }
 
 .hero-inner { 
@@ -306,8 +303,8 @@ body {
     align-items: center !important; 
     justify-content: center !important;
     gap: 10px !important; 
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: #cbd5e1 !important; 
     text-decoration: none !important;
     padding: 0.6rem 1.4rem !important; 
@@ -360,23 +357,39 @@ body {
     border: 2px solid var(--glass-border); 
 }
 
-/* Marquee */
+/* 🎯 MARQUEE FULL WIDTH FIX (Gaps Removed) */
+/* 🎯 MARQUEE ULTIMATE FULL WIDTH FIX */
 .hero-marquee-wrap { 
-    width: 100% !important; 
+    position: relative;
+    width: 100vw !important;         /* পুরো ভিউপোর্ট চওড়া */
+    margin-left: calc(-50vw + 50%) !important; /* কন্টেইনারের বাউন্ডারি ভাঙার ম্যাজিক */
+    margin-right: calc(-50vw + 50%) !important;
     overflow: hidden !important; 
-    padding: 0.8rem 0; 
-    max-width: 100vw;
+    padding: 0.8rem 0 !important; 
+    background: transparent !important;
 }
 
+/* কন্টেইনারের ভেতরের কন্টেন্ট ফিক্স */
+.section {
+    position: relative; 
+    z-index: 1;
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 5rem 2rem;
+    overflow: visible; /* এটাকে visible রাখতে হবে যাতে মারকিউ বেরিয়ে যেতে পারে */
+}
+
+/* মারকিউ ট্র্যাক দুটির মধ্যে গ্যাপ তৈরির জন্য এই অংশটুকু আপডেট করুন */
 .hero-marquee-track { 
     display: flex; 
     width: max-content; 
     animation: scrollLeft 28s linear infinite; 
+    margin-bottom: 1.5rem; /* ট্র্যাকের নিচে গ্যাপ তৈরি করবে */
 }
 
 .hero-marquee-reverse { 
     animation: scrollRight 33s linear infinite; 
-    margin-top: 0.6rem; 
+    margin-top: 1.5rem;   /* ট্র্যাকের উপরে গ্যাপ তৈরি করবে */
 }
 
 .marquee-group { 
@@ -872,12 +885,11 @@ body {
         gap: 2rem; 
     }
 
-    /* 🔴 লোগো বামে ও মেনু গ্রুপ ডানে পুশ করার নিখুঁত ফিক্স */
     .navbar {
         padding: 0.8rem 1.5rem !important;
     }
 
-    .navbar .nav-inner {
+    .nav-inner {
         display: flex !important;
         flex-direction: row !important;
         justify-content: space-between !important; 
@@ -885,12 +897,11 @@ body {
         width: 100% !important;
     }
 
-    .navbar .nav-logo {
+    .nav-logo {
         margin-right: auto !important; 
     }
 
-    /* Home + Blog + Hamburger Wrapper */
-    .navbar .nav-links {
+    .nav-links {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
@@ -922,7 +933,6 @@ body {
     .hamburger.active span:nth-child(2) { opacity: 0; }
     .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* 📂 মোবাইল ড্রপডাউন গ্লাস প্যানেল */
     .nav-menu-dropdown {
         position: absolute !important;
         top: 100% !important;
@@ -976,17 +986,16 @@ body {
     }
 }
 
-/* 📱 একদম ছোট মোবাইল স্ক্রিন ফিক্স (Max-Width: 480px) */
 @media (max-width: 480px) {
     .navbar {
         padding: 0.6rem 1rem !important;
     }
     
-    .navbar .nav-logo {
+    .nav-logo {
         font-size: 1.2rem !important;
     }
 
-    .navbar .nav-links {
+    .nav-links {
         gap: 0.5rem !important; 
     }
 
@@ -1025,7 +1034,6 @@ body {
     }
 }
 
-/* 🔴 টাইমলাইন ও ওভারফ্লো এক্সট্রা স্ক্রলবার প্রটেকশন */
 @media (max-width: 768px) {
     .electric-timeline {
         padding-left: 30px !important; 
@@ -1043,5 +1051,68 @@ body {
     .github-mini-card img {
         max-width: 100% !important;
         height: auto !important;
+    }
+}
+
+
+/* ==========================================================================
+   15. SINGLE ARTICLE CENTERING FIX (🔴 مقاله کایمریا سنترینگ)
+   ========================================================================== */
+#article-content {
+    max-width: 800px !important;
+    margin: 0 auto !important;   
+    padding: 2rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important; 
+    text-align: center !important;  
+}
+
+#article-content .blog-category {
+    align-self: center !important;
+    margin-bottom: 1.5rem !important;
+    display: inline-block !important;
+}
+
+#article-content .blog-title {
+    text-align: center !important;
+    width: 100% !important;
+    font-size: clamp(2rem, 5vw, 3rem) !important; 
+    line-height: 1.3 !important;
+    margin-bottom: 2rem !important;
+    background: linear-gradient(135deg, #fff, var(--text2)) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+#article-content .blog-excerpt {
+    text-align: left !important; 
+    width: 100% !important;
+    max-width: 750px !important;
+    color: var(--text) !important;
+    font-size: 1.1rem !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.3px;
+    margin-top: 1rem !important;
+}
+
+#article-content .blog-img {
+    display: block !important;
+    margin: 0 auto 2rem auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+@media (max-width: 480px) {
+    #article-content {
+        padding: 1rem 0.5rem !important;
+    }
+    #article-content .blog-title {
+        font-size: 1.8rem !important;
+    }
+    #article-content .blog-excerpt {
+        font-size: 1rem !important;
     }
 }

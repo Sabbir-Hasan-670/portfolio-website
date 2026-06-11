@@ -8,7 +8,7 @@ const session = require('express-session');
 const fs = require('fs');
 const os = require('os');
 const si = require('systeminformation');
-const cron = require('node-cron'); // ⏰ ক্রন জব প্যাকেজ রিকোয়ার করা হলো
+const cron = require('node-cron'); 
 
 dotenv.config();
 
@@ -49,12 +49,21 @@ const db = mysql.createPool({
     database: process.env.DB_NAME
 });
 
+// 🎯 [SEO HELPER]: টাইটেল থেকে এসইও ফ্রেন্ডলি ইউআরএল স্ল্যাগ তৈরির কোর ফাংশন
+function createSlug(title) {
+    return title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9 -]/g, '') // স্পেশাল ক্যারেক্টার ও ইমোজি রিমুভ করবে
+        .replace(/\s+/g, '-')        // খালি স্পেসগুলোকে ড্যাশ (-) বানাবে
+        .replace(/-+/g, '-');        // ডাবল বা অতিরিক্ত ড্যাশ থাকলে সিঙ্গেল করবে
+}
+
 // ==========================================
 // 🚀 GITHUB CACHE SYSTEM & AUTOMATIC CRON JOB
 // ==========================================
-let cachedGithubProjects = []; // সার্ভারের মেমরিতে গিটহাব প্রজেক্ট জমা রাখার ক্যাশ বক্স
+let cachedGithubProjects = []; 
 
-// গিটহাব থেকে ব্যাকগ্রাউন্ডে ডেটা ফেচ করার কোর ফাংশন
 async function updateGithubCache() {
     if (!process.env.GITHUB_USERNAME) return;
     console.log("⏳ Fetching fresh data from GitHub API...");
@@ -66,7 +75,6 @@ async function updateGithubCache() {
             const repos = await ghRes.json();
             const activeRepos = repos.filter(repo => !repo.fork);
             
-            // Promise.all দিয়ে সব রেপোর ল্যাঙ্গুয়েজ ডেটা একসাথে প্যারালাল ফেচ হবে (সুপার ফাস্ট)
             cachedGithubProjects = await Promise.all(activeRepos.map(async (repo) => {
                 let languageHTML = '';
                 try {
@@ -103,12 +111,10 @@ async function updateGithubCache() {
     }
 }
 
-// ⏰ [CRON JOB]: প্রতিদিন সকাল ৬টা, দুপুর ১২টা, সন্ধ্যা ৬টা এবং রাত ১২টায় অটো রান হবে
 cron.schedule('0 0,6,12,18 * * *', () => {
     updateGithubCache();
 });
 
-// ⚡ সার্ভার যখনই প্রথমবার চালু (Start) হবে, তখনই ব্যাকগ্রাউন্ডে একবার ক্যাশ লোড করে নেবে
 updateGithubCache();
 
 
@@ -131,16 +137,10 @@ app.get('/api/experience', async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed to fetch experience' }); }
 });
 
-// ==========================================
-// HYBRID PROJECTS API (১ মিলিসেকেন্ডে ইনস্ট্যান্ট লোড)
-// ==========================================
 app.get('/api/projects', async (req, res) => {
     try {
         const [dbProjects] = await db.query('SELECT * FROM projects ORDER BY id DESC');
-
-        // 🚀 কোনো লাইভ গিটহাব কল নেই! মেমরি থেকে সরাসরি সেভড ক্যাশ ডেটা রিটার্ন করবে
         res.json([...dbProjects, ...cachedGithubProjects]);
-        
     } catch (err) { 
         res.status(500).json({ error: 'Failed to fetch projects' }); 
     }
@@ -196,18 +196,33 @@ app.post('/api/contact', upload.none(), async (req, res) => {
 // ==========================================
 app.get('/api/blog', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM blog_posts ORDER BY created_at DESC');
+        const [rows] = await db.query('SELECT * FROM blog_posts ORDER BY id DESC');
         res.json(rows);
     } catch (err) { res.status(500).json({ error: 'Failed to fetch blogs' }); }
 });
 
-app.get('/api/blog/:id', async (req, res) => {
+// 🟢 [HYBRID ROUTE FIXED]: আইডি (সংখ্যা) অথবা স্ল্যাগ (টেক্সট)—যেকোনো একটা ম্যাচ করলেই নিখুঁত ডেটা রিটার্ন করবে
+app.get('/api/blog/:identifier', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM blog_posts WHERE id = ?', [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ error: 'Not found' });
-        const [nextRow] = await db.query('SELECT id, title FROM blog_posts WHERE id < ? ORDER BY id DESC LIMIT 1', [req.params.id]);
-        res.json({ post: rows[0], nextPost: nextRow[0] || null });
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+        const param = req.params.identifier;
+        const isNumber = /^\d+$/.test(param); 
+        
+        let querySql = 'SELECT * FROM blog_posts WHERE slug = ?';
+        if (isNumber) {
+            querySql = 'SELECT * FROM blog_posts WHERE id = ?';
+        }
+
+        const [rows] = await db.query(querySql, [param]);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+        
+        res.json(rows[0]);
+    } catch (err) { 
+        console.error("Database Single Blog Error:", err);
+        res.status(500).json({ error: 'Failed to fetch article details' }); 
+    }
 });
 
 // ==========================================
@@ -227,14 +242,14 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// SECURE ADMIN ROUTES
+// SECURE ADMIN ROUTES (requireAuth Protected)
 // ==========================================
 const requireAuth = (req, res, next) => {
     if (req.session && req.session.isAuthenticated) next();
     else res.status(403).json({ error: 'Access denied.' });
 };
 
-// --- CREATE & UPDATE ROUTES ---
+// 💼 --- 1. EXPERIENCE ROUTES (CREATE & EDIT) ---
 app.post('/api/admin/experience', requireAuth, upload.none(), async (req, res) => {
     const { role, company_or_project, duration, description } = req.body;
     try {
@@ -243,6 +258,15 @@ app.post('/api/admin/experience', requireAuth, upload.none(), async (req, res) =
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
+app.put('/api/admin/experience/:id', requireAuth, upload.none(), async (req, res) => {
+    const { role, company_or_project, duration, description } = req.body;
+    try {
+        await db.query('UPDATE experience SET role=?, company_or_project=?, duration=?, description=? WHERE id=?', [role, company_or_project, duration, description, req.params.id]);
+        res.json({ message: 'Experience updated successfully! 💼' });
+    } catch (err) { res.status(500).json({ error: 'Server error' }); }
+});
+
+// 🚀 --- 2. PROJECTS ROUTES (CREATE & EDIT) ---
 app.post('/api/admin/projects', requireAuth, upload.single('project_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Image is required' });
     const { title, description, github_url, live_url } = req.body;
@@ -253,6 +277,68 @@ app.post('/api/admin/projects', requireAuth, upload.single('project_image'), asy
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
+app.put('/api/admin/projects/:id', requireAuth, upload.single('project_image'), async (req, res) => {
+    const { title, description, github_url, live_url } = req.body;
+    try {
+        if (req.file) {
+            const newPath = '/uploads/' + req.file.filename;
+            const [rows] = await db.query('SELECT image_path FROM projects WHERE id = ?', [req.params.id]);
+            if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+            await db.query('UPDATE projects SET title=?, description=?, image_path=?, github_url=?, live_url=? WHERE id=?', [title, description, newPath, github_url, live_url, req.params.id]);
+        } else {
+            await db.query('UPDATE projects SET title=?, description=?, github_url=?, live_url=? WHERE id=?', [title, description, github_url, live_url, req.params.id]);
+        }
+        res.json({ message: 'Project updated successfully! 🚀' });
+    } catch (err) { res.status(500).json({ error: 'Server error' }); }
+});
+
+// 🎓 --- 3. EDUCATION ROUTES (CREATE & EDIT) ---
+app.post('/api/admin/education', requireAuth, upload.none(), async (req, res) => {
+    const { degree, institution, duration, description } = req.body;
+    try {
+        await db.query("INSERT INTO education (degree, institution, duration, description, image_path) VALUES (?, ?, ?, ?, '')", [degree, institution, duration, description]);
+        res.json({ message: 'Education added successfully' });
+    } catch (err) {
+        console.error("Database Error:", err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+app.put('/api/admin/education/:id', requireAuth, upload.none(), async (req, res) => {
+    const { degree, institution, duration, description } = req.body;
+    try {
+        await db.query('UPDATE education SET degree=?, institution=?, duration=?, description=? WHERE id=?', [degree, institution, duration, description, req.params.id]);
+        res.json({ message: 'Education entry updated successfully! 🎓' });
+    } catch (err) { res.status(500).json({ error: 'Server error' }); }
+});
+
+// 📜 --- 4. CERTIFICATES ROUTES (CREATE & EDIT) ---
+app.post('/api/admin/certificates', requireAuth, upload.single('cert_image'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'Certificate image is required' });
+    const { title, issuer, link } = req.body;
+    const imagePath = '/uploads/' + req.file.filename;
+    try {
+        await db.query('INSERT INTO certificates (title, issuer, image_path, link) VALUES (?, ?, ?, ?)', [title, issuer, imagePath, link]);
+        res.json({ message: 'Certificate added successfully!' });
+    } catch (err) { res.status(500).json({ error: 'Server error adding certificate.' }); }
+});
+
+app.put('/api/admin/certificates/:id', requireAuth, upload.single('cert_image'), async (req, res) => {
+    const { title, issuer, link } = req.body;
+    try {
+        if (req.file) {
+            const newPath = '/uploads/' + req.file.filename;
+            const [rows] = await db.query('SELECT image_path FROM certificates WHERE id = ?', [req.params.id]);
+            if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+            await db.query('UPDATE certificates SET title=?, issuer=?, image_path=?, link=? WHERE id=?', [title, issuer, newPath, link, req.params.id]);
+        } else {
+            await db.query('UPDATE certificates SET title=?, issuer=?, link=? WHERE id=?', [title, issuer, link, req.params.id]);
+        }
+        res.json({ message: 'Certificate updated successfully! 📜' });
+    } catch (err) { res.status(500).json({ error: 'Server error' }); }
+});
+
+// 👤 --- 5. SOCIALS ROUTE ---
 app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
     const { github_link, linkedin_link, facebook_link, fiverr_link, pinterest_link, adobe_stock_link } = req.body;
     try {
@@ -264,35 +350,42 @@ app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-app.post('/api/admin/education', requireAuth, upload.none(), async (req, res) => {
-    const { degree, institution, duration, description } = req.body;
-    const sql = "INSERT INTO education (degree, institution, duration, description, image_path) VALUES (?, ?, ?, ?, '')"; 
-    try {
-        await db.query(sql, [degree, institution, duration, description]);
-        res.json({ message: 'Education added successfully' });
-    } catch (err) {
-        console.error("Database Error:", err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-app.post('/api/admin/certificates', requireAuth, upload.single('cert_image'), async (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'Certificate image is required' });
-    const { title, issuer, link } = req.body;
-    const imagePath = '/uploads/' + req.file.filename;
-    try {
-        await db.query('INSERT INTO certificates (title, issuer, image_path, link) VALUES (?, ?, ?, ?)', [title, issuer, imagePath, link]);
-        res.json({ message: 'Certificate added successfully!' });
-    } catch (err) { res.status(500).json({ error: 'Server error adding certificate.' }); }
-});
-
+// 📝 --- 6. BLOG ROUTES (CREATE & EDIT) ---
 app.post('/api/admin/blog', requireAuth, upload.single('blog_image'), async (req, res) => {
-    const { title, category, content } = req.body;
+    const { title, category, content, custom_slug } = req.body;
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';
+    
+    let finalSlug = '';
+    if (custom_slug && custom_slug.trim() !== '') {
+        finalSlug = createSlug(custom_slug);
+    } else {
+        finalSlug = createSlug(title || 'untitled');
+    }
+
     try {
-        await db.query('INSERT INTO blog_posts (title, category, content, image_path) VALUES (?, ?, ?, ?)', [title, category, content, imagePath]);
+        await db.query('INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', [title, finalSlug, category, content, imagePath]);
         res.json({ message: 'Blog added successfully!' });
     } catch (err) { res.status(500).json({ error: 'Failed to save blog' }); }
+});
+
+app.put('/api/admin/blog/:id', requireAuth, upload.single('blog_image'), async (req, res) => {
+    const { title, category, content, custom_slug } = req.body;
+    const blogId = req.params.id;
+    let slug = createSlug(custom_slug && custom_slug.trim() !== '' ? custom_slug : title || 'untitled');
+    try {
+        if (req.file) {
+            const newImagePath = '/uploads/' + req.file.filename;
+            const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [blogId]);
+            if (rows[0]?.image_path) {
+                const oldPath = path.join(__dirname, 'public', rows[0].image_path);
+                fs.unlink(oldPath, (err) => { if (err) console.log("Old file already missing."); });
+            }
+            await db.query('UPDATE blog_posts SET title=?, slug=?, category=?, content=?, image_path=? WHERE id=?', [title, slug, category, content, newImagePath, blogId]);
+        } else {
+            await db.query('UPDATE blog_posts SET title=?, slug=?, category=?, content=? WHERE id=?', [title, slug, category, content, blogId]);
+        }
+        res.json({ message: 'Article updated successfully! 🚀' });
+    } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 // --- UPLOAD ROUTES (WITH AUTO-DELETE) ---
@@ -371,94 +464,61 @@ app.get('/api/admin/system-status', requireAuth, async (req, res) => {
 // DELETE ROUTES (AUTO-DELETE FILES)
 // ==========================================
 app.delete('/api/admin/experience/:id', requireAuth, async (req, res) => {
-    try { 
-        await db.query('DELETE FROM experience WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Deleted' }); 
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+    try { await db.query('DELETE FROM experience WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' }); } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 app.delete('/api/admin/messages/:id', requireAuth, async (req, res) => {
-    try { 
-        await db.query('DELETE FROM messages WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Deleted' }); 
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+    try { await db.query('DELETE FROM messages WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' }); } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 app.delete('/api/admin/projects/:id', requireAuth, async (req, res) => {
     try {
         const [rows] = await db.query('SELECT image_path FROM projects WHERE id = ?', [req.params.id]);
-        if (rows[0]?.image_path) {
-            fs.unlink(path.join(__dirname, 'public', rows[0].image_path), (err) => { if(err) console.log("File missing."); });
-        }
-        await db.query('DELETE FROM projects WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Project deleted' }); 
+        if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+        await db.query('DELETE FROM projects WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' });
     } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 app.delete('/api/admin/education/:id', requireAuth, async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT image_path FROM education WHERE id = ?', [req.params.id]);
-        if (rows[0]?.image_path && rows[0].image_path !== '') {
-            fs.unlink(path.join(__dirname, 'public', rows[0].image_path), (err) => { if(err) console.log("File missing."); });
-        }
-        await db.query('DELETE FROM education WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Education deleted' }); 
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+    try { await db.query('DELETE FROM education WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' }); } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 app.delete('/api/admin/certificates/:id', requireAuth, async (req, res) => {
     try {
         const [rows] = await db.query('SELECT image_path FROM certificates WHERE id = ?', [req.params.id]);
-        if (rows[0]?.image_path) {
-            fs.unlink(path.join(__dirname, 'public', rows[0].image_path), (err) => { if(err) console.log("File missing."); });
-        }
-        await db.query('DELETE FROM certificates WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Certificate deleted' }); 
+        if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+        await db.query('DELETE FROM certificates WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' });
     } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
     try {
         const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [req.params.id]);
-        if (rows[0]?.image_path) {
-            fs.unlink(path.join(__dirname, 'public', rows[0].image_path), (err) => { if(err) console.log("File missing."); });
-        }
-        await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]); 
-        res.json({ message: 'Blog deleted' }); 
-    } catch (err) { res.status(500).json({ error: 'Failed to delete blog' }); }
+        if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+        await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' });
+    } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
 
 // ==========================================
-// N8N AUTOMATION ROUTE (FIXED IMAGE TIMEOUT & TELEGRAM)
+// N8N AUTOMATION ROUTE 
 // ==========================================
 app.post('/api/n8n/blog', async (req, res) => {
     try {
         const { secret, title, category, content, imageUrl } = req.body;
-        
-        // ১. পাসওয়ার্ড সিকিউরিটি চেক
         const expectedSecret = process.env.N8N_SECRET_KEY || 'S.abbir@670#613';
-        if (secret !== expectedSecret) {
-            console.log(`⚠️ [AUTH FAILED] Incoming secret: ${secret} does not match.`);
-            return res.status(403).json({ error: 'Unauthorized n8n request' });
-        }
-
-        // ⭐ n8n কে সাথে সাথে রেসপন্স পাঠিয়ে দিন যাতে নোড ১ সেকেন্ডে সবুজ হয়ে ক্লোজ হয়ে যায়
-        res.json({ success: true, message: 'Blog data received! Processing in background.' });
-
-        // ২. বাকি ভারী কাজগুলো সার্ভার এখন ব্যাকগ্রাউন্ডে করবে
+        if (secret !== expectedSecret) return res.status(403).json({ error: 'Unauthorized' });
+        
+        res.json({ success: true, message: 'Processing in background.' });
         let imagePath = '';
         
-        // 🔒 [CRITICAL FIX]: ইউআরএল যদি আসলেই একটি সঠিক লাইভ লিংক হয়, কেবল তখনই ইমেজ ডাউনলোড প্রসেস রান হবে
         if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
             const imageName = 'blog_' + Date.now() + '.png';
             const absolutePath = path.join(__dirname, 'public/uploads', imageName);
             
             try {
-                // ইমেজের জন্য সর্বোচ্চ ১০ সেকেন্ডের সেфটি টাইম-আউট বাফার
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000);
-
                 const response = await fetch(imageUrl, { signal: controller.signal });
                 clearTimeout(timeoutId);
 
@@ -466,63 +526,20 @@ app.post('/api/n8n/blog', async (req, res) => {
                     const buffer = await response.arrayBuffer();
                     fs.writeFileSync(absolutePath, Buffer.from(buffer));
                     imagePath = '/uploads/' + imageName;
-                    console.log("📸 Image downloaded and saved successfully!");
                 }
-            } catch (imgErr) {
-                console.error("❌ Background image download failed or timed out:", imgErr.message);
-                imagePath = ''; // ফেইল করলে ইমেজ ছাড়াই পোস্ট হবে
-            }
-        } else {
-            console.log("ℹ️ No valid image URL received from Gemini/n8n. Skipping image step safely.");
+            } catch (imgErr) { console.error(imgErr.message); }
         }
 
-        // ৩. ডাটাবেজে ব্লগ পোস্ট ইনসার্ট করা
+        const slug = createSlug(title || 'untitled-ai-post');
+
         try {
             await db.query(
-                'INSERT INTO blog_posts (title, category, content, image_path) VALUES (?, ?, ?, ?)', 
-                [
-                    title || 'Untitled AI Post', 
-                    category || 'Cybersecurity', 
-                    content || 'No Content Provided', 
-                    imagePath || ''
-                ]
+                'INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', 
+                [title || 'Untitled AI Post', slug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '']
             );
-            console.log("🚀 [DATABASE SUCCESS] Blog post saved successfully!");
+        } catch (dbErr) { console.error(dbErr.message); }
 
-            // ⚡ [TELEGRAM ALERT IMPLEMENTATION] 
-            const botToken = process.env.TELEGRAM_BOT_TOKEN;
-            const chatId = process.env.TELEGRAM_CHAT_ID;
-
-            if (botToken && chatId) {
-                const cleanTitle = (title || 'Untitled AI Post').replace(/[_*`\[\]]/g, '\\$&');
-                const cleanCategory = (category || 'Cybersecurity').replace(/[_*`\[\]]/g, '\\$&');
-                
-                const telegramMessage = `🚀 *New Blog Published Automatically!*\n\n📌 *Title:* ${cleanTitle}\n📁 *Category:* ${cleanCategory}\n\n✅ Saved successfully to your VPS database!`;
-
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: telegramMessage,
-                        parse_mode: 'Markdown'
-                    })
-                })
-                .then(telRes => {
-                    if (!telRes.ok) console.error(`⚠️ Telegram API responded with status: ${telRes.status}`);
-                })
-                .catch(telErr => console.error("❌ Telegram notification dispatch failed:", telErr.message));
-            } else {
-                console.log("ℹ️ Telegram credentials missing in .env. Skipping alert.");
-            }
-
-        } catch (dbErr) {
-            console.error("❌ [MYSQL QUERY FAILED]:", dbErr.message);
-        }
-
-    } catch (err) {
-        console.error("❌ n8n background global error:", err.message);
-    }
+    } catch (err) { console.error(err.message); }
 });
 
 const PORT = process.env.PORT || 5005;

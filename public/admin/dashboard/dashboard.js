@@ -17,15 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAdminClock();
     setInterval(updateAdminClock, 1000);
 
-
-
     // ==========================================
     // . THEME TOGGLE LOGIC
     // ==========================================
     const themeBtn = document.getElementById('theme-btn');
     const body = document.getElementById('main-body');
 
-    // Check if you saved the light theme previously
     if (localStorage.getItem('admin-theme') === 'light') {
         body.classList.add('light-theme');
     }
@@ -33,8 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
             body.classList.toggle('light-theme');
-            
-            // Save your preference to the browser
             if (body.classList.contains('light-theme')) {
                 localStorage.setItem('admin-theme', 'light');
             } else {
@@ -67,32 +62,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.deleteItem = deleteItem;
 
+    // ==========================================
+    // 💼 EXPERIENCE CMS MANAGER
+    // ==========================================
     async function fetchExperience() {
         const list = document.getElementById('experience-list-admin');
+        if (!list) return;
         try {
             const res = await fetch('/api/experience');
             const data = await res.json();
             list.innerHTML = '';
+            window.cachedExperience = data;
             data.forEach(exp => {
-                list.innerHTML += `<li><div class="info"><h4>${exp.role}</h4><p>${exp.company_or_project}</p></div><button class="delete-btn" onclick="deleteItem('/api/admin/experience', ${exp.id}, window.fetchExperience)">Delete</button></li>`;
+                list.innerHTML += `
+                <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                    <div class="info"><h4>${exp.role}</h4><p>${exp.company_or_project}</p></div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editExperience(${exp.id})">Edit</button>
+                        <button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/experience', ${exp.id}, window.fetchExperience)">Delete</button>
+                    </div>
+                </li>`;
             });
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
     window.fetchExperience = fetchExperience;
 
+    // ==========================================
+    // 🚀 PROJECTS CMS MANAGER
+    // ==========================================
     async function fetchProjects() {
         const list = document.getElementById('projects-list-admin');
+        if (!list) return;
         try {
             const res = await fetch('/api/projects');
             const data = await res.json();
             list.innerHTML = '';
+            window.cachedProjects = data.filter(p => !String(p.id).startsWith('gh-'));
             data.forEach(proj => {
-                list.innerHTML += `<li><div class="info"><h4>${proj.title}</h4></div><button class="delete-btn" onclick="deleteItem('/api/admin/projects', ${proj.id}, window.fetchProjects)">Delete</button></li>`;
+                const isGithub = String(proj.id).startsWith('gh-');
+                list.innerHTML += `
+                <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                    <div class="info"><h4>${proj.title} ${isGithub ? '<span style="color:#6366f1;font-size:0.7rem;">(GitHub)</span>' : ''}</h4></div>
+                    <div style="display: flex; gap: 8px;">
+                        ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : ''}
+                        ${!isGithub ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/projects', ${proj.id}, window.fetchProjects)">Delete</button>` : ''}
+                    </div>
+                </li>`;
             });
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
     window.fetchProjects = fetchProjects;
 
+    // ==========================================
+    // 🎓 EDUCATION CMS MANAGER
+    // ==========================================
     async function fetchEducation() {
         const list = document.getElementById('admin-education-list');
         if (!list) return;
@@ -100,16 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/education');
             const data = await res.json();
             list.innerHTML = '';
+            window.cachedEducation = data;
             data.forEach(edu => {
-                list.innerHTML += `<div class="dash-card" style="padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+                list.innerHTML += `
+                <div class="dash-card" style="padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
                     <div><h4>${edu.degree}</h4><p style="margin: 0; opacity: 0.7;">${edu.institution}</p></div>
-                    <button class="delete-btn" onclick="deleteItem('/api/admin/education', ${edu.id}, window.fetchEducation)">Delete</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editEducation(${edu.id})">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('/api/admin/education', ${edu.id}, window.fetchEducation)">Delete</button>
+                    </div>
                 </div>`;
             });
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
     window.fetchEducation = fetchEducation;
 
+    // ==========================================
+    // 📜 CERTIFICATES CMS MANAGER
+    // ==========================================
     async function fetchCertificates() {
         const list = document.getElementById('admin-certificates-list');
         if (!list) return;
@@ -117,20 +148,170 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/certificates');
             const data = await res.json();
             list.innerHTML = '';
+            window.cachedCertificates = data;
             data.forEach(cert => {
-                list.innerHTML += `<div class="dash-card" style="padding: 1rem; text-align: center; background: rgba(0,0,0,0.2);">
+                list.innerHTML += `
+                <div class="dash-card" style="padding: 1rem; text-align: center; background: rgba(0,0,0,0.2);">
                     <img src="${cert.image_path}" style="width: 100px; height: 100px; object-fit: contain; margin-bottom: 0.5rem;">
                     <h4>${cert.title}</h4>
                     <p style="opacity: 0.7; font-size: 0.9rem;">${cert.issuer}</p>
-                    <button class="delete-btn" style="width:100%; margin-top:0.5rem;" onclick="deleteItem('/api/admin/certificates', ${cert.id}, window.fetchCertificates)">Delete</button>
+                    <div style="display: flex; gap: 6px; margin-top: 10px;">
+                        <button class="action-btn" style="flex: 1; padding: 4px; font-size: 0.8rem; background: #2ecc71;" onclick="editCertificate(${cert.id})">Edit</button>
+                        <button class="delete-btn" style="flex: 1; padding: 4px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/certificates', ${cert.id}, window.fetchCertificates)">Delete</button>
+                    </div>
                 </div>`;
             });
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
     window.fetchCertificates = fetchCertificates;
 
+    // ==========================================
+    // 🎛️ UNIVERSAL CUSTOM MODAL ENGINE (🔴 POPUP BUG FIXED)
+    // ==========================================
+    const uniModal = document.getElementById('universal-edit-modal');
+    const uniForm = document.getElementById('universal-edit-form');
+    const uniContainer = document.getElementById('dynamic-inputs-container');
+    const uniTitle = document.getElementById('universal-modal-title');
+
+    document.getElementById('universal-edit-cancel')?.addEventListener('click', () => {
+        uniModal.classList.add('hidden');
+    });
+
+    window.editExperience = function(id) {
+        if (!window.cachedExperience) return;
+        const exp = window.cachedExperience.find(item => item.id === id);
+        if (!exp) return;
+
+        uniTitle.textContent = "💼 Edit Experience Entry";
+        document.getElementById('universal-item-id').value = id;
+        document.getElementById('universal-item-type').value = 'experience';
+
+        uniContainer.innerHTML = `
+            <div class="input-group"><input type="text" id="uni-role" value="${exp.role || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Role</label></div>
+            <div class="input-group"><input type="text" id="uni-company" value="${exp.company_or_project || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Company / Project</label></div>
+            <div class="input-group"><input type="text" id="uni-duration" value="${exp.duration || ''}"><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Duration</label></div>
+            <div class="input-group"><textarea id="uni-desc" rows="4" placeholder="Responsibilities...">${exp.description || ''}</textarea></div>
+        `;
+        uniModal.classList.remove('hidden');
+    };
+
+    window.editProject = function(id) {
+        if (!window.cachedProjects) return;
+        const proj = window.cachedProjects.find(item => item.id === id);
+        if (!proj) return;
+
+        uniTitle.textContent = "🚀 Edit Project Details";
+        document.getElementById('universal-item-id').value = id;
+        document.getElementById('universal-item-type').value = 'project';
+
+        uniContainer.innerHTML = `
+            <div class="input-group"><input type="text" id="uni-title" value="${proj.title || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Project Title</label></div>
+            <div class="input-group"><input type="text" id="uni-github" value="${proj.github_url || ''}"><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">GitHub URL</label></div>
+            <div class="input-group"><input type="text" id="uni-live" value="${proj.live_url || ''}"><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Live Link</label></div>
+            <div class="input-group"><textarea id="uni-desc" rows="4" placeholder="Project Description...">${proj.description || ''}</textarea></div>
+        `;
+        uniModal.classList.remove('hidden');
+    };
+
+    window.editEducation = function(id) {
+        if (!window.cachedEducation) return;
+        const edu = window.cachedEducation.find(item => item.id === id);
+        if (!edu) return;
+
+        uniTitle.textContent = "🎓 Edit Education Details";
+        document.getElementById('universal-item-id').value = id;
+        document.getElementById('universal-item-type').value = 'education';
+
+        uniContainer.innerHTML = `
+            <div class="input-group"><input type="text" id="uni-degree" value="${edu.degree || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Degree / Title</label></div>
+            <div class="input-group"><input type="text" id="uni-institution" value="${edu.institution || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Institution</label></div>
+            <div class="input-group"><input type="text" id="uni-duration" value="${edu.duration || ''}"><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Duration / Years</label></div>
+            <div class="input-group"><textarea id="uni-desc" rows="3" placeholder="Additional Details...">${edu.description || ''}</textarea></div>
+        `;
+        uniModal.classList.remove('hidden');
+    };
+
+    window.editCertificate = function(id) {
+        if (!window.cachedCertificates) return;
+        const cert = window.cachedCertificates.find(item => item.id === id);
+        if (!cert) return;
+
+        uniTitle.textContent = "📜 Edit Certificate Entry";
+        document.getElementById('universal-item-id').value = id;
+        document.getElementById('universal-item-type').value = 'certificate';
+
+        uniContainer.innerHTML = `
+            <div class="input-group"><input type="text" id="uni-title" value="${cert.title || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Certification Title</label></div>
+            <div class="input-group"><input type="text" id="uni-issuer" value="${cert.issuer || ''}" required><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Issuing Organization</label></div>
+            <div class="input-group"><input type="url" id="uni-link" value="${cert.link || ''}"><label style="top:-20px; font-size:0.8rem; color:#38bdf8;">Verification URL</label></div>
+        `;
+        uniModal.classList.remove('hidden');
+    };
+
+    uniForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('universal-item-id').value;
+        const type = document.getElementById('universal-item-type').value;
+
+        let url = `/api/admin/${type}/${id}`;
+        let options = { method: 'PUT' };
+        let callback;
+
+        if (type === 'experience') {
+            options.headers = { 'Content-Type': 'application/json' };
+            options.body = JSON.stringify({
+                role: document.getElementById('uni-role').value,
+                company_or_project: document.getElementById('uni-company').value,
+                duration: document.getElementById('uni-duration').value,
+                description: document.getElementById('uni-desc').value
+            });
+            callback = fetchExperience;
+        } 
+        else if (type === 'project') {
+            const formData = new FormData();
+            formData.append('title', document.getElementById('uni-title').value);
+            formData.append('github_url', document.getElementById('uni-github').value);
+            formData.append('live_url', document.getElementById('uni-live').value);
+            formData.append('description', document.getElementById('uni-desc').value);
+            options.body = formData;
+            callback = fetchProjects;
+        } 
+        else if (type === 'education') {
+            options.headers = { 'Content-Type': 'application/json' };
+            options.body = JSON.stringify({
+                degree: document.getElementById('uni-degree').value,
+                institution: document.getElementById('uni-institution').value,
+                duration: document.getElementById('uni-duration').value,
+                description: document.getElementById('uni-desc').value
+            });
+            callback = fetchEducation;
+        } 
+        else if (type === 'certificate') {
+            const formData = new FormData();
+            formData.append('title', document.getElementById('uni-title').value);
+            formData.append('issuer', document.getElementById('uni-issuer').value);
+            formData.append('link', document.getElementById('uni-link').value);
+            options.body = formData;
+            callback = fetchCertificates;
+        }
+
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            if (response.ok) {
+                uniModal.classList.add('hidden');
+                alert(data.message || 'Updated successfully! 🎉');
+                if (callback) callback();
+            } else { alert('Error: ' + data.error); }
+        } catch (err) { alert('Server network error during update.'); }
+    });
+
+    // ==========================================
+    // 📬 INBOX MESSAGES & PROFILE SOCIALS
+    // ==========================================
     async function fetchInbox() {
         const container = document.getElementById('messages-container');
+        if (!container) return;
         try {
             const res = await fetch('/api/admin/messages');
             const data = await res.json();
@@ -143,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.fetchInbox = fetchInbox;
 
-    // 🌟 NEW FIX: Pre-fill the social links form to prevent accidental deletion 🌟
     async function fetchSocialLinks() {
         try {
             const res = await fetch('/api/profile');
@@ -151,7 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             
             if (data) {
-                // Safely fill inputs if they exist on the page
                 const gh = document.getElementById('social-github'); if(gh) gh.value = data.github_link || '';
                 const li = document.getElementById('social-linkedin'); if(li) li.value = data.linkedin_link || '';
                 const fb = document.getElementById('social-facebook'); if(fb) fb.value = data.facebook_link || '';
@@ -171,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchEducation(); 
     fetchCertificates(); 
     fetchInbox();
-    fetchSocialLinks(); // 🌟 Added to the initial load sequence
+    fetchSocialLinks(); 
 
     // --- UNIVERSAL CROPPER LOGIC (Fixed Sizes) ---
     let cropper;
@@ -222,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url, options);
             const data = await response.json();
             if (response.status === 403) return window.location.href = '/admin/login.html';
-            if (response.ok) { alert(data.message); if(callback) callback(); } // Removed formElement.reset() here to protect socials
+            if (response.ok) { alert(data.message); if(callback) callback(); }
             else { alert('Error: ' + data.error); }
         } catch (e) { alert('Server error.'); }
     }
@@ -238,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('live_url', document.getElementById('proj-live').value);
         formData.append('project_image', croppedBlob, 'project.jpg');
         submitForm('/api/admin/projects', { method: 'POST', body: formData }, e.target, () => {
-            e.target.reset(); // Reset form manually after success
+            e.target.reset(); 
             croppedBlob = null; fetchProjects();
         });
     });
@@ -255,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-   // Submit Social Links
+    // Submit Social Links
     document.getElementById('socials-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const payload = {
@@ -266,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
             pinterest_link: document.getElementById('social-pinterest').value,
             adobe_stock_link: document.getElementById('social-adobe').value
         };
-        // Removed the automatic form reset so your links stay in the boxes after saving
         submitForm('/api/admin/socials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }, e.target, fetchSocialLinks);
     });
 
@@ -284,17 +462,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Submit Education (No Image)
+    // Submit Education
     document.getElementById('admin-education-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const payload = {
             degree: document.getElementById('edu-degree').value,
             institution: document.getElementById('edu-institution').value,
             duration: document.getElementById('edu-duration').value,
             description: document.getElementById('edu-description').value
         };
-        
         submitForm('/api/admin/education', { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' }, 
@@ -334,140 +510,107 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     // ==========================================
-    // BLOG MANAGER LOGIC (FIXED)
+    // 📝 SECURE BLOG MANAGER (WITH POPUP EDIT)
     // ==========================================
-
-    // 1. Fetch and Display Published Blogs
     async function fetchAdminBlogs() {
         try {
-            const res = await fetch('/api/blog');
+            const res = await fetch('/api/blog'); 
             const data = await res.json();
-            const list = document.getElementById('blog-list');
-            
+            const list = document.getElementById('blog-list'); 
             if (!list) return;
             list.innerHTML = data.length ? '' : '<p>No articles published yet.</p>';
-            
+            window.cachedBlogs = data; 
             data.forEach(blog => {
                 list.innerHTML += `
-                    <li>
-                        <span><strong>${blog.title}</strong> <span style="color:#6366f1;">(${blog.category})</span></span>
-                        <button class="delete-btn" onclick="deleteItem('/api/admin/blog', ${blog.id}, window.fetchAdminBlogs)">Delete</button>
+                    <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                        <span><strong>${blog.title}</strong> <span style="color:#6366f1;">(${blog.category || 'General'})</span></span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #38bdf8;" onclick="openEditBlogModal(${blog.id})">Edit</button>
+                            <button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/blog', ${blog.id}, window.fetchAdminBlogs)">Delete</button>
+                        </div>
                     </li>`;
             });
         } catch (e) { console.log(e); }
     }
-    
     window.fetchAdminBlogs = fetchAdminBlogs;
-    fetchAdminBlogs(); 
+    fetchAdminBlogs();
 
-    // 2. Submit a New Blog Post
-    const blogForm = document.getElementById('blog-form');
-    if (blogForm) {
-        blogForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            formData.append('title', document.getElementById('blog-title').value);
-            formData.append('category', document.getElementById('blog-category').value);
-            formData.append('content', document.getElementById('blog-content').value);
-            
-            const fileInput = document.getElementById('blog-image');
-            if (fileInput.files.length > 0) {
-                formData.append('blog_image', fileInput.files[0]);
-            }
-            
-            try {
-                const response = await fetch('/api/admin/blog', {
-                    method: 'POST',
-                    body: formData 
-                });
-                
-                if (response.ok) {
-                    blogForm.reset(); 
-                    fetchAdminBlogs(); 
-                    alert('Article published successfully! 🚀');
-                } else {
-                    const data = await response.json();
-                    alert('Server Error: ' + (data.error || 'Failed to publish'));
-                }
-            } catch (err) {
-                console.error("Frontend Fetch Error:", err);
-                alert("Network error. Could not reach server.");
-            }
-        });
+    document.getElementById('blog-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+        const formData = new FormData();
+        formData.append('title', document.getElementById('blog-title').value); 
+        formData.append('category', document.getElementById('blog-category').value);
+        formData.append('content', document.getElementById('blog-content').value); 
+        formData.append('custom_slug', document.getElementById('blog-slug').value);
+        const fileInput = document.getElementById('blog-image'); 
+        if (fileInput.files.length > 0) formData.append('blog_image', fileInput.files[0]);
+        try {
+            const response = await fetch('/api/admin/blog', { method: 'POST', body: formData });
+            if (response.ok) { blogForm.reset(); fetchAdminBlogs(); alert('Article published successfully! 🚀'); }
+        } catch (err) { alert("Network error."); }
+    });
+
+    const editBlogModal = document.getElementById('edit-blog-modal');
+    window.openEditBlogModal = function(id) {
+        if (!window.cachedBlogs) return; 
+        const blog = window.cachedBlogs.find(b => b.id === id); 
+        if (!blog) return;
+        document.getElementById('edit-blog-id').value = blog.id; 
+        document.getElementById('edit-blog-title').value = blog.title || '';
+        document.getElementById('edit-blog-slug').value = blog.slug || ''; 
+        document.getElementById('edit-blog-category').value = blog.category || '';
+        document.getElementById('edit-blog-content').value = blog.content || ''; 
+        editBlogModal.classList.remove('hidden');
     }
+    document.getElementById('edit-blog-cancel')?.addEventListener('click', () => editBlogModal.classList.add('hidden'));
+
+    document.getElementById('edit-blog-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+        const id = document.getElementById('edit-blog-id').value;
+        const formData = new FormData();
+        formData.append('title', document.getElementById('edit-blog-title').value); 
+        formData.append('custom_slug', document.getElementById('edit-blog-slug').value);
+        formData.append('category', document.getElementById('edit-blog-category').value); 
+        formData.append('content', document.getElementById('edit-blog-content').value);
+        const fileInput = document.getElementById('edit-blog-image'); 
+        if (fileInput.files.length > 0) formData.append('blog_image', fileInput.files[0]);
+        try {
+            const response = await fetch(`/api/admin/blog/${id}`, { method: 'PUT', body: formData });
+            if (response.ok) { editBlogModal.classList.add('hidden'); fetchAdminBlogs(); alert('Article updated perfectly! 🎉'); }
+        } catch (err) { alert('Error.'); }
+    });
 
     // ==========================================
-    // REAL-TIME SYSTEM STATS (Anti-Spam Update)
+    // REAL-TIME SYSTEM STATS
     // ==========================================
-    let statsTimer; 
-
+    let statsTimer;
     async function fetchSystemStats() {
-        const overviewTab = document.getElementById('tab-overview');
+        const overviewTab = document.getElementById('tab-overview'); 
         if (!overviewTab) return;
-
         try {
             const res = await fetch('/api/admin/system-status');
-            
-            if (res.status === 403) {
-                clearInterval(statsTimer);
-                window.location.href = '/admin/login.html';
-                return;
-            }
-            
+            if (res.status === 403) { clearInterval(statsTimer); window.location.href = '/admin/login.html'; return; }
             if (!res.ok) return; 
-            
             const data = await res.json();
-            
-            // 1. Update RAM
             document.getElementById('sys-ram-percent').textContent = `${data.ramPercentage}%`;
             document.getElementById('sys-ram-bar').style.width = `${data.ramPercentage}%`;
             document.getElementById('sys-ram-text').textContent = `${data.usedRam} GB / ${data.totalRam} GB Used`;
-            
-            // 2. Update Processor Info
             document.getElementById('sys-cpu-cores').textContent = `${data.cpuCores} Threads`;
             document.getElementById('sys-cpu-model').textContent = data.cpuModel;
-            
-            // 3. Update Uptime
             document.getElementById('sys-uptime').textContent = data.uptime;
             document.getElementById('sys-os').textContent = `OS: ${data.osPlatform}`;
-            
-            // 4. 🌟 NEW: Update CPU Load 
-            const cpuEl = document.getElementById('sys-cpu-percent');
-            if (cpuEl) {
-                cpuEl.textContent = `${data.cpuPercentage}%`;
-                // Turn red if CPU is struggling!
-                cpuEl.style.color = data.cpuPercentage > 85 ? '#e74c3c' : '#2ecc71'; 
-            }
-            
-            // 5. 🌟 NEW: Update Disk Storage 
-            const diskEl = document.getElementById('sys-disk-percent');
-            if (diskEl) {
-                diskEl.textContent = `${data.diskPercentage}%`;
-                document.getElementById('sys-disk-bar').style.width = `${data.diskPercentage}%`;
-                document.getElementById('sys-disk-text').textContent = `${data.usedDisk} GB / ${data.totalDisk} GB Used`;
-            }
-            
-            // 6. 🌟 NEW: Update Network 
-            const netDownEl = document.getElementById('sys-net-down');
-            if (netDownEl) {
-                netDownEl.textContent = data.networkDownload || "0.00";
-                document.getElementById('sys-net-up').textContent = data.networkUpload || "0.00";
-            }
-            
-        } catch (e) {
-            console.log("Stats update skipped.");
-        }
+            const cpuEl = document.getElementById('sys-cpu-percent'); if (cpuEl) { cpuEl.textContent = `${data.cpuPercentage}%`; cpuEl.style.color = data.cpuPercentage > 85 ? '#e74c3c' : '#2ecc71'; }
+            const diskEl = document.getElementById('sys-disk-percent'); if (diskEl) { diskEl.textContent = `${data.diskPercentage}%`; document.getElementById('sys-disk-bar').style.width = `${data.diskPercentage}%`; document.getElementById('sys-disk-text').textContent = `${data.usedDisk} GB / ${data.totalDisk} GB Used`; }
+            const netDownEl = document.getElementById('sys-net-down'); if (netDownEl) { netDownEl.textContent = data.networkDownload || "0.00"; document.getElementById('sys-net-up').textContent = data.networkUpload || "0.00"; }
+        } catch (e) { console.log("Stats skipped."); }
     }
-
-    fetchSystemStats();
+    fetchSystemStats(); 
     statsTimer = setInterval(fetchSystemStats, 5000);
 
-    // Logout
-    document.getElementById('logout-btn')?.addEventListener('click', async () => {
-        await fetch('/api/logout', { method: 'POST' });
-        window.location.href = '/admin/login.html';
+    // Logout Trigger
+    document.getElementById('logout-btn')?.addEventListener('click', async () => { 
+        await fetch('/api/logout', { method: 'POST' }); 
+        window.location.href = '/admin/login.html'; 
     });
 });

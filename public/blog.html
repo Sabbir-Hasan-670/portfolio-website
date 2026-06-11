@@ -10,31 +10,48 @@
 <body>
     <canvas id="starCanvas"></canvas>
     <div class="main-content">
-        <nav class="navbar">
-            <a href="index.html" class="nav-logo">SH.</a>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="blog.html" style="color:#fff;">Blog</a></li>
-                <li><a href="index.html#contact">Contact</a></li>
-            </ul>
+        
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="index.html#home" class="nav-logo">SH.</a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="index.html" class="nav-visible-btn">Home</a>
+                    <a href="blog.html" class="nav-visible-btn" style="color:#fff;">Blog</a>
+
+                    <button class="hamburger" id="hamburger" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="nav-menu-dropdown" id="navDropdown">
+                        <a href="index.html#about">About</a>
+                        <a href="index.html#projects">Projects</a>
+                        <a href="index.html#experience">Experience</a>
+                        <a href="index.html#education">Education</a>
+                        <a href="index.html#contact" class="nav-cta">Let's Talk</a>
+                    </div>
+                </div>
+            </div>
         </nav>
 
         <h1 style="text-align:center; margin-bottom:1.5rem;">📝 Latest Articles</h1>
 
         <div class="category-filters" id="categoryFilters">
             <button class="cat-btn active" data-category="all">All</button>
-            </div>
+        </div>
 
         <div class="blog-grid" id="blogGrid">
             <p style="color:var(--text2);">Loading articles...</p>
         </div>
 
-       <div class="pagination" id="pagination">
+        <div class="pagination" id="pagination">
             <button class="load-more-btn" id="loadMoreBtn" style="display:none;">Load More Posts →</button>
         </div>
 
         <footer class="footer">
-            <p>&copy; <span id="year"></span> Sabbir Hasan</p>
+            <p>&copy; <span id="year"></span> Sabbir Hasan. Engineered with Node.js & MySQL.</p>
         </footer>
     </div>
 
