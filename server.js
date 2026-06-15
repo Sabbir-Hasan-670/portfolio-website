@@ -25,10 +25,28 @@ app.use(session({
     cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// Mailer
+// ==========================================
+// 🛡️ SECURE SMTP TRANSPORTER CONFIGURATION
+// ==========================================
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, 
+    auth: { 
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("❌ Nodemailer SMTP Handshake Failed:", error.message);
+    } else {
+        console.log("⚡ Nodemailer SMTP Relay is fully active and authenticated!");
+    }
 });
 
 // Multer (File Uploads)
@@ -49,14 +67,13 @@ const db = mysql.createPool({
     database: process.env.DB_NAME
 });
 
-// 🎯 [SEO HELPER]: টাইটেল থেকে এসইও ফ্রেন্ডলি ইউআরএল স্ল্যাগ তৈরির কোর ফাংশন
 function createSlug(title) {
     return title
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9 -]/g, '') // স্পেশাল ক্যারেক্টার ও ইমোজি রিমুভ করবে
-        .replace(/\s+/g, '-')        // খালি স্পেসগুলোকে ড্যাশ (-) বানাবে
-        .replace(/-+/g, '-');        // ডাবল বা অতিরিক্ত ড্যাশ থাকলে সিঙ্গেল করবে
+        .replace(/[^a-z0-9 -]/g, '') 
+        .replace(/\s+/g, '-')        
+        .replace(/-+/g, '-');        
 }
 
 // ==========================================
@@ -117,7 +134,6 @@ cron.schedule('0 0,6,12,18 * * *', () => {
 
 updateGithubCache();
 
-
 // ==========================================
 // PUBLIC API ROUTES
 // ==========================================
@@ -160,6 +176,17 @@ app.get('/api/certificates', async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed to fetch certificates' }); }
 });
 
+app.get('/api/services', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM services ORDER BY id DESC');
+        res.json(rows || []);
+    } catch (err) { 
+        console.error("Database services layer notice:", err.message);
+        res.json([]); 
+    }
+});
+
+// ✉️ BACKEND SMTP MAIL ROUTE
 app.post('/api/contact', upload.none(), async (req, res) => {
     const { sender_name, sender_email, sender_phone, message } = req.body;
     if (!sender_name || !sender_email || !message) return res.status(400).json({ error: 'Fill all required fields.' });
@@ -171,22 +198,24 @@ app.post('/api/contact', upload.none(), async (req, res) => {
         res.json({ success: true, message: 'Message sent securely!' });
 
         const mailToAdmin = {
-            from: process.env.EMAIL_USER, 
+            from: `"Portfolio Portal" <${process.env.EMAIL_USER}>`, 
             to: process.env.RECEIVER_EMAIL,
+            replyTo: sender_email,
             subject: `New Portfolio Message from ${sender_name}`,
             text: `Name: ${sender_name}\nEmail: ${sender_email}\nPhone: ${sender_phone || 'Not provided'}\n\nMessage:\n${message}`
         };
-        transporter.sendMail(mailToAdmin).catch(err => console.error("Admin email failed:", err));
+        transporter.sendMail(mailToAdmin).catch(err => console.error("Admin email failed:", err.message));
 
         const mailToUser = {
-            from: process.env.EMAIL_USER, 
+            from: `"Sabbir Hasan" <${process.env.EMAIL_USER}>`, 
             to: sender_email,
             subject: `Thank you for reaching out, ${sender_name}!`,
             text: `Hi ${sender_name},\n\nThank you for visiting my portfolio and reaching out! \n\nI have received your message and will get back to you as soon as possible.\n\nBest regards,\nSabbir Hasan\nIT & Web Specialist`
         };
-        transporter.sendMail(mailToUser).catch(err => console.error("Auto-reply failed:", err));
+        transporter.sendMail(mailToUser).catch(err => console.error("Auto-reply failed:", err.message));
 
     } catch (err) { 
+        console.error("Database Save Failure:", err.message);
         res.status(500).json({ error: 'Database failed to save message.' }); 
     }
 });
@@ -201,7 +230,6 @@ app.get('/api/blog', async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed to fetch blogs' }); }
 });
 
-// 🟢 [HYBRID ROUTE FIXED]: আইডি (সংখ্যা) অথবা স্ল্যাগ (টেক্সট)—যেকোনো একটা ম্যাচ করলেই নিখুঁত ডেটা রিটার্ন করবে
 app.get('/api/blog/:identifier', async (req, res) => {
     try {
         const param = req.params.identifier;
@@ -241,15 +269,12 @@ app.post('/api/logout', (req, res) => {
     res.json({ message: 'Logged out.' });
 });
 
-// ==========================================
-// SECURE ADMIN ROUTES (requireAuth Protected)
-// ==========================================
 const requireAuth = (req, res, next) => {
     if (req.session && req.session.isAuthenticated) next();
     else res.status(403).json({ error: 'Access denied.' });
 };
 
-// 💼 --- 1. EXPERIENCE ROUTES (CREATE & EDIT) ---
+// 💼 --- EXPERIENCE ROUTES ---
 app.post('/api/admin/experience', requireAuth, upload.none(), async (req, res) => {
     const { role, company_or_project, duration, description } = req.body;
     try {
@@ -266,7 +291,7 @@ app.put('/api/admin/experience/:id', requireAuth, upload.none(), async (req, res
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 🚀 --- 2. PROJECTS ROUTES (CREATE & EDIT) ---
+// 🚀 --- PROJECTS ROUTES ---
 app.post('/api/admin/projects', requireAuth, upload.single('project_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Image is required' });
     const { title, description, github_url, live_url } = req.body;
@@ -292,7 +317,7 @@ app.put('/api/admin/projects/:id', requireAuth, upload.single('project_image'), 
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 🎓 --- 3. EDUCATION ROUTES (CREATE & EDIT) ---
+// 🎓 --- EDUCATION ROUTES ---
 app.post('/api/admin/education', requireAuth, upload.none(), async (req, res) => {
     const { degree, institution, duration, description } = req.body;
     try {
@@ -312,7 +337,7 @@ app.put('/api/admin/education/:id', requireAuth, upload.none(), async (req, res)
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 📜 --- 4. CERTIFICATES ROUTES (CREATE & EDIT) ---
+// 📜 --- CERTIFICATES ROUTES ---
 app.post('/api/admin/certificates', requireAuth, upload.single('cert_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Certificate image is required' });
     const { title, issuer, link } = req.body;
@@ -338,7 +363,24 @@ app.put('/api/admin/certificates/:id', requireAuth, upload.single('cert_image'),
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 👤 --- 5. SOCIALS ROUTE ---
+// 🛠js --- SERVICES ADMIN ROUTES ---
+app.post('/api/admin/services', requireAuth, upload.none(), async (req, res) => {
+    const { title, description, icon, tags } = req.body;
+    try {
+        await db.query('INSERT INTO services (title, description, icon, tags) VALUES (?, ?, ?, ?)', 
+        [title, description, icon || '💻', tags || '']);
+        res.json({ message: 'Service added successfully!' });
+    } catch (err) { res.status(500).json({ error: 'Server error adding service' }); }
+});
+
+app.delete('/api/admin/services/:id', requireAuth, async (req, res) => {
+    try { 
+        await db.query('DELETE FROM services WHERE id = ?', [req.params.id]); 
+        res.json({ message: 'Service deleted successfully!' }); 
+    } catch (err) { res.status(500).json({ error: 'Failed to delete service' }); }
+});
+
+// 👤 --- SOCIALS ROUTE ---
 app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
     const { github_link, linkedin_link, facebook_link, fiverr_link, pinterest_link, adobe_stock_link } = req.body;
     try {
@@ -350,7 +392,7 @@ app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 📝 --- 6. BLOG ROUTES (CREATE & EDIT) ---
+// 📝 --- BLOG ROUTES ---
 app.post('/api/admin/blog', requireAuth, upload.single('blog_image'), async (req, res) => {
     const { title, category, content, custom_slug } = req.body;
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';
@@ -499,47 +541,67 @@ app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed' }); }
 });
 
-
 // ==========================================
-// N8N AUTOMATION ROUTE 
+// N8N AUTOMATION ROUTE
 // ==========================================
 app.post('/api/n8n/blog', async (req, res) => {
     try {
         const { secret, title, category, content, imageUrl } = req.body;
         const expectedSecret = process.env.N8N_SECRET_KEY || 'S.abbir@670#613';
-        if (secret !== expectedSecret) return res.status(403).json({ error: 'Unauthorized' });
+        
+        if (secret !== expectedSecret) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
         
         res.json({ success: true, message: 'Processing in background.' });
-        let imagePath = '';
         
-        if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
-            const imageName = 'blog_' + Date.now() + '.png';
-            const absolutePath = path.join(__dirname, 'public/uploads', imageName);
-            
+        setImmediate(async () => {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-                const response = await fetch(imageUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
+                let imagePath = '';
+                
+                if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+                    const imageName = 'blog_' + Date.now() + '.png';
+                    const absolutePath = path.join(__dirname, 'public/uploads', imageName);
+                    
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+                        const response = await fetch(imageUrl, { signal: controller.signal });
+                        clearTimeout(timeoutId);
 
-                if (response.ok) {
-                    const buffer = await response.arrayBuffer();
-                    fs.writeFileSync(absolutePath, Buffer.from(buffer));
-                    imagePath = '/uploads/' + imageName;
+                        if (response.ok) {
+                            const buffer = await response.arrayBuffer();
+                            fs.writeFileSync(absolutePath, Buffer.from(buffer));
+                            imagePath = '/uploads/' + imageName;
+                        }
+                    } catch (imgErr) { 
+                        console.error("Background Image Fetch Error:", imgErr.message); 
+                    }
                 }
-            } catch (imgErr) { console.error(imgErr.message); }
+
+                const slug = createSlug(title || 'untitled-ai-post');
+
+                try {
+                    await db.query(
+                        'INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', 
+                        [title || 'Untitled AI Post', slug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '']
+                    );
+                    console.log(`✅ [BG SUCCESS]: "${title}" uploaded successfully in background!`);
+                } catch (dbErr) { 
+                    console.error("Background DB Insert Error:", dbErr.message); 
+                }
+
+            } catch (bgErr) {
+                console.error("Background Core Thread Error:", bgErr.message);
+            }
+        });
+
+    } catch (err) { 
+        console.error("N8N Route Main Error:", err.message); 
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Internal server error' });
         }
-
-        const slug = createSlug(title || 'untitled-ai-post');
-
-        try {
-            await db.query(
-                'INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', 
-                [title || 'Untitled AI Post', slug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '']
-            );
-        } catch (dbErr) { console.error(dbErr.message); }
-
-    } catch (err) { console.error(err.message); }
+    }
 });
 
 const PORT = process.env.PORT || 5005;

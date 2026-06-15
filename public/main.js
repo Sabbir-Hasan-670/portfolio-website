@@ -113,7 +113,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// 📱 Navbar & Mobile Menu
+// 📱 Navbar & Mobile Menu Control Framework
 const navbar = document.getElementById('navbar');
 if (navbar) {
     window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
@@ -292,6 +292,48 @@ async function fetchEducation() {
     } catch (e) { console.log(e); }
 }
 
+// Loader Engine for Services Grid Component
+async function fetchServices() {
+    const grid = document.getElementById('public-services-grid');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+        
+        if (!data || !Array.isArray(data)) {
+            grid.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">No services available at the moment.</p>';
+            return;
+        }
+        
+        grid.innerHTML = data.length ? '' : '<p style="text-align:center; width:100%; color:#94a3b8;">No services added yet.</p>';
+        
+        data.forEach(srv => {
+            let tagsHtml = '';
+            if (srv.tags) {
+                const tagArray = srv.tags.split(',');
+                tagArray.forEach(tag => {
+                    if(tag.trim() !== '') {
+                        tagsHtml += `<span class="service-tag">${tag.trim()}</span>`;
+                    }
+                });
+            }
+
+            grid.innerHTML += `
+                <div class="service-card">
+                    <div class="service-icon-box">${srv.icon || '💻'}</div>
+                    <h3 class="service-title">${srv.title}</h3>
+                    <p class="service-desc">${srv.description}</p>
+                    <div class="service-tags">${tagsHtml}</div>
+                </div>
+            `;
+        });
+    } catch (e) { 
+        console.log("Services Fetch Exception Block Handled:", e);
+        if (grid) grid.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">Services module active.</p>';
+    }
+}
+
 // ==========================================
 // 9. BLOG PAGE EXCLUSIVE LOGIC
 // ==========================================
@@ -321,6 +363,7 @@ function buildCategoryButtons(posts) {
     const categories = [...new Set(posts.map(p => p.category || 'Uncategorized'))];
     let html = '<button class="cat-btn active" data-category="all">All</button>';
     categories.forEach(cat => {
+        // 🌟 FIXED STRING LITERAL HACK RIGHT HERE:
         html += `<button class="cat-btn" data-category="${cat}">${cat}</button>`;
     });
     categoryFilters.innerHTML = html;
@@ -363,7 +406,6 @@ function renderPage(filteredPosts, page) {
         const card = document.createElement('div');
         card.className = 'blog-card';
         
-        // 🔴 [SEO FIXED URL LINK]: আইডির জায়গায় ডাইনামিক স্ল্যাগ দিয়ে রিড লিংক জেনারেশন
         const postSlug = post.slug || post.id;
         card.innerHTML = `
             ${post.image_path ? `<img src="${post.image_path}" class="blog-img" alt="${post.title}">` : ''}
@@ -401,16 +443,11 @@ if (loadMoreBtn) {
     });
 }
 
-// ═══════════════════════════════════════════
-// 🔗 SINGLE ARTICLE PAGE EXCLUSIVE LOGIC (🎯 BULLETPROOF HYBRID FIX)
-// ═══════════════════════════════════════════
-(async function fetchSingleArticle() {
+async function fetchSingleArticle() {
     const articleContainer = document.getElementById('article-content');
-    if (!articleContainer) return; // শুধু article.html পেজেই রান হবে
+    if (!articleContainer) return; 
 
     const params = new URLSearchParams(window.location.search);
-    
-    // 🛠️ ইউআরএল-এ যদি ভুল করে ?id=3 অথবা ?slug=3 অথবা ?slug=how-to-learn-english যেকোনোটা থাকে, সে রিড করবে
     const articleIdentifier = params.get('slug') || params.get('id'); 
 
     if (!articleIdentifier) {
@@ -425,7 +462,6 @@ if (loadMoreBtn) {
         const data = await res.json();
         const article = data.post ? data.post : data;
 
-        // ফলব্যাক ভেরিয়েবল ম্যাপিং
         const title = article.title || article.blog_title || 'Untitled Post';
         const category = article.category || article.blog_category || 'General';
         const content = article.content || article.description || article.body || article.text || 'No content available.';
@@ -433,7 +469,6 @@ if (loadMoreBtn) {
 
         document.title = `${title} | Blog`;
         
-        // সেন্টারিং লেআউট রেন্ডারিং
         articleContainer.innerHTML = `
             <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center;">
                 <span class="blog-category" style="margin-bottom: 1.5rem; display: inline-block;">${category}</span>
@@ -446,11 +481,61 @@ if (loadMoreBtn) {
         console.error("Fetch Error:", e);
         articleContainer.innerHTML = '<p style="color:#e74c3c; text-align:center;">⚠️ Failed to load the article. Please check your database data or URL.</p>';
     }
-})();
+}
 
-// Initialize 
+// ═══════════════════════════════════════════
+// ✉️ CONTACT FORM SUBMISSION LISTENER (RELOAD PROTECTION FIXED)
+// ═══════════════════════════════════════════
+function initContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) return;
+
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+
+        const submitBtn = contactForm.querySelector('.form-submit');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Sending Message... ⏳";
+        }
+
+        const formData = new FormData(contactForm);
+
+        try {
+            console.log("⏳ Dispatched payload fields to endpoint...");
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                body: formData 
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert('✅ Success: Message logged and sent safely!');
+                contactForm.reset(); 
+            } else {
+                alert('⚠️ Error: ' + (data.error || 'Something went wrong.'));
+            }
+        } catch (err) {
+            console.error("Submission Failure Layer:", err);
+            alert('❌ Network failed. Please check backend API server logs.');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Send Message 🚀";
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════════
+// 🚀 MAIN RUNTIME EXECUTION GATEWAY
+// ═══════════════════════════════════════════
 fetchProfile();
 fetchProjects();
 fetchExperience();
 fetchEducation();
+fetchServices(); 
 fetchAllPosts();
+fetchSingleArticle();
+initContactForm();

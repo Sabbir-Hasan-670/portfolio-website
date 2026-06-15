@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FluentPath – 30-Day English Mastery Course</title>
+  <link rel="stylesheet" href="learn-english.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body class="light-mode">
+
+<header class="topnav" id="topnav">
+  <div class="nav-brand">
+    <span class="brand-icon">📚</span>
+    <span class="brand-name">FluentPath</span>
+    <span class="brand-tag">30-Day English Mastery</span>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a>
+    <a href="#lessons"   class="nav-link" data-section="lessons">Lessons</a>
+    <a href="#speaking"  class="nav-link" data-section="speaking">Speaking</a>
+    <a href="#writing"   class="nav-link" data-section="writing">Writing</a>
+    <a href="#vocabulary" class="nav-link" data-section="vocabulary">Vocabulary</a>
+    <a href="#pronunciation" class="nav-link" data-section="pronunciation">Pronunciation</a>
+    <a href="#certificate" class="nav-link" data-section="certificate">Certificate</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search lessons…" autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌙</button>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Course Days</h3>
+      <div class="level-badges">
+        <span class="badge beginner">Beginner 1-10</span>
+        <span class="badge intermediate">Intermediate 11-20</span>
+        <span class="badge advanced">Advanced 21-30</span>
+      </div>
+    </div>
+    <ul class="day-list" id="dayList"></ul>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+
+    <section class="section active" id="dashboard">
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Welcome to FluentPath 🎓</h1>
+          <p>Your complete 30-day journey from absolute beginner to advanced English fluency. Every lesson is unlocked — learn at your own pace!</p>
+          <button class="btn-primary" onclick="app.goToSection('lessons')">Start Learning →</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card"><span class="stat-num" id="statCompleted">0</span><span class="stat-label">Days Completed</span></div>
+          <div class="stat-card"><span class="stat-num" id="statProgress">0%</span><span class="stat-label">Progress</span></div>
+          <div class="stat-card"><span class="stat-num">30</span><span class="stat-label">Total Days</span></div>
+          <div class="stat-card"><span class="stat-num">300+</span><span class="stat-label">Exercises</span></div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <h2>Your Progress</h2>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <p id="progressText">0 of 30 days completed</p>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-card" onclick="app.goToSection('lessons')">
+          <div class="ov-icon">📖</div>
+          <h3>30 Daily Lessons</h3>
+          <p>Structured lessons from alphabet basics to advanced business English.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('speaking')">
+          <div class="ov-icon">🎤</div>
+          <h3>Speaking Module</h3>
+          <p>Pronunciation drills, shadowing, real-life conversations, and interview practice.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('writing')">
+          <div class="ov-icon">✍️</div>
+          <h3>Writing Module</h3>
+          <p>From simple sentences to professional essays, emails, and resumes.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('vocabulary')">
+          <div class="ov-icon">📝</div>
+          <h3>Vocabulary Module</h3>
+          <p>3000+ words with native Bangla pronunciation, meaning, and sentences.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('pronunciation')">
+          <div class="ov-icon">🔊</div>
+          <h3>Pronunciation Module</h3>
+          <p>IPA basics, word stress, intonation, and Bangla phonetics guide.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('certificate')">
+          <div class="ov-icon">🏆</div>
+          <h3>Certificate</h3>
+          <p>Earn your FluentPath certificate upon completing all 30 days.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="lessons">
+      <div class="section-header">
+        <h2>📖 30-Day Lessons</h2>
+        <p>Click any day to open the full lesson. All days are unlocked!</p>
+      </div>
+      <div class="day-cards-grid" id="dayCardsGrid"></div>
+    </section>
+
+    <section class="section" id="lessonDetail">
+      <div id="lessonContent"></div>
+    </section>
+
+    <section class="section" id="speaking">
+      <div class="section-header">
+        <h2>🎤 Speaking Module</h2>
+        <p>Build your speaking confidence with structured drills and real-life conversations.</p>
+      </div>
+
+      <div class="module-tabs">
+        <button class="tab-btn active" data-tab="sp-pronunciation">Pronunciation</button>
+        <button class="tab-btn" data-tab="sp-shadowing">Shadowing</button>
+        <button class="tab-btn" data-tab="sp-conversations">Conversations</button>
+        <button class="tab-btn" data-tab="sp-interview">Interview</button>
+        <button class="tab-btn" data-tab="sp-business">Business</button>
+      </div>
+
+      <div class="tab-content active" id="sp-pronunciation">
+        <h3>Pronunciation Practice</h3>
+        <div class="content-card">
+          <h4>🔤 The 44 Sounds of English (Phonemes)</h4>
+          <p>English has 26 letters but <strong>44 sounds</strong>. Mastering these sounds is the foundation of clear pronunciation.</p>
+          <div class="phoneme-grid">
+            <div class="phoneme-group">
+              <h5>Short Vowels</h5>
+              <div class="phoneme-list">
+                <span class="phoneme">/æ/ – cat</span><span class="phoneme">/ɛ/ – bed</span>
+                <span class="phoneme">/ɪ/ – sit</span><span class="phoneme">/ɒ/ – hot</span>
+                <span class="phoneme">/ʌ/ – cup</span><span class="phoneme">/ʊ/ – book</span>
+              </div>
+            </div>
+            <div class="phoneme-group">
+              <h5>Long Vowels</h5>
+              <div class="phoneme-list">
+                <span class="phoneme">/eɪ/ – cake</span><span class="phoneme">/iː/ – see</span>
+                <span class="phoneme">/aɪ/ – time</span><span class="phoneme">/oʊ/ – go</span>
+                <span class="phoneme">/juː/ – use</span>
+              </div>
+            </div>
+            <div class="phoneme-group">
+              <h5>Common Consonants</h5>
+              <div class="phoneme-list">
+                <span class="phoneme">/θ/ – think</span><span class="phoneme">/ð/ – this</span>
+                <span class="phoneme">/ʃ/ – she</span><span class="phoneme">/ʒ/ – measure</span>
+                <span class="phoneme">/tʃ/ – chair</span><span class="phoneme">/dʒ/ – judge</span>
+                <span class="phoneme">/ŋ/ – sing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <h4>🎯 Minimal Pairs Practice</h4>
+          <p>Minimal pairs are words that differ by only one sound. Practicing them sharpens your ear and tongue.</p>
+          <div class="minimal-pairs">
+            <div class="pair"><span>ship</span><span>/</span><span>sheep</span></div>
+            <div class="pair"><span>bit</span><span>/</span><span>beat</span></div>
+            <div class="pair"><span>cat</span><span>/</span><span>cut</span></div>
+            <div class="pair"><span>think</span><span>/</span><span>sink</span></div>
+            <div class="pair"><span>live</span><span>/</span><span>leave</span></div>
+            <div class="pair"><span>pull</span><span>/</span><span>pool</span></div>
+            <div class="pair"><span>bad</span><span>/</span><span>bed</span></div>
+            <div class="pair"><span>fan</span><span>/</span><span>van</span></div>
+          </div>
+          <p class="tip">💡 <strong>Tip:</strong> Say each pair aloud 5 times, exaggerating the difference. Record yourself and compare.</p>
+        </div>
+
+        <div class="content-card">
+          <h4>🗣️ Tongue Twisters for Fluency</h4>
+          <div class="tongue-twisters">
+            <div class="twister"><strong>Level 1:</strong> "She sells seashells by the seashore."</div>
+            <div class="twister"><strong>Level 2:</strong> "Peter Piper picked a peck of pickled peppers."</div>
+            <div class="twister"><strong>Level 3:</strong> "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"</div>
+            <div class="twister"><strong>Level 4:</strong> "The sixth sick sheikh's sixth sheep's sick."</div>
+          </div>
+          <p class="tip">💡 Start slowly, then increase speed. Repeat each 3 times without stopping.</p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="sp-shadowing">
+        <h3>Shadowing Technique</h3>
+        <div class="content-card">
+          <h4>What is Shadowing?</h4>
+          <p>Shadowing is a language learning technique where you <strong>listen to a native speaker and repeat immediately</strong>, mimicking their rhythm, stress, and intonation. It is one of the most powerful methods for achieving native-like fluency.</p>
+          <div class="steps-list">
+            <div class="step"><span class="step-num">1</span><div><strong>Choose a short audio clip</strong> (30–60 seconds) of a native English speaker — a podcast, movie clip, or news segment.</div></div>
+            <div class="step"><span class="step-num">2</span><div><strong>Listen once</strong> without speaking. Focus on rhythm and melody.</div></div>
+            <div class="step"><span class="step-num">3</span><div><strong>Listen and whisper</strong> along simultaneously. Don't worry about meaning yet.</div></div>
+            <div class="step"><span class="step-num">4</span><div><strong>Listen and speak aloud</strong> at the same time, matching the speaker's pace exactly.</div></div>
+            <div class="step"><span class="step-num">5</span><div><strong>Record yourself</strong> and compare with the original. Note differences in stress and intonation.</div></div>
+            <div class="step"><span class="step-num">6</span><div><strong>Repeat daily</strong> for 15–20 minutes for maximum improvement.</div></div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>📝 Shadowing Scripts – Beginner</h4>
+          <div class="script-box">
+            <p>"Good morning! My name is Sarah. I am a teacher. I live in New York. I love my job. Every day I wake up at seven o'clock. I have breakfast and then I go to school. My students are wonderful. I am very happy."</p>
+          </div>
+          <h4>📝 Shadowing Scripts – Intermediate</h4>
+          <div class="script-box">
+            <p>"Technology has changed the way we communicate. In the past, people wrote letters that took weeks to arrive. Today, we can send a message to anyone in the world in seconds. Social media platforms connect billions of people. However, some experts argue that despite being more connected, people feel lonelier than ever before."</p>
+          </div>
+          <h4>📝 Shadowing Scripts – Advanced</h4>
+          <div class="script-box">
+            <p>"The ramifications of artificial intelligence on the global labor market are profound and multifaceted. While automation has historically displaced workers in manufacturing sectors, the current wave of AI threatens to disrupt white-collar professions previously considered immune to technological substitution. Economists debate whether new job categories will emerge at a sufficient pace to absorb displaced workers, or whether structural unemployment will become an intractable challenge for policymakers."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="sp-conversations">
+        <h3>Real-Life Conversations</h3>
+        <div class="content-card">
+          <h4>🛒 At the Supermarket</h4>
+          <div class="dialogue">
+            <div class="line customer"><span>Customer:</span> Excuse me, where can I find the bread?</div>
+            <div class="line staff"><span>Staff:</span> It's in aisle 4, on the left side.</div>
+            <div class="line customer"><span>Customer:</span> Thank you. Do you have whole wheat bread?</div>
+            <div class="line staff"><span>Staff:</span> Yes, we have several varieties. Would you like me to show you?</div>
+            <div class="line customer"><span>Customer:</span> That would be great, thank you so much.</div>
+            <div class="line staff"><span>Staff:</span> Of course! Follow me, please.</div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>🏨 Hotel Check-In</h4>
+          <div class="dialogue">
+            <div class="line customer"><span>Guest:</span> Good evening. I have a reservation under the name Johnson.</div>
+            <div class="line staff"><span>Receptionist:</span> Good evening, Mr. Johnson. Let me pull up your reservation. Yes, I have you booked for a deluxe room for three nights. Is that correct?</div>
+            <div class="line customer"><span>Guest:</span> Yes, that's right. Could I get a room on a higher floor with a city view?</div>
+            <div class="line staff"><span>Receptionist:</span> Absolutely. I'll put you in room 1205. It has a wonderful view of the skyline. Here is your key card. Breakfast is served from 7 to 10 AM in the restaurant on the ground floor.</div>
+            <div class="line customer"><span>Guest:</span> Perfect. Is there a gym in the hotel?</div>
+            <div class="line staff"><span>Receptionist:</span> Yes, the fitness center is on the 3rd floor and is open 24 hours. Enjoy your stay!</div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>🍽️ At a Restaurant</h4>
+          <div class="dialogue">
+            <div class="line customer"><span>Customer:</span> Good evening. Do you have a table for two?</div>
+            <div class="line staff"><span>Waiter:</span> Good evening! Yes, right this way. Here are your menus. Can I start you off with something to drink?</div>
+            <div class="line customer"><span>Customer:</span> I'll have sparkling water, please. And my friend will have orange juice.</div>
+            <div class="line staff"><span>Waiter:</span> Excellent. Are you ready to order, or do you need a few more minutes?</div>
+            <div class="line customer"><span>Customer:</span> I think we're ready. I'd like the grilled salmon with roasted vegetables, please.</div>
+            <div class="line staff"><span>Waiter:</span> Great choice! And for your friend?</div>
+            <div class="line customer"><span>Customer:</span> She'll have the pasta primavera. Could we also get some garlic bread to start?</div>
+            <div class="line staff"><span>Waiter:</span> Of course. I'll have that out for you shortly.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="sp-interview">
+        <h3>Interview Practice</h3>
+        <div class="content-card">
+          <h4>💼 Common Interview Questions & Model Answers</h4>
+          <div class="qa-block">
+            <div class="question">Q: Tell me about yourself.</div>
+            <div class="answer"><strong>Model Answer:</strong> "I'm a marketing professional with five years of experience in digital marketing and brand management. I graduated from the University of Manchester with a degree in Business Administration. In my previous role at XYZ Company, I led a team that increased online engagement by 40% within six months. I'm passionate about data-driven strategies and I'm excited about the opportunity to bring my skills to your organization."</div>
+          </div>
+          <div class="qa-block">
+            <div class="question">Q: What is your greatest strength?</div>
+            <div class="answer"><strong>Model Answer:</strong> "My greatest strength is my ability to analyze complex problems and develop creative solutions. For example, when our company faced a significant drop in customer retention, I conducted a thorough analysis of customer feedback and identified three key pain points. I then proposed and implemented a new customer onboarding process that improved retention by 25% over the following quarter."</div>
+          </div>
+          <div class="qa-block">
+            <div class="question">Q: Where do you see yourself in five years?</div>
+            <div class="answer"><strong>Model Answer:</strong> "In five years, I see myself in a senior leadership role where I can contribute to strategic decision-making. I'm eager to develop my expertise in this industry and take on greater responsibilities. I'm particularly interested in growing with a company like yours, where there are clear opportunities for advancement and professional development."</div>
+          </div>
+          <div class="qa-block">
+            <div class="question">Q: Why do you want to work here?</div>
+            <div class="answer"><strong>Model Answer:</strong> "I've admired your company's commitment to innovation and sustainability for several years. Your recent expansion into renewable energy solutions aligns perfectly with my professional interests and values. I believe my background in project management and my passion for sustainable development would allow me to make a meaningful contribution to your team."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="sp-business">
+        <h3>Business Speaking</h3>
+        <div class="content-card">
+          <h4>📊 Presentation Language</h4>
+          <div class="phrase-category">
+            <h5>Opening a Presentation</h5>
+            <ul>
+              <li>"Good morning, everyone. Thank you for joining us today."</li>
+              <li>"I'd like to start by giving you an overview of what we'll cover."</li>
+              <li>"The purpose of today's presentation is to…"</li>
+              <li>"By the end of this session, you will have a clear understanding of…"</li>
+            </ul>
+          </div>
+          <div class="phrase-category">
+            <h5>Transitioning Between Points</h5>
+            <ul>
+              <li>"Moving on to our next point…"</li>
+              <li>"Now that we've covered X, let's turn our attention to Y."</li>
+              <li>"This brings me to my next point, which is…"</li>
+              <li>"Let me now shift focus to…"</li>
+            </ul>
+          </div>
+          <div class="phrase-category">
+            <h5>Handling Questions</h5>
+            <ul>
+              <li>"That's an excellent question. Let me address that."</li>
+              <li>"I'm glad you raised that point."</li>
+              <li>"I'll come back to that in a moment if you don't mind."</li>
+              <li>"Could you clarify what you mean by…?"</li>
+            </ul>
+          </div>
+          <div class="phrase-category">
+            <h5>Closing a Presentation</h5>
+            <ul>
+              <li>"To summarize the key points we've discussed today…"</li>
+              <li>"In conclusion, I'd like to emphasize that…"</li>
+              <li>"Thank you for your attention. I'm happy to take any questions."</li>
+              <li>"I look forward to your feedback and continued discussion."</li>
+            </ul>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>🤝 Negotiation English</h4>
+          <div class="phrase-category">
+            <h5>Making Proposals</h5>
+            <ul>
+              <li>"We'd like to propose a partnership where…"</li>
+              <li>"Our initial offer is… and we believe this reflects fair market value."</li>
+              <li>"What if we were to…? Would that work for you?"</li>
+            </ul>
+          </div>
+          <div class="phrase-category">
+            <h5>Responding to Offers</h5>
+            <ul>
+              <li>"That's an interesting proposal. Let me consider it."</li>
+              <li>"We appreciate the offer, however, we feel that…"</li>
+              <li>"Could you give us some flexibility on the timeline?"</li>
+              <li>"We're prepared to accept, provided that…"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="writing">
+      <div class="section-header">
+        <h2>✍️ Writing Module</h2>
+        <p>Master every form of English writing from simple sentences to professional documents.</p>
+      </div>
+
+      <div class="module-tabs">
+        <button class="tab-btn active" data-tab="wr-basics">Basics</button>
+        <button class="tab-btn" data-tab="wr-essay">Essay Writing</button>
+        <button class="tab-btn" data-tab="wr-email">Email Writing</button>
+        <button class="tab-btn" data-tab="wr-letter">Letters</button>
+        <button class="tab-btn" data-tab="wr-resume">Resume/CV</button>
+      </div>
+
+      <div class="tab-content active" id="wr-basics">
+        <h3>Sentence & Paragraph Writing</h3>
+        <div class="content-card">
+          <h4>The Perfect Sentence</h4>
+          <p>A complete sentence must have three things: a <strong>subject</strong>, a <strong>verb</strong>, and a <strong>complete thought</strong>.</p>
+          <div class="formula-box">Subject + Verb + Object/Complement = Complete Sentence</div>
+          <div class="examples-list">
+            <div class="example"><span class="ex-label">Simple:</span> The dog barks.</div>
+            <div class="example"><span class="ex-label">Compound:</span> The dog barks, and the cat runs away.</div>
+            <div class="example"><span class="ex-label">Complex:</span> Although the dog barks loudly, the neighbors never complain.</div>
+            <div class="example"><span class="ex-label">Compound-Complex:</span> Although the dog barks loudly, the neighbors never complain, and the owner feels relieved.</div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>Paragraph Structure (PEEL Method)</h4>
+          <div class="peel-grid">
+            <div class="peel-item"><span class="peel-letter">P</span><div><strong>Point</strong> – State your main idea clearly in the first sentence (topic sentence).</div></div>
+            <div class="peel-item"><span class="peel-letter">E</span><div><strong>Evidence</strong> – Support your point with facts, examples, or data.</div></div>
+            <div class="peel-item"><span class="peel-letter">E</span><div><strong>Explain</strong> – Explain how the evidence supports your point.</div></div>
+            <div class="peel-item"><span class="peel-letter">L</span><div><strong>Link</strong> – Connect back to the main topic or lead into the next paragraph.</div></div>
+          </div>
+          <div class="model-paragraph">
+            <h5>Model Paragraph:</h5>
+            <p><span class="highlight-p">Regular exercise is essential for maintaining good health.</span> <span class="highlight-e1">Studies show that adults who exercise at least 30 minutes a day have a 35% lower risk of developing heart disease.</span> <span class="highlight-e2">This demonstrates that physical activity directly strengthens the cardiovascular system and improves overall bodily function.</span> <span class="highlight-l">Therefore, incorporating daily exercise into one's routine is not merely a lifestyle choice but a fundamental health necessity.</span></p>
+            <div class="legend"><span class="highlight-p">Point</span><span class="highlight-e1">Evidence</span><span class="highlight-e2">Explain</span><span class="highlight-l">Link</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="wr-essay">
+        <h3>Essay Writing</h3>
+        <div class="content-card">
+          <h4>Five-Paragraph Essay Structure</h4>
+          <div class="essay-structure">
+            <div class="essay-part intro"><strong>Introduction (Paragraph 1)</strong><ul><li>Hook: An interesting opening sentence</li><li>Background: Brief context about the topic</li><li>Thesis Statement: Your main argument</li></ul></div>
+            <div class="essay-part body"><strong>Body Paragraph 1 – First Main Point</strong><ul><li>Topic sentence</li><li>Supporting evidence</li><li>Analysis and explanation</li></ul></div>
+            <div class="essay-part body"><strong>Body Paragraph 2 – Second Main Point</strong><ul><li>Topic sentence</li><li>Supporting evidence</li><li>Analysis and explanation</li></ul></div>
+            <div class="essay-part body"><strong>Body Paragraph 3 – Third Main Point / Counter-argument</strong><ul><li>Acknowledge opposing view</li><li>Refute with evidence</li><li>Reinforce your position</li></ul></div>
+            <div class="essay-part conclusion"><strong>Conclusion (Paragraph 5)</strong><ul><li>Restate thesis (in different words)</li><li>Summarize main points</li><li>Closing thought / call to action</li></ul></div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>Useful Linking Words</h4>
+          <div class="linking-grid">
+            <div class="link-group"><h5>Adding Ideas</h5><p>Furthermore, Moreover, In addition, Additionally, Also, Besides</p></div>
+            <div class="link-group"><h5>Contrasting</h5><p>However, Nevertheless, On the other hand, Despite, Although, Even though</p></div>
+            <div class="link-group"><h5>Cause & Effect</h5><p>Therefore, Consequently, As a result, Thus, Hence, Due to</p></div>
+            <div class="link-group"><h5>Examples</h5><p>For example, For instance, Such as, To illustrate, Namely</p></div>
+            <div class="link-group"><h5>Concluding</h5><p>In conclusion, To summarize, Overall, In summary, Ultimately</p></div>
+            <div class="link-group"><h5>Sequencing</h5><p>First, Second, Then, Next, After that, Finally</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="wr-email">
+        <h3>Professional Email Writing</h3>
+        <div class="content-card">
+          <h4>Formal Email Template</h4>
+          <div class="email-template">
+            <div class="email-line"><span class="email-field">Subject:</span> Request for Meeting – Project Alpha Update</div>
+            <div class="email-body">
+              <p>Dear Mr. Thompson,</p>
+              <p>I hope this email finds you well. I am writing to request a meeting to discuss the current progress of Project Alpha and to address a few key decisions that require your input.</p>
+              <p>As you may be aware, we have reached the midpoint of the project timeline. While we are largely on track, there are two areas where we would benefit from your guidance: the revised budget allocation and the updated delivery schedule.</p>
+              <p>Would you be available for a 30-minute meeting this week? I am flexible and can accommodate your schedule. Please let me know a time that works best for you, and I will send a calendar invitation promptly.</p>
+              <p>Thank you for your time and continued support. I look forward to hearing from you.</p>
+              <p>Yours sincerely,<br/>Sarah Mitchell<br/>Project Manager, Alpha Division<br/>Tel: +44 20 7946 0958</p>
+            </div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>Informal Email Template</h4>
+          <div class="email-template informal">
+            <div class="email-line"><span class="email-field">Subject:</span> Catching up – Coffee this week?</div>
+            <div class="email-body">
+              <p>Hi James,</p>
+              <p>Hope you're doing well! It's been ages since we last caught up. I was thinking we could grab a coffee sometime this week if you're free?</p>
+              <p>I've got some exciting news to share about the new project I've been working on. I think you'll find it really interesting!</p>
+              <p>Let me know what works for you. I'm pretty flexible Tuesday or Thursday afternoon.</p>
+              <p>Looking forward to it!</p>
+              <p>Best,<br/>Emma</p>
+            </div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>Key Email Phrases</h4>
+          <div class="linking-grid">
+            <div class="link-group"><h5>Opening</h5><p>I hope this email finds you well. / I am writing to… / Further to our conversation… / With reference to…</p></div>
+            <div class="link-group"><h5>Making Requests</h5><p>Could you please… / I would be grateful if… / I would appreciate it if… / Would it be possible to…</p></div>
+            <div class="link-group"><h5>Providing Information</h5><p>Please find attached… / I am pleased to inform you… / I would like to bring to your attention… / As per your request…</p></div>
+            <div class="link-group"><h5>Closing</h5><p>Please do not hesitate to contact me. / I look forward to hearing from you. / Thank you for your time and consideration. / Kind regards / Yours sincerely</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="wr-letter">
+        <h3>Letter Writing</h3>
+        <div class="content-card">
+          <h4>Formal Letter Structure</h4>
+          <div class="letter-template">
+            <p class="letter-part">[Your Name]<br/>[Your Address]<br/>[City, Postcode]<br/>[Date]</p>
+            <p class="letter-part">[Recipient's Name]<br/>[Their Title]<br/>[Company/Organization]<br/>[Address]</p>
+            <p class="letter-part"><strong>Dear Mr./Ms. [Last Name],</strong></p>
+            <p class="letter-part"><strong>Re: [Subject of the Letter]</strong></p>
+            <p class="letter-part">I am writing to [state your purpose clearly in the first paragraph].</p>
+            <p class="letter-part">[Body paragraph 1 – provide details and context]</p>
+            <p class="letter-part">[Body paragraph 2 – additional information or request]</p>
+            <p class="letter-part">I would be grateful if you could [state what action you want]. Please do not hesitate to contact me should you require any further information.</p>
+            <p class="letter-part">Yours sincerely,<br/>[Your Signature]<br/>[Your Printed Name]</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="wr-resume">
+        <h3>Resume / CV Writing</h3>
+        <div class="content-card">
+          <h4>Professional Resume Template</h4>
+          <div class="resume-template">
+            <div class="resume-header">
+              <h2>JOHN SMITH</h2>
+              <p>📧 john.smith@email.com | 📞 +1 555 0123 | 🔗 linkedin.com/in/johnsmith | 📍 New York, NY</p>
+            </div>
+            <div class="resume-section">
+              <h3>PROFESSIONAL SUMMARY</h3>
+              <p>Results-driven Marketing Manager with 6+ years of experience developing and executing data-driven marketing strategies. Proven track record of increasing brand awareness by 45% and driving revenue growth of $2M annually. Skilled in digital marketing, team leadership, and cross-functional collaboration.</p>
+            </div>
+            <div class="resume-section">
+              <h3>WORK EXPERIENCE</h3>
+              <div class="job">
+                <div class="job-header"><strong>Senior Marketing Manager</strong> | ABC Corporation | 2020 – Present</div>
+                <ul>
+                  <li>Led a team of 8 marketing professionals to execute multi-channel campaigns</li>
+                  <li>Increased website traffic by 60% through SEO optimization and content strategy</li>
+                  <li>Managed annual marketing budget of $500,000 with 15% cost savings</li>
+                </ul>
+              </div>
+            </div>
+            <div class="resume-section">
+              <h3>EDUCATION</h3>
+              <p><strong>Bachelor of Business Administration (Marketing)</strong><br/>University of New York | 2014 – 2018 | GPA: 3.8/4.0</p>
+            </div>
+            <div class="resume-section">
+              <h3>SKILLS</h3>
+              <p>Digital Marketing · SEO/SEM · Google Analytics · Team Leadership · Budget Management · Content Strategy · CRM Systems · Data Analysis</p>
+            </div>
+          </div>
+        </div>
+        <div class="content-card">
+          <h4>Power Verbs for Your Resume</h4>
+          <div class="linking-grid">
+            <div class="link-group"><h5>Leadership</h5><p>Led, Managed, Directed, Supervised, Coordinated, Oversaw, Spearheaded</p></div>
+            <div class="link-group"><h5>Achievement</h5><p>Achieved, Exceeded, Surpassed, Delivered, Accomplished, Attained</p></div>
+            <div class="link-group"><h5>Creation</h5><p>Developed, Designed, Created, Built, Established, Launched, Implemented</p></div>
+            <div class="link-group"><h5>Improvement</h5><p>Improved, Enhanced, Optimized, Streamlined, Increased, Reduced, Transformed</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="vocabulary">
+      <div class="section-header">
+        <h2>📝 Vocabulary Module</h2>
+        <p>Build a powerful vocabulary with essential words, translations, and sound pronunciations.</p>
+      </div>
+
+      <div class="module-tabs">
+        <button class="tab-btn active" data-tab="voc-daily">Daily Words</button>
+        <button class="tab-btn" data-tab="voc-idioms">Idioms</button>
+        <button class="tab-btn" data-tab="voc-phrasal">Phrasal Verbs</button>
+        <button class="tab-btn" data-tab="voc-business">Business</button>
+        <button class="tab-btn" data-tab="voc-academic">Academic</button>
+      </div>
+
+      <div class="tab-content active" id="voc-daily">
+        <h3>Essential Daily Vocabulary (বাংলা অর্থ ও উচ্চারণসহ)</h3>
+        <div class="vocab-search-wrap">
+          <input type="text" id="vocabSearch" placeholder="Search words…" />
+        </div>
+        <div class="vocab-grid" id="vocabGrid"></div>
+      </div>
+
+      <div class="tab-content" id="voc-idioms">
+        <h3>Common English Idioms</h3>
+        <div class="content-card">
+          <div class="idiom-list" id="idiomList"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="voc-phrasal">
+        <h3>Essential Phrasal Verbs</h3>
+        <div class="content-card">
+          <div class="phrasal-list" id="phrasalList"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="voc-business">
+        <h3>Business Vocabulary</h3>
+        <div class="content-card">
+          <div class="vocab-grid" id="businessVocabGrid"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="voc-academic">
+        <h3>Academic Vocabulary (AWL)</h3>
+        <div class="content-card">
+          <p>The Academic Word List (AWL) contains the most important words for academic reading and writing.</p>
+          <div class="vocab-grid" id="academicVocabGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pronunciation">
+      <div class="section-header">
+        <h2>🔊 Pronunciation Module</h2>
+        <p>Master English sounds, stress, and intonation for clear, confident speech.</p>
+      </div>
+
+      <div class="module-tabs">
+        <button class="tab-btn active" data-tab="pr-ipa">IPA Basics</button>
+        <button class="tab-btn" data-tab="pr-bangla-guide">Bangla Phonic Guide</button> <button class="tab-btn" data-tab="pr-stress">Word Stress</button>
+        <button class="tab-btn" data-tab="pr-intonation">Intonation</button>
+        <button class="tab-btn" data-tab="pr-silent">Silent Letters</button>
+        <button class="tab-btn" data-tab="pr-american">American vs British</button>
+      </div>
+
+      <div class="tab-content active" id="pr-ipa">
+        <h3>IPA – International Phonetic Alphabet</h3>
+        <div class="content-card">
+          <h4>Why Learn IPA?</h4>
+          <p>IPA is a universal system for writing pronunciation. Every dictionary uses IPA symbols.</p>
+          <div class="ipa-table">
+            <h5>Vowel Sounds</h5>
+            <table class="pron-table">
+              <thead><tr><th>Symbol</th><th>Example Word</th><th>Transcription</th></tr></thead>
+              <tbody>
+                <tr><td>/iː/</td><td>see, tree, feel</td><td>/siː/ /triː/ /fiːl/</td></tr>
+                <tr><td>/ɪ/</td><td>sit, bit, him</td><td>/sɪt/ /bɪt/ /hɪm/</td></tr>
+                <tr><td>/e/</td><td>bed, red, said</td><td>/bed/ /red/ /sed/</td></tr>
+                <tr><td>/æ/</td><td>cat, bad, man</td><td>/kæt/ /bæd/ /mæn/</td></tr>
+                <tr><td>/ɑː/</td><td>car, far, heart</td><td>/kɑː/ /fɑː/ /hɑːt/</td></tr>
+                <tr><td>/ɒ/</td><td>hot, dog, lot</td><td>/hɒt/ /dɒɡ/ /lɒt/</td></tr>
+                <tr><td>/ɔː/</td><td>law, more, door</td><td>/lɔː/ /mɔː/ /dɔː/</td></tr>
+                <tr><td>/ʊ/</td><td>book, put, good</td><td>/bʊk/ /pʊt/ /ɡʊd/</td></tr>
+                <tr><td>/uː/</td><td>food, blue, true</td><td>/fuːd/ /bluː/ /truː/</td></tr>
+                <tr><td>/ʌ/</td><td>cup, run, love</td><td>/kʌp/ /rʌn/ /lʌv/</td></tr>
+                <tr><td>/ɜː/</td><td>bird, word, her</td><td>/bɜːd/ /wɜːd/ /hɜː/</td></tr>
+                <tr><td>/ə/</td><td>about, the, sofa</td><td>/əˈbaʊt/ /ðə/ /ˈsoʊfə/</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="pr-bangla-guide">
+        <h3>Bangla Phonic Guide (বাংলা অক্ষরের মাধ্যমে ইংরেজি উচ্চারণ)</h3>
+        <div class="content-card">
+          <h4>ইংরেজি স্বরবর্ণের বাংলা উচ্চারণ রূপান্তর</h4>
+          <p>ইংরেজি নিখুঁত উচ্চারণের জন্য নিচের চার্টটি অনুসরণ করুন:</p>
+          <table class="pron-table">
+            <thead><tr><th>ইংরেজি শব্দ</th><th>IPA</th><th>বাংলা লিপিতে উচ্চারণ</th><th>বাংলা অর্থ</th></tr></thead>
+            <tbody>
+              <tr><td><strong>A</strong>pple</td><td>/ˈæp.əl/</td><td><span style="color:#2563eb; font-weight:600;">অ্যাপল্</span></td><td>আপেল</td></tr>
+              <tr><td><strong>B</strong>oy</td><td>/bɔɪ/</td><td><span style="color:#2563eb; font-weight:600;">বয়</span></td><td>বালক</td></tr>
+              <tr><td><strong>C</strong>at</td><td>/kæt/</td><td><span style="color:#2563eb; font-weight:600;">ক্যাট্</span></td><td>বিড়াল</td></tr>
+              <tr><td><strong>D</strong>octor</td><td>/ˈdɒk.tər/</td><td><span style="color:#2563eb; font-weight:600;">ডক্টর্</span></td><td>ডাক্তার</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="pr-stress">
+        <h3>Word Stress Rules</h3>
+        <div class="content-card">
+          <h4>What is Word Stress?</h4>
+          <p>In English, one syllable in every word is stressed.</p>
+          <div class="stress-rules">
+            <div class="stress-rule">
+              <h5>Rule 1: Two-Syllable Nouns & Adjectives</h5>
+              <p>Usually stressed on the <strong>FIRST</strong> syllable.</p>
+              <div class="stress-examples">
+                <span><strong>TA</strong>-ble</span><span><strong>WIN</strong>-dow</span><span><strong>HAP</strong>-py</span><span><strong>CLE</strong>-ver</span>
+              </div>
+            </div>
+            <div class="stress-rule">
+              <h5>Rule 2: Two-Syllable Verbs</h5>
+              <p>Usually stressed on the <strong>SECOND</strong> syllable.</p>
+              <div class="stress-examples">
+                <span>be-<strong>GIN</strong></span><span>de-<strong>CIDE</strong></span><span>re-<strong>PEAT</strong></span><span>for-<strong>GET</strong></span>
+              </div>
+            </div>
+            <div class="stress-rule">
+              <h5>Rule 3: Words Ending in -tion, -sion, -ic</h5>
+              <p>Stress falls on the syllable <strong>BEFORE</strong> the suffix.</p>
+              <div class="stress-examples">
+                <span>edu-<strong>CA</strong>-tion</span><span>de-<strong>CI</strong>-sion</span><span>e-<strong>CO</strong>-no-mic</span>
+              </div>
+            </div>
+            <div class="stress-rule">
+              <h5>Rule 4: Compound Nouns</h5>
+              <p>Stress falls on the <strong>FIRST</strong> word.</p>
+              <div class="stress-examples">
+                <span><strong>BOOK</strong>-store</span><span><strong>AIR</strong>-port</span><span><strong>SUN</strong>-glasses</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="pr-intonation">
+        <h3>Intonation Patterns</h3>
+        <div class="content-card">
+          <h4>Rising and Falling Intonation</h4>
+          <p>Intonation is the music of language — the rise and fall of your voice.</p>
+          <div class="intonation-patterns">
+            <div class="intonation-item">
+              <h5>↘ Falling Intonation</h5>
+              <p>Used for: statements, commands, wh-questions, finished thoughts</p>
+              <div class="intonation-examples">
+                <span>"I live in London." ↘</span>
+                <span>"Where do you work?" ↘</span>
+                <span>"Close the door." ↘</span>
+              </div>
+            </div>
+            <div class="intonation-item">
+              <h5>↗ Rising Intonation</h5>
+              <p>Used for: yes/no questions, showing surprise, listing items (except the last)</p>
+              <div class="intonation-examples">
+                <span>"Are you coming?" ↗</span>
+                <span>"Really?" ↗</span>
+                <span>"I need bread ↗, milk ↗, and eggs ↘."</span>
+              </div>
+            </div>
+            <div class="intonation-item">
+              <h5>↗↘ Rise-Fall Intonation</h5>
+              <p>Used for: expressing strong feelings, sarcasm, or being definitive</p>
+              <div class="intonation-examples">
+                <span>"That's absolutely wonderful!" ↗↘</span>
+                <span>"Oh, sure." ↗↘ (sarcastic)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="pr-silent">
+        <h3>Silent Letters</h3>
+        <div class="content-card">
+          <h4>Common Silent Letter Patterns</h4>
+          <div class="silent-grid">
+            <div class="silent-group"><h5>Silent K (before N)</h5><div class="silent-words"><span>know</span><span>knife</span><span>knock</span><span>knee</span><span>knight</span></div></div>
+            <div class="silent-group"><h5>Silent W (before R)</h5><div class="silent-words"><span>write</span><span>wrong</span><span>wrap</span><span>wrist</span><span>wreck</span></div></div>
+            <div class="silent-group"><h5>Silent B (after M)</h5><div class="silent-words"><span>bomb</span><span>climb</span><span>thumb</span><span>lamb</span><span>comb</span></div></div>
+            <div class="silent-group"><h5>Silent G (before N)</h5><div class="silent-words"><span>sign</span><span>gnome</span><span>gnat</span><span>foreign</span><span>design</span></div></div>
+            <div class="silent-group"><h5>Silent H</h5><div class="silent-words"><span>hour</span><span>honest</span><span>heir</span><span>vehicle</span><span>ghost</span></div></div>
+            <div class="silent-group"><h5>Silent L</h5><div class="silent-words"><span>calm</span><span>walk</span><span>talk</span><span>half</span><span>salmon</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="pr-american">
+        <h3>American vs British Pronunciation</h3>
+        <div class="content-card">
+          <h4>Key Differences</h4>
+          <table class="pron-table">
+            <thead><tr><th>Word</th><th>American 🇺🇸</th><th>British 🇬🇧</th></tr></thead>
+            <tbody>
+              <tr><td>water</td><td>/ˈwɑːtər/ (flap T)</td><td>/ˈwɔːtə/</td></tr>
+              <tr><td>car</td><td>/kɑːr/ (rhotic R)</td><td>/kɑː/ (non-rhotic)</td></tr>
+              <tr><td>dance</td><td>/dæns/ (short A)</td><td>/dɑːns/ (long A)</td></tr>
+              <tr><td>schedule</td><td>/ˈskɛdʒuːl/</td><td>/ˈʃɛdjuːl/</td></tr>
+              <tr><td>advertisement</td><td>/ˌædvərˈtaɪzmənt/</td><td>/ədˈvɜːtɪsmənt/</td></tr>
+              <tr><td>tomato</td><td>/təˈmeɪtoʊ/</td><td>/təˈmɑːtəʊ/</td></tr>
+              <tr><td>either</td><td>/ˈiːðər/</td><td>/ˈaɪðə/</td></tr>
+            </tbody>
+          </table>
+          <div class="tip">💡 <strong>Tip:</strong> Choose one accent (American or British) and stick with it consistently.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="certificate">
+      <div class="section-header">
+        <h2>🏆 Course Certificate</h2>
+        <p>Complete all 30 days to earn your FluentPath English Mastery Certificate.</p>
+      </div>
+      <div class="certificate-wrap">
+        <div class="cert-progress-info">
+          <div class="cert-stat"><span id="certCompleted">0</span><label>Days Completed</label></div>
+          <div class="cert-stat"><span id="certPercent">0%</span><label>Progress</label></div>
+          <div class="cert-stat"><span>30</span><label>Total Days</label></div>
+        </div>
+        <div class="cert-form">
+          <label>Your Full Name (for certificate)</label>
+          <input type="text" id="certName" placeholder="Enter your full name" />
+          <button class="btn-primary" id="generateCertBtn">Generate Certificate</button>
+        </div>
+        <div class="certificate-display" id="certificateDisplay" style="display:none">
+          <div class="certificate" id="certificateCard">
+            <div class="cert-border">
+              <div class="cert-logo">📚 FluentPath</div>
+              <div class="cert-title">Certificate of Completion</div>
+              <div class="cert-subtitle">This is to certify that</div>
+              <div class="cert-name" id="certNameDisplay"></div>
+              <div class="cert-body">has successfully completed the</div>
+              <div class="cert-course">30-Day English Mastery Course</div>
+              <div class="cert-desc">covering Beginner, Intermediate, and Advanced levels of English Grammar, Speaking, Writing, Vocabulary, and Pronunciation</div>
+              <div class="cert-footer">
+                <div class="cert-date" id="certDate"></div>
+                <div class="cert-sig" style="font-style: italic;">FluentPath Academy</div>
+              </div>
+              <div class="cert-seal">🏆</div>
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="window.print()">🖨️ Print Certificate</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="quizModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="quizTitle">Daily Quiz</h3>
+      <button class="modal-close" id="quizClose">✕</button>
+    </div>
+    <div class="modal-body" id="quizBody"></div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="submitQuiz">Submit Answers</button>
+      <button class="btn-secondary" id="closeQuizBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="learn-english.js"></script>
+</body>
+</html>
