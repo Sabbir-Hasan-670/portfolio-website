@@ -207,10 +207,11 @@
             </section>
 
             <section id="tab-socials" class="tab-pane">
-                <div class="dashboard-grid">
-                    <div class="dash-card">
-                        <h3>Update Social Links</h3>
-                        <form id="socials-form">
+                <form id="socials-form">
+                    <div class="dashboard-grid">
+                        
+                        <div class="dash-card">
+                            <h3>Update Social Links</h3>
                             <div class="input-group">
                                 <input type="text" id="social-github" name="github_link" autocomplete="off">
                                 <label>GitHub Profile URL</label>
@@ -235,10 +236,72 @@
                                 <input type="text" id="social-adobe" name="adobe_stock_link" autocomplete="off">
                                 <label>Adobe Stock URL</label>
                             </div>
-                            <button type="submit" class="action-btn">Save Links 🔗</button>
-                        </form>
-                    </div>
 
+                            <h4 style="margin-top: 30px; margin-bottom: 20px;">Hero Section Text</h4>
+                            <div class="input-group">
+                                <input type="text" id="hero-roles" name="hero_roles" autocomplete="off" placeholder="e.g. Graphic Designer, Web Developer">
+                                <label>Typing Roles (Comma Separated)</label>
+                            </div>
+                            <div class="input-group">
+                                <textarea id="hero-desc" name="hero_description" rows="3" placeholder="e.g. CCNA-trained Network Engineer..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="dash-card">
+                            <h3 style="margin-bottom: 20px;">Hero Bento Stats</h3>
+                            <div class="input-group">
+                                <input type="text" id="stat-ccna-title" name="stat_ccna_title" autocomplete="off" placeholder="e.g. CCNA">
+                                <label>CCNA Title</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="stat-ccna" name="stat_ccna" autocomplete="off" placeholder="e.g. 200-301 Trained">
+                                <label>CCNA Stat Label</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="stat-ceh-title" name="stat_ceh_title" autocomplete="off" placeholder="e.g. CEH">
+                                <label>CEH Title</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="stat-ceh" name="stat_ceh" autocomplete="off" placeholder="e.g. Cybersecurity">
+                                <label>CEH Stat Label</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="stat-years" name="stat_years" autocomplete="off" placeholder="e.g. 3+">
+                                <label>Years Experience Stat</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="stat-projects" name="stat_projects" autocomplete="off" placeholder="e.g. 20+">
+                                <label>Projects Built Stat</label>
+                            </div>
+
+                            <h4 style="margin-top: 30px; margin-bottom: 20px;">About Section ("Who I Am")</h4>
+                            <div class="input-group">
+                                <input type="text" id="about-title" name="about_title" autocomplete="off" placeholder="e.g. CS Graduate · CCNA Trained · IT Professional">
+                                <label>About Subtitle</label>
+                            </div>
+                            <div class="input-group">
+                                <textarea id="about-desc" name="about_desc" rows="5" placeholder="Write your about text here..."></textarea>
+                            </div>
+
+                            <h4 style="margin-top: 30px; margin-bottom: 20px;">Contact Options</h4>
+                            <div class="input-group">
+                                <input type="email" id="contact-email" name="contact_email" autocomplete="off" placeholder="e.g. hello@example.com">
+                                <label>Contact Email</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="contact-location" name="contact_location" autocomplete="off" placeholder="e.g. Faridpur, Dhaka, Bangladesh">
+                                <label>Location Text</label>
+                            </div>
+                            <div class="input-group">
+                                <textarea id="contact-map" name="contact_map_url" rows="3" placeholder="Paste Google Maps Embed URL src here..."></textarea>
+                                <label style="font-size:0.75rem; color:#64748b; margin-top:5px; position:static;">Go to Google Maps -> Share -> Embed a map -> Copy the src url only.</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-btn" style="margin-top: 20px; width: 100%;">Save Links & Text 🚀</button>
+                </form>
+
+                <div class="dashboard-grid" style="margin-top: 30px;">
                     <div class="uploads-column">
                         <div class="dash-card">
                             <h3>Update Avatar</h3>
@@ -258,6 +321,12 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Hidden GitHub Image Form -->
+                <form id="github-image-form" style="display:none;">
+                    <input type="hidden" id="gh-repo-id" name="repo_id">
+                    <input type="file" id="gh-image-input" name="gh_image" accept="image/*">
+                </form>
             </section>
 
             <section id="tab-inbox" class="tab-pane">
@@ -380,8 +449,27 @@
         </div>
     </div>
 
+    <!-- Email Reply Modal -->
+    <div id="reply-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3>Reply to Email</h3>
+            <form id="reply-form" onsubmit="event.preventDefault(); sendEmailReply();">
+                <input type="hidden" id="reply-to-email">
+                <div class="input-group">
+                    <input type="text" id="reply-subject" autocomplete="off" required value="Reply to your inquiry">
+                    <label>Subject</label>
+                </div>
+                <div class="input-group">
+                    <textarea id="reply-message" rows="5" required placeholder="Type your reply here..."></textarea>
+                </div>
+                <button type="submit" class="action-btn" style="width: 100%;">Send Reply 🚀</button>
+                <button type="button" class="action-btn" style="background:#e74c3c; width: 100%; margin-top: 10px;" onclick="document.getElementById('reply-modal').classList.add('hidden')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="dashboard.js"></script>
     
-</body>
+<script src="/toast.js"></script></body>
 </html>

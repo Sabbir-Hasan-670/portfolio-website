@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FluentPath – 30-Day English Mastery Course</title>
-  <link rel="stylesheet" href="learn-english.css" />
+  <link rel="stylesheet" href="learn-english.css?v=2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
 </head>
@@ -15,6 +15,7 @@
     <span class="brand-icon">📚</span>
     <span class="brand-name">FluentPath</span>
     <span class="brand-tag">30-Day English Mastery</span>
+    <a href="/" class="btn-back" style="margin-left: 1rem; padding: 0.3rem 0.6rem; background: var(--bg-hover); color: var(--text-primary); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; border: 1px solid var(--border);">← Back to Portfolio</a>
   </div>
   <nav class="nav-links" id="navLinks">
     <a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a>
@@ -23,6 +24,8 @@
     <a href="#writing"   class="nav-link" data-section="writing">Writing</a>
     <a href="#vocabulary" class="nav-link" data-section="vocabulary">Vocabulary</a>
     <a href="#pronunciation" class="nav-link" data-section="pronunciation">Pronunciation</a>
+    <a href="#ai-tutor" class="nav-link nav-link-ai" data-section="ai-tutor">🤖 AI Tutor</a>
+    <a href="#exams" class="nav-link nav-link-exam" data-section="exams">📝 Exams</a>
     <a href="#certificate" class="nav-link" data-section="certificate">Certificate</a>
   </nav>
   <div class="nav-actions">
@@ -92,13 +95,23 @@
         </div>
         <div class="overview-card" onclick="app.goToSection('vocabulary')">
           <div class="ov-icon">📝</div>
-          <h3>Vocabulary Module</h3>
-          <p>3000+ words with native Bangla pronunciation, meaning, and sentences.</p>
+          <h3>A–Z Vocabulary</h3>
+          <p>500+ words with Bangla অর্থ, IPA উচ্চারণ, and example sentences.</p>
         </div>
         <div class="overview-card" onclick="app.goToSection('pronunciation')">
           <div class="ov-icon">🔊</div>
           <h3>Pronunciation Module</h3>
           <p>IPA basics, word stress, intonation, and Bangla phonetics guide.</p>
+        </div>
+        <div class="overview-card ai-card" onclick="app.goToSection('ai-tutor')">
+          <div class="ov-icon">🤖</div>
+          <h3>AI Smart Tutor</h3>
+          <p>বাংলায় বুঝুন! AI দিয়ে Speaking ও Writing প্র্যাকটিস করুন।</p>
+        </div>
+        <div class="overview-card exam-card" onclick="app.goToSection('exams')">
+          <div class="ov-icon">📝</div>
+          <h3>English Exams</h3>
+          <p>Beginner থেকে Advanced — পরীক্ষা দিন এবং আপনার স্কোর দেখুন।</p>
         </div>
         <div class="overview-card" onclick="app.goToSection('certificate')">
           <div class="ov-icon">🏆</div>
@@ -213,8 +226,7 @@
         <div class="content-card">
           <h4>📝 Shadowing Scripts – Beginner</h4>
           <div class="script-box">
-            <p>"Good morning! My name is Sarah. I am a teacher. I live in New York. I love my job. Every day I wake up at seven o'clock. I have breakfast and then I go to school. My students are wonderful. I am very happy."</p>
-          </div>
+            <p>"Good morning! My name is Sabbir Hasan. I am an CSE Graduate Student. I am from Bangladesh. I love learning new languages and exploring different cultures. In my free time, I enjoy reading books, watching movies, and traveling to new places."</p>
           <h4>📝 Shadowing Scripts – Intermediate</h4>
           <div class="script-box">
             <p>"Technology has changed the way we communicate. In the past, people wrote letters that took weeks to arrive. Today, we can send a message to anyone in the world in seconds. Social media platforms connect billions of people. However, some experts argue that despite being more connected, people feel lonelier than ever before."</p>
@@ -527,22 +539,23 @@
 
     <section class="section" id="vocabulary">
       <div class="section-header">
-        <h2>📝 Vocabulary Module</h2>
-        <p>Build a powerful vocabulary with essential words, translations, and sound pronunciations.</p>
+        <h2>📝 A–Z Vocabulary (বাংলা সহ)</h2>
+        <p>500+ English words with Bangla অর্থ, IPA উচ্চারণ, example sentences — beginner to advanced.</p>
       </div>
 
       <div class="module-tabs">
-        <button class="tab-btn active" data-tab="voc-daily">Daily Words</button>
-        <button class="tab-btn" data-tab="voc-idioms">Idioms</button>
-        <button class="tab-btn" data-tab="voc-phrasal">Phrasal Verbs</button>
-        <button class="tab-btn" data-tab="voc-business">Business</button>
-        <button class="tab-btn" data-tab="voc-academic">Academic</button>
+        <button class="tab-btn active" data-tab="voc-daily">🔤 A–Z Words</button>
+        <button class="tab-btn" data-tab="voc-idioms">💬 Idioms</button>
+        <button class="tab-btn" data-tab="voc-phrasal">🔗 Phrasal Verbs</button>
+        <button class="tab-btn" data-tab="voc-business">💼 Business</button>
+        <button class="tab-btn" data-tab="voc-academic">🎓 Academic</button>
       </div>
 
       <div class="tab-content active" id="voc-daily">
-        <h3>Essential Daily Vocabulary (বাংলা অর্থ ও উচ্চারণসহ)</h3>
+        <h3>A–Z English Vocabulary (বাংলা অর্থ ও উচ্চারণসহ)</h3>
         <div class="vocab-search-wrap">
-          <input type="text" id="vocabSearch" placeholder="Search words…" />
+          <input type="text" id="vocabSearch" placeholder="Search words in English or বাংলা…" />
+          <div class="az-index" id="azIndex"></div>
         </div>
         <div class="vocab-grid" id="vocabGrid"></div>
       </div>
@@ -784,8 +797,6 @@
       </div>
     </section>
 
-  </main>
-</div>
 
 <div class="modal-overlay" id="quizModal">
   <div class="modal">
@@ -801,6 +812,136 @@
   </div>
 </div>
 
-<script src="learn-english.js"></script>
+    <!-- ====================== AI TUTOR SECTION ====================== -->
+    <section class="section" id="ai-tutor">
+      <div class="section-header">
+        <h2>🤖 AI Smart English Tutor</h2>
+        <p>বাংলায় বুঝুন, ইংরেজিতে কথা বলুন! আপনার ব্যক্তিগত AI English Teacher।</p>
+      </div>
+
+      <div class="tutor-layout">
+        <div class="tutor-sidebar">
+          <h4>🎯 Practice Topics</h4>
+          <div class="topic-list">
+            <button class="topic-btn active" data-topic="greeting">👋 Greeting & Introduction</button>
+            <button class="topic-btn" data-topic="daily">🏠 Daily Life</button>
+            <button class="topic-btn" data-topic="shopping">🛒 Shopping</button>
+            <button class="topic-btn" data-topic="travel">✈️ Travel</button>
+            <button class="topic-btn" data-topic="work">💼 Work & Office</button>
+            <button class="topic-btn" data-topic="grammar">📖 Grammar Help</button>
+            <button class="topic-btn" data-topic="pronunciation">🔊 Pronunciation</button>
+            <button class="topic-btn" data-topic="freemode">💬 Free Chat</button>
+          </div>
+          <div class="tutor-info-box">
+            <h5>📊 Session Stats</h5>
+            <div class="tutor-stat"><span>Messages:</span><span id="tutorMsgCount">0</span></div>
+            <div class="tutor-stat"><span>Words Learned:</span><span id="tutorWordsLearned">0</span></div>
+            <div class="tutor-stat"><span>Corrections:</span><span id="tutorCorrections">0</span></div>
+          </div>
+        </div>
+
+        <div class="tutor-main">
+          <div class="chat-window" id="chatWindow">
+            <div class="chat-msg ai">
+              <div class="chat-avatar">🤖</div>
+              <div class="chat-bubble">
+                <p>আসসালামু আলাইকুম! আমি FluentPath AI Tutor। আমি আপনাকে ইংরেজি শিখতে সাহায্য করব।</p>
+                <p>ইংরেজিতে বা বাংলায় যেকোনো প্রশ্ন করুন, বা নিচের Mic বাটন চেপে কথা বলুন!</p>
+                <p class="chat-en">Hello! I am your FluentPath AI Tutor. Ask me anything in English or Bengali!</p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <div class="chat-input-row">
+              <textarea id="chatInput" placeholder="ইংরেজি বা বাংলায় লিখুন..." rows="2"></textarea>
+              <div class="chat-btns">
+                <button id="micBtn" class="mic-btn" title="Speak (Voice Input)">🎤</button>
+                <button id="sendBtn" class="send-btn">Send ➤</button>
+              </div>
+            </div>
+            <div class="chat-options">
+              <label><input type="checkbox" id="autoSpeak" checked> 🔊 Auto-speak AI reply</label>
+              <label><input type="checkbox" id="showBangla" checked> 🇧🇩 Show Bengali translation</label>
+              <button id="clearChatBtn" class="clear-btn">🗑 Clear Chat</button>
+            </div>
+          </div>
+          <div id="voiceStatus" class="voice-status hidden">🎤 Listening... speak now</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== EXAMS SECTION ====================== -->
+    <section class="section" id="exams">
+      <div class="section-header">
+        <h2>📝 English Exams</h2>
+        <p>নিজের ইংরেজি দক্ষতা পরীক্ষা করুন। Beginner থেকে Advanced পর্যন্ত তিনটি স্তর।</p>
+      </div>
+
+      <div id="exam-home">
+        <div class="exam-level-cards">
+          <div class="exam-level-card beginner" onclick="app.startExam('beginner')">
+            <div class="elc-icon">🌱</div>
+            <h3>Beginner</h3>
+            <p>শুরুর স্তর — ছোট বাক্য, সহজ শব্দ, বর্ণমালা।</p>
+            <div class="elc-meta">20 Questions • 10 min</div>
+            <button class="elc-btn">Start Exam →</button>
+          </div>
+          <div class="exam-level-card intermediate" onclick="app.startExam('intermediate')">
+            <div class="elc-icon">📚</div>
+            <h3>Intermediate</h3>
+            <p>মধ্যম স্তর — Grammar, Tense, Vocabulary।</p>
+            <div class="elc-meta">25 Questions • 15 min</div>
+            <button class="elc-btn">Start Exam →</button>
+          </div>
+          <div class="exam-level-card advanced" onclick="app.startExam('advanced')">
+            <div class="elc-icon">🏆</div>
+            <h3>Advanced</h3>
+            <p>উচ্চতর স্তর — Idioms, Phrasal Verbs, Essay।</p>
+            <div class="elc-meta">30 Questions • 20 min</div>
+            <button class="elc-btn">Start Exam →</button>
+          </div>
+        </div>
+        <div class="exam-history-wrap">
+          <h3>📊 Your Exam History</h3>
+          <div id="examHistory"><p class="no-history">আপনি এখনো কোনো পরীক্ষা দেননি।</p></div>
+        </div>
+      </div>
+
+      <div id="exam-active" class="hidden">
+        <div class="exam-header-bar">
+          <div class="exam-info">
+            <span id="examLevelLabel" class="exam-level-badge">Beginner</span>
+            <span>প্রশ্ন <strong id="examQNum">1</strong> / <strong id="examQTotal">20</strong></span>
+          </div>
+          <div class="exam-timer" id="examTimer">⏱ 10:00</div>
+        </div>
+        <div class="exam-progress-bar"><div id="examProgressBar" style="width:0%"></div></div>
+        <div id="examQuestionWrap"></div>
+        <div class="exam-nav">
+          <button id="examNextBtn" class="exam-next-btn" onclick="app.nextExamQuestion()">Next →</button>
+        </div>
+      </div>
+
+      <div id="exam-result" class="hidden">
+        <div class="exam-result-card">
+          <div class="result-icon" id="resultIcon">🏆</div>
+          <h2 id="resultTitle">দারুণ!</h2>
+          <div class="result-score" id="resultScore">18 / 20</div>
+          <div class="result-percent" id="resultPercent">90%</div>
+          <p id="resultMessage">চমৎকার পারফরম্যান্স!</p>
+          <div id="resultFeedback" class="result-feedback"></div>
+          <div class="result-actions">
+            <button onclick="app.goToSection('exams')" class="btn-primary">Try Again</button>
+            <button onclick="app.goToSection('lessons')" class="btn-secondary">Continue Learning</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="/toast.js"></script>
+<script src="learn-english.js?v=2"></script>
 </body>
 </html>

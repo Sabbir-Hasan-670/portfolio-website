@@ -3,20 +3,20 @@
    style.css  |  Production-Ready Responsive Stylesheet
    ============================================================ */
 
-/* ── CSS Custom Properties ── */
+/* 🎨 CSS Custom Properties 🎨 */
 :root {
-  --primary:       #4f46e5;
-  --primary-dark:  #3730a3;
-  --primary-light: #818cf8;
-  --secondary:     #06b6d4;
-  --accent:        #f59e0b;
+  --primary:       #00758F;
+  --primary-dark:  #00596E;
+  --primary-light: #4D9FB2;
+  --secondary:     #F29111;
+  --accent:        #E58700;
   --success:       #10b981;
   --danger:        #ef4444;
   --warning:       #f59e0b;
 
   --bg:            #f8fafc;
   --bg-card:       #ffffff;
-  --bg-sidebar:    #1e1b4b;
+  --bg-sidebar:    #0B2B36;
   --bg-nav:        #ffffff;
 
   --text-primary:  #1e293b;
@@ -25,7 +25,7 @@
   --text-inverse:  #ffffff;
 
   --border:        #e2e8f0;
-  --border-focus:  #4f46e5;
+  --border-focus:  #00758F;
 
   --shadow-sm:     0 1px 3px rgba(0,0,0,.08);
   --shadow-md:     0 4px 16px rgba(0,0,0,.10);
@@ -40,7 +40,7 @@
   --sidebar-w:     260px;
 
   --font-sans:     'Inter', system-ui, sans-serif;
-  --font-serif:    'Merriweather', Georgia, serif;
+  --font-serif:    'JetBrains Mono', monospace;
 
   --transition:    .25s ease;
 }
@@ -1820,12 +1820,12 @@ body.dark-mode .chat-msg.user .chat-bubble { background: var(--primary); }
   display: flex; flex-direction: column; gap: .5rem;
 }
 .chat-input-row { display: flex; gap: .5rem; align-items: flex-end; }
-.chat-input-row textarea {
+.chat-input-row input {
   flex: 1; resize: none; border: 1.5px solid var(--border); border-radius: var(--radius-md);
   padding: .6rem .9rem; font-family: var(--font-sans); font-size: 0.9rem;
   background: var(--bg); color: var(--text-primary); transition: border-color .2s; outline: none;
 }
-.chat-input-row textarea:focus { border-color: var(--primary); }
+.chat-input-row input:focus { border-color: var(--primary); }
 .chat-btns { display: flex; gap: .4rem; }
 .mic-btn, .send-btn {
   border: none; border-radius: var(--radius-md); cursor: pointer;
@@ -1927,4 +1927,113 @@ body.dark-mode .eq-fill-input { background: var(--bg); color: #fff; }
   .chat-window { height: 300px; }
   .exam-level-cards { grid-template-columns: 1fr; }
   .result-actions { flex-direction: column; }
+}
+
+/* IDE Layout */
+.ide-container {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  min-height: 50vh;
+}
+.ide-editor-pane {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.ide-db-pane {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* AI Tutor Layout */
+.tutor-container {
+  display: flex;
+  height: 75vh;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.tutor-sidebar {
+  width: 250px;
+  background: var(--bg-sidebar);
+  padding: 20px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tutor-chat-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  .ide-container {
+    flex-direction: column;
+  }
+  .ide-db-pane {
+    min-height: 300px;
+  }
+  
+  .tutor-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 75vh;
+  }
+  .tutor-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 15px;
+  }
+  .tutor-sidebar h3 {
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
+  .tutor-sidebar p {
+    display: none; /* hide description on mobile to save space */
+  }
+  .tutor-sidebar .btn-secondary {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+  .tutor-chat-pane {
+    height: 500px;
+  }
+  
+  /* Additional mobile fixes */
+  .ld-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+  
+  .hero-banner {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .quick-stats {
+    flex-direction: column;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }

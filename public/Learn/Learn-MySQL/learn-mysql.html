@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FluentPath - 30-Day MySQL Mastery Course</title>
+  <link rel="stylesheet" href="learn-mysql.css?v=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+</head>
+<body class="light-mode">
+
+<header class="topnav" id="topnav">
+  <div class="nav-brand">
+    <span class="brand-icon">🗄️</span>
+    <span class="brand-name">FluentPath</span>
+    <span class="brand-tag">30-Day MySQL Mastery</span>
+    <a href="/" class="btn-back" style="margin-left: 1rem; padding: 0.3rem 0.6rem; background: var(--bg-hover); color: var(--text-primary); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; border: 1px solid var(--border);">← Back to Portfolio</a>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a>
+    <a href="#lessons"   class="nav-link" data-section="lessons">Lessons</a>
+    <a href="#ide"       class="nav-link" data-section="ide">SQL IDE</a>
+    <a href="#syntax"    class="nav-link" data-section="syntax">Syntax Guide</a>
+    <a href="#ai-tutor" class="nav-link nav-link-ai" data-section="ai-tutor">🤖 AI Tutor</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search lessons…" autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌙</button>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Course Days</h3>
+      <div class="level-badges">
+        <span class="badge beginner">Beginner 1-10</span>
+        <span class="badge intermediate">Intermediate 11-20</span>
+        <span class="badge advanced">Advanced 21-30</span>
+      </div>
+    </div>
+    <ul class="day-list" id="dayList"></ul>
+  </aside>
+
+  <main class="main-content">
+    <section class="section active" id="dashboard">
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Welcome to MySQL Mastery 🚀</h1>
+          <p>Master relational databases, SQL queries, and architecture in 30 days. Every lesson is unlocked — learn at your own pace!</p>
+          <button class="btn-primary" onclick="app.resumeJourney()">Start Learning →</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card"><span class="stat-num" id="statCompleted">0</span><span class="stat-label">Days Completed</span></div>
+          <div class="stat-card"><span class="stat-num" id="statProgress">0%</span><span class="stat-label">Progress</span></div>
+          <div class="stat-card"><span class="stat-num">30</span><span class="stat-label">Total Days</span></div>
+          <div class="stat-card"><span class="stat-num">300+</span><span class="stat-label">Queries</span></div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <h2>Your Progress</h2>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <p id="progressText">0 of 30 days completed</p>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-card" onclick="app.goToSection('lessons')">
+          <div class="ov-icon">📖</div>
+          <h3>30 Daily Lessons</h3>
+          <p>Structured lessons from basic SELECT statements to advanced JOINs and Indexing.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('ide')">
+          <div class="ov-icon">💻</div>
+          <h3>In-Browser SQL IDE</h3>
+          <p>Write, run, and practice real SQL queries directly in your browser without any setup.</p>
+        </div>
+        <div class="overview-card" onclick="app.goToSection('syntax')">
+          <div class="ov-icon">📖</div>
+          <h3>Syntax Guide</h3>
+          <p>A quick reference for essential MySQL commands, data types, and functions.</p>
+        </div>
+        <div class="overview-card ai-card" onclick="app.goToSection('ai-tutor')">
+          <div class="ov-icon">🤖</div>
+          <h3>SQL AI Tutor</h3>
+          <p>Stuck on a query? Ask the AI Tutor for explanations, error checking, and tips!</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="lessons">
+      <div id="lessonDetail"></div>
+    </section>
+
+    <section class="section" id="ide">
+      <div class="section-header">
+        <h2>💻 Browser SQL IDE</h2>
+        <p>Write and execute real SQL queries directly in your browser. Powered by WebAssembly.</p>
+      </div>
+      <div class="ide-container" style="display: flex; flex-direction: column; gap: 15px;">
+        <div class="ide-editor">
+          <textarea id="sqlInput" style="width: 100%; height: 150px; font-family: var(--font-serif); padding: 10px; background: #1e1e1e; color: #d4d4d4; border-radius: 8px;" placeholder="Enter your SQL query here... (e.g. SELECT * FROM users;)"></textarea>
+          <div style="margin-top: 10px;">
+            <button class="btn-primary" onclick="app.runSQL()">▶ Run Query</button>
+            <button class="btn-secondary" onclick="document.getElementById('sqlInput').value = ''">Clear</button>
+          </div>
+        </div>
+        <div class="ide-results" id="sqlResults" style="background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); min-height: 200px; overflow-x: auto;">
+          <em style="color: var(--text-muted);">Query results will appear here...</em>
+        </div>
+      </div>
+    </section>
+
+      <section class="section" id="syntax">
+        <div class="section-header">
+          <h2>📖 Syntax Guide</h2>
+          <p>Quick reference for essential MySQL commands and structure.</p>
+        </div>
+        <div class="content-card syntax-grid" style="display: grid; gap: 15px;">
+          
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">SELECT</h3>
+            <code>SELECT column1, column2 FROM table_name;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">INSERT INTO</h3>
+            <code>INSERT INTO table_name (column1, column2) VALUES (value1, value2);</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">UPDATE</h3>
+            <code>UPDATE table_name SET column1 = value1 WHERE condition;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">DELETE</h3>
+            <code>DELETE FROM table_name WHERE condition;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">WHERE & Operators</h3>
+            <code>SELECT * FROM table_name WHERE age > 25 AND status = 'active';</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">ORDER BY</h3>
+            <code>SELECT * FROM table_name ORDER BY column1 ASC, column2 DESC;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">GROUP BY & HAVING</h3>
+            <code>SELECT COUNT(id), country FROM customers GROUP BY country HAVING COUNT(id) > 5;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">JOINS (Inner, Left, Right)</h3>
+            <code>SELECT a.col, b.col FROM table_A a INNER JOIN table_B b ON a.id = b.id;</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">CREATE TABLE</h3>
+            <code>CREATE TABLE users (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100) NOT NULL);</code>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+            <h3 style="color: var(--primary); margin-bottom: 5px;">ALTER TABLE</h3>
+            <code>ALTER TABLE table_name ADD column_name datatype;</code>
+          </div>
+
+        </div>
+      </section>
+
+    <section class="section" id="ai-tutor">
+      <div class="tutor-container">
+        <div class="tutor-sidebar">
+          <h3>🤖 SQL AI Tutor</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Ask me anything about MySQL, or practice writing queries!</p>
+          <ul class="topic-list" id="aiTopicList">
+            <!-- Dynamically populated from JS -->
+          </ul>
+        </div>
+        <div class="tutor-chat-pane">
+          <div class="chat-window" id="chatWindow"></div>
+          <div class="chat-input-area">
+            <div class="voice-status hidden" id="voiceStatus"></div>
+            <div class="chat-input-row">
+              <input type="text" id="chatInput" placeholder="Ask a SQL question..." autocomplete="off" />
+              <button id="sendBtn" class="btn-primary">Send ➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/toast.js"></script>
+<script src="learn-mysql.js?v=2"></script>
+</body>
+</html>

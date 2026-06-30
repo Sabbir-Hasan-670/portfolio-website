@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Wait 1.5 seconds so the user sees the animation, then redirect
                     setTimeout(() => {
-                        window.location.href = '/admin/dashboard/dashboard.html';
+                        window.location.href = '/admin/dashboard/dashboard';
                     }, 1500);
 
                 } else {
@@ -129,7 +129,8 @@ if (eduForm) {
 }
 
 window.deleteEducation = async (id) => {
-    if (confirm('Delete this entry?')) {
+    const confirmed = await window.customConfirm('Delete this entry?');
+    if (confirmed) {
         await fetch(`/api/admin/education/${id}`, { method: 'DELETE' });
         loadAdminEducation();
     }
@@ -180,7 +181,8 @@ if (certForm) {
 }
 
 window.deleteCertificate = async (id) => {
-    if (confirm('Delete this certificate?')) {
+    const confirmed = await window.customConfirm('Delete this certificate?');
+    if (confirmed) {
         await fetch(`/api/admin/certificates/${id}`, { method: 'DELETE' });
         loadAdminCertificates();
     }

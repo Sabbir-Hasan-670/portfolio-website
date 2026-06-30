@@ -1,61 +1,84 @@
-// ⭐ Starfield Background
+// ⭐ Enhanced Starfield with Nebula & Mouse Parallax
 (function() {
     const sc = document.getElementById('starCanvas');
     if (!sc) return;
     const sctx = sc.getContext('2d');
     let stars = [], shootingStars = [];
-    const starCount = 180;
+    const starCount = 250;
+    let mouseX = 0, mouseY = 0;
 
     function resize() { sc.width = window.innerWidth; sc.height = window.innerHeight; }
     resize();
     window.addEventListener('resize', () => { resize(); initStars(); });
 
+    // Mouse parallax
+    document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.01;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.01;
+    });
+
     class Star {
         constructor() {
             this.x = Math.random() * sc.width;
             this.y = Math.random() * sc.height;
-            this.size = Math.random() * 2 + 0.5;
-            this.opacity = Math.random() * 0.7 + 0.3;
+            this.size = Math.random() * 2.2 + 0.3;
+            this.opacity = Math.random() * 0.7 + 0.2;
             this.speed = Math.random() * 0.015 + 0.005;
+            this.parallaxFactor = Math.random() * 0.5 + 0.1;
+            this.hue = Math.random() > 0.85 ? (Math.random() > 0.5 ? 200 : 270) : 0;
         }
         update() {
             this.opacity += this.speed;
-            if (this.opacity > 0.85 || this.opacity < 0.25) this.speed *= -1;
+            if (this.opacity > 0.9 || this.opacity < 0.15) this.speed *= -1;
         }
         draw() {
+            const px = this.x + mouseX * this.parallaxFactor;
+            const py = this.y + mouseY * this.parallaxFactor;
             sctx.beginPath();
-            sctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            sctx.fillStyle = `rgba(200,220,255,${this.opacity})`;
+            sctx.arc(px, py, this.size, 0, Math.PI * 2);
+            if (this.hue) {
+                sctx.fillStyle = `hsla(${this.hue}, 80%, 75%, ${this.opacity})`;
+            } else {
+                sctx.fillStyle = `rgba(200,220,255,${this.opacity})`;
+            }
             sctx.fill();
         }
     }
+
     class ShootingStar {
         constructor() { this.reset(); }
         reset() {
             this.x = Math.random() * sc.width;
-            this.y = Math.random() * sc.height * 0.4;
-            this.length = Math.random() * 70 + 20;
-            this.speed = Math.random() * 5 + 3;
+            this.y = Math.random() * sc.height * 0.3;
+            this.length = Math.random() * 80 + 30;
+            this.speed = Math.random() * 6 + 3;
             this.opacity = 1;
-            this.angle = Math.PI / 4;
+            this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
         }
         update() {
             this.x += Math.cos(this.angle) * this.speed;
             this.y += Math.sin(this.angle) * this.speed;
-            this.opacity -= 0.012;
+            this.opacity -= 0.01;
             if (this.opacity <= 0 || this.x > sc.width || this.y > sc.height) {
                 this.reset();
-                this.x = Math.random() * sc.width;
-                this.y = Math.random() * sc.height * 0.25;
-                this.opacity = 1;
+                this.opacity = 0;
+                setTimeout(() => { this.opacity = 1; }, Math.random() * 8000 + 3000);
             }
         }
         draw() {
+            if (this.opacity <= 0) return;
+            const gradient = sctx.createLinearGradient(
+                this.x, this.y,
+                this.x - Math.cos(this.angle) * this.length,
+                this.y - Math.sin(this.angle) * this.length
+            );
+            gradient.addColorStop(0, `rgba(255,255,255,${this.opacity})`);
+            gradient.addColorStop(1, `rgba(255,255,255,0)`);
             sctx.beginPath();
             sctx.moveTo(this.x, this.y);
             sctx.lineTo(this.x - Math.cos(this.angle) * this.length, this.y - Math.sin(this.angle) * this.length);
-            sctx.strokeStyle = `rgba(255,255,255,${this.opacity})`;
-            sctx.lineWidth = 1.3;
+            sctx.strokeStyle = gradient;
+            sctx.lineWidth = 1.5;
             sctx.stroke();
         }
     }
@@ -64,7 +87,7 @@
         stars = [];
         for (let i = 0; i < starCount; i++) stars.push(new Star());
         shootingStars = [];
-        for (let i = 0; i < 3; i++) shootingStars.push(new ShootingStar());
+        for (let i = 0; i < 4; i++) shootingStars.push(new ShootingStar());
     }
     initStars();
 
@@ -78,16 +101,23 @@
 })();
 
 // ⌨️ Typing Effect
+window.typingTitles = ['Multidisciplinary IT Specialist', 'Graphic Designer', 'Web Developer', 'Network Security Enthusiast'];
+window.setTypingRoles = (rolesStr) => {
+    if (rolesStr) {
+        const arr = rolesStr.split(',').map(r => r.trim()).filter(r => r);
+        if (arr.length > 0) window.typingTitles = arr;
+    }
+};
+
 (function() {
     const el = document.getElementById('typingText');
-    if (!el) return; 
+    if (!el) return;
 
-    const titles = ['Multidisciplinary IT Specialist', 'Graphic Designer', 'Web Developer', 'Network Security Enthusiast'];
     let ti = 0, ci = 0, del = false;
 
     function type() {
-        if (!el) return; 
-        const cur = titles[ti];
+        if (!el) return;
+        const cur = window.typingTitles[ti % window.typingTitles.length] || '';
         if (!del) {
             el.textContent = cur.substring(0, ci + 1);
             ci++;
@@ -95,14 +125,26 @@
         } else {
             el.textContent = cur.substring(0, ci - 1);
             ci--;
-            if (ci === 0) { del = false; ti = (ti + 1) % titles.length; }
+            if (ci === 0) { del = false; ti = (ti + 1) % window.typingTitles.length; }
         }
         setTimeout(type, del ? 35 : 80);
     }
     type();
 })();
 
-// 👁️ Scroll Reveal
+// 📊 Scroll Progress Bar
+(function() {
+    const progressBar = document.getElementById('scrollProgress');
+    if (!progressBar) return;
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
+    });
+})();
+
+// 👁️ Scroll Reveal with Stagger
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -110,10 +152,15 @@ const revealObserver = new IntersectionObserver((entries) => {
             revealObserver.unobserve(entry.target);
         }
     });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// 📱 Navbar & Mobile Menu Control Framework
+// Add reveal to dynamically created elements
+function observeNewReveals() {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+}
+
+// 📱 Navbar & Mobile Menu
 const navbar = document.getElementById('navbar');
 if (navbar) {
     window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
@@ -124,7 +171,7 @@ const navDropdown = document.getElementById('navDropdown');
 
 if (hamburger && navDropdown) {
     hamburger.addEventListener('click', (e) => {
-        e.stopPropagation(); 
+        e.stopPropagation();
         hamburger.classList.toggle('active');
         navDropdown.classList.toggle('active');
     });
@@ -144,7 +191,7 @@ if (hamburger && navDropdown) {
     });
 }
 
-// 📅 Footer Year (Null Safety Added)
+// 📅 Footer Year
 const yearEl = document.getElementById('year');
 if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
@@ -157,13 +204,21 @@ if (yearEl) {
 async function fetchProfile() {
     const heroBtns = document.getElementById('hero-buttons');
     const githubBtn = document.getElementById('link-github');
-    if (!heroBtns && !githubBtn) return; 
+    if (!heroBtns && !githubBtn) return;
 
     try {
         const res = await fetch('/api/profile');
         if (!res.ok) return;
         const data = await res.json();
         if (!data) return;
+
+        if (data.hero_roles && window.setTypingRoles) {
+            window.setTypingRoles(data.hero_roles);
+        }
+        if (data.hero_description) {
+            const heroBio = document.getElementById('hero-bio');
+            if (heroBio) heroBio.innerText = data.hero_description;
+        }
 
         if (heroBtns) {
             heroBtns.innerHTML = '';
@@ -186,6 +241,15 @@ async function fetchProfile() {
             if (linkedinBtn) linkedinBtn.href = data.linkedin_link;
         } else if (linkedinBtn) { linkedinBtn.remove(); }
 
+        if (data.adobe_stock_link && data.adobe_stock_link.trim() !== "") {
+            const abBtn = document.createElement('a');
+            abBtn.href = data.adobe_stock_link;
+            abBtn.className = "btn";
+            abBtn.target = "_blank";
+            abBtn.innerHTML = `Adobe Stock`;
+            document.querySelector('.social-links').appendChild(abBtn);
+        }
+
         if (data.facebook_link && data.facebook_link.trim() !== "") {
             if (facebookBtn) facebookBtn.href = data.facebook_link;
         } else if (facebookBtn) { facebookBtn.remove(); }
@@ -198,13 +262,71 @@ async function fetchProfile() {
             if (pinterestBtn) pinterestBtn.href = data.pinterest_link;
         } else if (pinterestBtn) { pinterestBtn.remove(); }
 
+        // --- INJECT BENTO STATS ---
+        if (data.stat_ccna) {
+            const ccnaEl = document.getElementById('stat-ccna-label');
+            if (ccnaEl) ccnaEl.innerText = data.stat_ccna;
+        }
+        if (data.stat_ccna_title) {
+            const ccnaTitleEl = document.getElementById('stat-ccna');
+            if (ccnaTitleEl) ccnaTitleEl.innerText = data.stat_ccna_title;
+        }
+        if (data.stat_ceh) {
+            const cehEl = document.getElementById('stat-ceh-label');
+            if (cehEl) cehEl.innerText = data.stat_ceh;
+        }
+        if (data.stat_ceh_title) {
+            const cehTitleEl = document.getElementById('stat-ceh');
+            if (cehTitleEl) cehTitleEl.innerText = data.stat_ceh_title;
+        }
+        if (data.stat_years) {
+            const yearsEl = document.getElementById('stat-years');
+            if (yearsEl) yearsEl.innerText = data.stat_years;
+        }
+        if (data.stat_projects) {
+            const projEl = document.getElementById('stat-projects');
+            if (projEl) projEl.innerText = data.stat_projects;
+        }
+
+        // --- INJECT ABOUT SECTION ---
+        if (data.about_title) {
+            const aboutTitleEl = document.getElementById('about-title-display');
+            if (aboutTitleEl) aboutTitleEl.innerText = data.about_title;
+        }
+        if (data.about_desc) {
+            const aboutDescEl = document.getElementById('about-desc-display');
+            if (aboutDescEl) {
+                // Split by newlines and wrap in p tags
+                const paragraphs = data.about_desc.split('\n').filter(p => p.trim() !== '');
+                aboutDescEl.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+            }
+        }
+
+        // --- INJECT CONTACT SECTION ---
+        if (data.contact_email) {
+            const emailEl = document.getElementById('contact-email-display');
+            if (emailEl) emailEl.innerText = data.contact_email;
+        }
+        if (data.contact_location) {
+            const locEl = document.getElementById('contact-location-display');
+            if (locEl) locEl.innerText = data.contact_location;
+        }
+        if (data.contact_map_url) {
+            const mapContainer = document.getElementById('contact-map-container');
+            const mapIframe = document.getElementById('contact-map-iframe');
+            if (mapContainer && mapIframe) {
+                mapIframe.src = data.contact_map_url;
+                mapContainer.style.display = 'block';
+            }
+        }
+
         if (data.github_link && data.github_link.trim() !== "") {
             const username = data.github_link.replace(/\/$/, '').split('/').pop();
             const aboutImgContainer = document.getElementById('about-image');
             if (aboutImgContainer) {
-                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" style="width:100%; height:100%; object-fit:cover; border-radius:22px;">`;
             }
-            
+
             const graphImg = document.getElementById('github-graph-mini');
             const graphLoading = document.getElementById('github-loading');
             if (graphImg && graphLoading) {
@@ -224,27 +346,30 @@ async function fetchProjects() {
         const projects = await res.json();
         grid.innerHTML = '';
         if (!projects.length) {
-            grid.innerHTML = '<p style="color:#94a3b8;text-align:center;">No projects yet.</p>';
+            grid.innerHTML = '<p style="color:var(--text2);text-align:center;grid-column:1/-1;">No projects yet.</p>';
             return;
         }
-        projects.forEach(proj => {
+        const latestProjects = projects.slice(0, 6);
+        latestProjects.forEach((proj, index) => {
             const isGithub = proj.id && String(proj.id).startsWith('gh-');
             const card = document.createElement('div');
             card.className = 'project-card reveal';
+            card.style.transitionDelay = `${index * 0.08}s`;
             card.innerHTML = `
-                ${isGithub ? '<div style="color:#6366f1; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">⚡ Auto-Imported</div>' : ''}
+                ${isGithub ? '<div style="color:var(--accent2); font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; padding:1rem 1.5rem 0; display:flex; align-items:center; gap:6px;"><span style="display:inline-block;width:6px;height:6px;background:var(--accent2);border-radius:50%;"></span> Auto-Imported</div>' : ''}
                 <div class="project-image">${proj.image_path ? `<img src="${proj.image_path}" alt="${proj.title}">` : '🚀'}</div>
                 <div class="project-body">
                     <h3>${proj.title}</h3>
                     <p>${proj.description || ''}</p>
                     <div class="project-tags">${proj.languages || ''}</div>
-                    <div style="margin-top:0.8rem;display:flex;gap:6px;">
-                        ${proj.live_url ? `<a href="${proj.live_url}" target="_blank" class="btn btn-primary" style="padding:0.35rem 0.7rem;font-size:0.75rem;">Live Demo ↗</a>` : ''}
-                        ${proj.github_url ? `<a href="${proj.github_url}" target="_blank" class="btn btn-outline" style="padding:0.35rem 0.7rem;font-size:0.75rem;">GitHub ↗</a>` : ''}
+                    <div style="margin-top:auto;padding-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+                        ${proj.live_url ? `<a href="${proj.live_url}" target="_blank" class="btn btn-primary" style="padding:0.4rem 0.9rem !important;font-size:0.75rem !important;border-radius:8px !important;">Live Demo ↗</a>` : ''}
+                        ${proj.github_url ? `<a href="${proj.github_url}" target="_blank" class="btn btn-outline" style="padding:0.4rem 0.9rem !important;font-size:0.75rem !important;border-radius:8px !important;">GitHub ↗</a>` : ''}
                     </div>
                 </div>`;
             grid.appendChild(card);
         });
+        observeNewReveals();
     } catch (e) { console.log(e); }
 }
 
@@ -256,17 +381,18 @@ async function fetchExperience() {
         const data = await res.json();
         timeline.innerHTML = '';
         if (!data.length) {
-            timeline.innerHTML = '<p style="color:#94a3b8;">No experience added yet.</p>';
+            timeline.innerHTML = '<p style="color:var(--text2);">No experience added yet.</p>';
             return;
         }
-        data.forEach(exp => {
+        data.forEach((exp, index) => {
             timeline.innerHTML += `
-                <div class="reveal" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:1.3rem;">
+                <div class="reveal" style="transition-delay:${index * 0.1}s">
                     <div class="timeline-role">${exp.role}</div>
-                    <div class="timeline-sub">${exp.company_or_project} | ${exp.duration}</div>
+                    <div class="timeline-sub">${exp.company_or_project} · ${exp.duration}</div>
                     <div class="timeline-desc">${exp.description}</div>
                 </div>`;
         });
+        observeNewReveals();
     } catch (e) { console.log(e); }
 }
 
@@ -278,21 +404,22 @@ async function fetchEducation() {
         const data = await res.json();
         timeline.innerHTML = '';
         if (!data.length) {
-            timeline.innerHTML = '<p style="color:#94a3b8;">No education added yet.</p>';
+            timeline.innerHTML = '<p style="color:var(--text2);">No education added yet.</p>';
             return;
         }
-        data.forEach(edu => {
+        data.forEach((edu, index) => {
             timeline.innerHTML += `
-                <div class="reveal" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:1.3rem;">
+                <div class="reveal" style="transition-delay:${index * 0.1}s">
                     <div class="timeline-role">${edu.degree}</div>
-                    <div class="timeline-sub">${edu.institution} | ${edu.duration}</div>
+                    <div class="timeline-sub">${edu.institution} · ${edu.duration}</div>
                     <div class="timeline-desc">${edu.description || ''}</div>
                 </div>`;
         });
+        observeNewReveals();
     } catch (e) { console.log(e); }
 }
 
-// Loader Engine for Services Grid Component
+// Services Grid
 async function fetchServices() {
     const grid = document.getElementById('public-services-grid');
     if (!grid) return;
@@ -300,15 +427,15 @@ async function fetchServices() {
     try {
         const res = await fetch('/api/services');
         const data = await res.json();
-        
+
         if (!data || !Array.isArray(data)) {
-            grid.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">No services available at the moment.</p>';
+            grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text2);">No services available at the moment.</p>';
             return;
         }
-        
-        grid.innerHTML = data.length ? '' : '<p style="text-align:center; width:100%; color:#94a3b8;">No services added yet.</p>';
-        
-        data.forEach(srv => {
+
+        grid.innerHTML = data.length ? '' : '<p style="text-align:center; width:100%; color:var(--text2);">No services added yet.</p>';
+
+        data.forEach((srv, index) => {
             let tagsHtml = '';
             if (srv.tags) {
                 const tagArray = srv.tags.split(',');
@@ -320,7 +447,7 @@ async function fetchServices() {
             }
 
             grid.innerHTML += `
-                <div class="service-card">
+                <div class="service-card reveal" style="transition-delay:${index * 0.1}s">
                     <div class="service-icon-box">${srv.icon || '💻'}</div>
                     <h3 class="service-title">${srv.title}</h3>
                     <p class="service-desc">${srv.description}</p>
@@ -328,10 +455,42 @@ async function fetchServices() {
                 </div>
             `;
         });
-    } catch (e) { 
+        observeNewReveals();
+    } catch (e) {
         console.log("Services Fetch Exception Block Handled:", e);
-        if (grid) grid.innerHTML = '<p style="text-align:center; width:100%; color:#94a3b8;">Services module active.</p>';
+        if (grid) grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text2);">Services module active.</p>';
     }
+}
+
+// Certificates Grid
+async function fetchCertificates() {
+    const grid = document.getElementById('certificates-grid');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/certificates');
+        const data = await res.json();
+        grid.innerHTML = '';
+
+        if (!data.length) {
+            grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text2);">No certificates added yet.</p>';
+            return;
+        }
+
+        data.forEach((cert, index) => {
+            grid.innerHTML += `
+                <div class="cert-card reveal" style="transition-delay:${index * 0.1}s">
+                    ${cert.image_path ? `<img src="${cert.image_path}" alt="${cert.title}">` : ''}
+                    <div class="cert-body">
+                        <h3>${cert.title}</h3>
+                        <p>${cert.issuer || ''}</p>
+                        ${cert.link ? `<a href="${cert.link}" target="_blank" class="cert-link">View Certificate →</a>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        observeNewReveals();
+    } catch (e) { console.log(e); }
 }
 
 // ==========================================
@@ -347,7 +506,7 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 const categoryFilters = document.getElementById('categoryFilters');
 
 async function fetchAllPosts() {
-    if (!blogGrid) return; 
+    if (!blogGrid) return;
     try {
         const res = await fetch('/api/blog');
         allPosts = await res.json();
@@ -363,7 +522,6 @@ function buildCategoryButtons(posts) {
     const categories = [...new Set(posts.map(p => p.category || 'Uncategorized'))];
     let html = '<button class="cat-btn active" data-category="all">All</button>';
     categories.forEach(cat => {
-        // 🌟 FIXED STRING LITERAL HACK RIGHT HERE:
         html += `<button class="cat-btn" data-category="${cat}">${cat}</button>`;
     });
     categoryFilters.innerHTML = html;
@@ -405,15 +563,15 @@ function renderPage(filteredPosts, page) {
         const excerpt = post.content ? post.content.substring(0, 120) + '...' : '';
         const card = document.createElement('div');
         card.className = 'blog-card';
-        
+
         const postSlug = post.slug || post.id;
         card.innerHTML = `
-            ${post.image_path ? `<img src="${post.image_path}" class="blog-img" alt="${post.title}">` : ''}
+            ${post.image_path ? `<div style="overflow:hidden;"><img src="${post.image_path}" class="blog-img" alt="${post.title}"></div>` : ''}
             <div class="blog-body">
                 <span class="blog-category">${post.category || 'General'}</span>
                 <h3 class="blog-title">${post.title}</h3>
                 <div class="blog-excerpt">${excerpt}</div>
-                <a href="article.html?slug=${postSlug}" class="read-more">Read Article →</a>
+                <a href="/article?slug=${postSlug}" class="read-more">Read Article →</a>
             </div>`;
         blogGrid.appendChild(card);
     });
@@ -445,10 +603,10 @@ if (loadMoreBtn) {
 
 async function fetchSingleArticle() {
     const articleContainer = document.getElementById('article-content');
-    if (!articleContainer) return; 
+    if (!articleContainer) return;
 
     const params = new URLSearchParams(window.location.search);
-    const articleIdentifier = params.get('slug') || params.get('id'); 
+    const articleIdentifier = params.get('slug') || params.get('id');
 
     if (!articleIdentifier) {
         articleContainer.innerHTML = '<p style="color:var(--text2); text-align:center;">Article identifier is missing in URL!</p>';
@@ -458,7 +616,7 @@ async function fetchSingleArticle() {
     try {
         const res = await fetch(`/api/blog/${articleIdentifier}`);
         if (!res.ok) throw new Error('Not found');
-        
+
         const data = await res.json();
         const article = data.post ? data.post : data;
 
@@ -468,12 +626,12 @@ async function fetchSingleArticle() {
         const image = article.image_path || article.img_path || '';
 
         document.title = `${title} | Blog`;
-        
+
         articleContainer.innerHTML = `
             <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center;">
                 <span class="blog-category" style="margin-bottom: 1.5rem; display: inline-block;">${category}</span>
                 <h1 class="blog-title" style="margin-bottom: 2rem; text-align: center; background: linear-gradient(135deg, #fff, var(--text2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; line-height: 1.3; width: 100%;">${title}</h1>
-                ${image ? `<img src="${image}" class="blog-img" style="display: block; margin: 0 auto 2rem auto; max-width: 100%; height: auto; max-height: 450px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" alt="${title}">` : ''}
+                ${image ? `<img src="${image}" class="blog-img" style="display: block; margin: 0 auto 2rem auto; max-width: 100%; height: auto; max-height: 450px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5);" alt="${title}">` : ''}
                 <div class="blog-excerpt" style="color: var(--text); font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; text-align: left; width: 100%; max-width: 750px; letter-spacing: 0.3px; margin-top: 1rem;">${content}</div>
             </div>
         `;
@@ -484,14 +642,14 @@ async function fetchSingleArticle() {
 }
 
 // ═══════════════════════════════════════════
-// ✉️ CONTACT FORM SUBMISSION LISTENER (RELOAD PROTECTION FIXED)
+// ✉️ CONTACT FORM SUBMISSION
 // ═══════════════════════════════════════════
 function initContactForm() {
     const contactForm = document.getElementById('contactForm');
     if (!contactForm) return;
 
     contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const submitBtn = contactForm.querySelector('.form-submit');
         if (submitBtn) {
@@ -505,20 +663,20 @@ function initContactForm() {
             console.log("⏳ Dispatched payload fields to endpoint...");
             const res = await fetch('/api/contact', {
                 method: 'POST',
-                body: formData 
+                body: formData
             });
 
             const data = await res.json();
 
             if (res.ok && data.success) {
-                alert('✅ Success: Message logged and sent safely!');
-                contactForm.reset(); 
+                window.showToast('Message sent successfully!', 'success');
+                contactForm.reset();
             } else {
                 alert('⚠️ Error: ' + (data.error || 'Something went wrong.'));
             }
         } catch (err) {
             console.error("Submission Failure Layer:", err);
-            alert('❌ Network failed. Please check backend API server logs.');
+            window.showToast('Something went wrong. Please try again.', 'error');
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -535,7 +693,8 @@ fetchProfile();
 fetchProjects();
 fetchExperience();
 fetchEducation();
-fetchServices(); 
+fetchServices();
+fetchCertificates();
 fetchAllPosts();
 fetchSingleArticle();
 initContactForm();

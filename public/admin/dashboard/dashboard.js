@@ -52,12 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Data Fetching & Deletion ---
     async function deleteItem(url, id, fetchFunction) {
-        if (!confirm('Delete this item?')) return;
+        const confirmed = await window.customConfirm('Delete this item?');
+        if (!confirmed) return;
         try {
             const res = await fetch(`${url}/${id}`, { method: 'DELETE' });
-            if (res.status === 403) return window.location.href = '/admin/login.html';
+            if (res.status === 403) return window.location.href = '/admin/login';
             if (res.ok) fetchFunction();
-        } catch (e) { alert('Network error.'); }
+        } catch (e) { window.showToast('An error occurred.', 'error'); }
     }
 
     window.deleteItem = deleteItem;
@@ -96,22 +97,83 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/projects');
             const data = await res.json();
-            list.innerHTML = '';
             window.cachedProjects = data.filter(p => !String(p.id).startsWith('gh-'));
-            data.forEach(proj => {
-                const isGithub = String(proj.id).startsWith('gh-');
-                list.innerHTML += `
-                <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
-                    <div class="info"><h4>${proj.title} ${isGithub ? '<span style="color:#6366f1;font-size:0.7rem;">(GitHub)</span>' : ''}</h4></div>
-                    <div style="display: flex; gap: 8px;">
-                        ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : ''}
-                        ${!isGithub ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/projects', ${proj.id}, window.fetchProjects)">Delete</button>` : ''}
-                    </div>
-                </li>`;
-            });
+            window.allProjectsData = data; // Keep all for rendering
+            window.currentProjectLimit = 10;
+            renderAdminProjects();
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
     window.fetchProjects = fetchProjects;
+
+    window.renderAdminProjects = () => {
+        const list = document.getElementById('projects-list-admin');
+        if (!list || !window.allProjectsData) return;
+        list.innerHTML = '';
+        
+        const toShow = window.allProjectsData.slice(0, window.currentProjectLimit);
+        
+        toShow.forEach((proj) => {
+            const isGithub = String(proj.id).startsWith('gh-');
+            const pinBtnText = proj.is_pinned ? 'Unpin' : 'Pin';
+            const pinBtnColor = proj.is_pinned ? '#f39c12' : '#7f8c8d';
+            const hasCustomImage = isGithub && proj.image_path && !proj.image_path.startsWith('https://');
+
+            list.innerHTML += `
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                <div class="info"><h4>${proj.title} ${isGithub ? '<span style="color:#6366f1;font-size:0.7rem;">(GitHub)</span>' : ''} ${proj.is_pinned ? '📌' : ''}</h4></div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: ${pinBtnColor};" onclick="togglePin('${proj.id}', ${isGithub}, ${proj.is_pinned})">${pinBtnText}</button>
+                    
+                    ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #9f5bff;" onclick="document.getElementById('gh-repo-id').value='${proj.id}'; document.getElementById('gh-image-input').click();">Image</button>`}
+                    
+                    ${hasCustomImage ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="removeGithubImage('${proj.id}')">Remove Image</button>` : ''}
+
+                    ${!isGithub ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/projects', ${proj.id}, window.fetchProjects)">Delete</button>` : ''}
+                </div>
+            </li>`;
+        });
+        
+        if (window.allProjectsData.length > window.currentProjectLimit) {
+            list.innerHTML += `
+            <div id="projects-see-more-container" style="text-align: center; margin-top: 15px;">
+                <button class="action-btn" style="background: rgba(255,255,255,0.1);" onclick="window.currentProjectLimit += 10; window.renderAdminProjects();">See More 👇</button>
+            </div>
+            `;
+        }
+    };
+
+    window.togglePin = async (id, isGithub, currentPinStatus) => {
+        const type = isGithub ? 'gh' : 'db';
+        const newPinStatus = currentPinStatus ? 0 : 1;
+        
+        try {
+            const res = await fetch('/api/admin/projects/pin', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, type, is_pinned: newPinStatus })
+            });
+            if (res.ok) {
+                window.showToast('Success!', 'success'); // Will replace with toast later
+                fetchProjects();
+            } else window.showToast('Success!', 'success');
+        } catch(e) { window.showToast('Success!', 'success'); }
+    };
+
+    window.removeGithubImage = async (repo_id) => {
+        const confirmed = await window.customConfirm('Are you sure you want to remove this custom image?');
+        if (!confirmed) return;
+        try {
+            const res = await fetch('/api/admin/github-image/remove', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ repo_id })
+            });
+            if (res.ok) {
+                window.showToast('Success!', 'success');
+                fetchProjects();
+            } else window.showToast('Success!', 'success');
+        } catch(e) { window.showToast('Success!', 'success'); }
+    };
 
     // ==========================================
     // 🎓 EDUCATION CMS MANAGER
@@ -303,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.message || 'Updated successfully! 🎉');
                 if (callback) callback();
             } else { alert('Error: ' + data.error); }
-        } catch (err) { alert('Server network error during update.'); }
+        } catch (e) { window.showToast('An error occurred.', 'error'); }
     });
 
     // ==========================================
@@ -318,29 +380,80 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '';
             if(data.length === 0) container.innerHTML = '<p>Inbox empty.</p>';
             data.forEach(msg => {
-                container.innerHTML += `<div style="background:rgba(0,0,0,0.2); padding:15px; margin-bottom:10px; border-radius:8px;"><h4>From: ${msg.sender_name}</h4><p>${msg.message}</p><button class="delete-btn" style="margin-top:10px;" onclick="deleteItem('/api/admin/messages', ${msg.id}, window.fetchInbox)">Trash</button></div>`;
+                const replyBtn = msg.sender_email ? `<button class="action-btn" style="margin-top:10px; margin-right:8px; background:#f1c40f;" onclick="openReplyModal('${msg.sender_email}')">Reply</button>` : '';
+                container.innerHTML += `<div style="background:rgba(0,0,0,0.2); padding:15px; margin-bottom:10px; border-radius:8px;">
+                    <h4>From: ${msg.sender_name} ${msg.sender_email ? `(${msg.sender_email})` : ''}</h4>
+                    <p>${msg.message}</p>
+                    <div style="display:flex;">
+                        ${replyBtn}
+                        <button class="delete-btn" style="margin-top:10px;" onclick="deleteItem('/api/admin/messages', ${msg.id}, window.fetchInbox)">Trash</button>
+                    </div>
+                </div>`;
             });
         } catch (e) { container.innerHTML = 'Error loading.'; }
     }
     window.fetchInbox = fetchInbox;
 
+    window.openReplyModal = (email) => {
+        document.getElementById('reply-to-email').value = email;
+        document.getElementById('reply-subject').value = 'Reply to your inquiry';
+        document.getElementById('reply-message').value = '';
+        document.getElementById('reply-modal').classList.remove('hidden');
+    };
+
+    window.sendEmailReply = async () => {
+        const to = document.getElementById('reply-to-email').value;
+        const subject = document.getElementById('reply-subject').value;
+        const message = document.getElementById('reply-message').value;
+
+        if (!to || !message) return alert("Missing recipient or message.");
+
+        try {
+            const res = await fetch('/api/admin/inbox/reply', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to, subject, message })
+            });
+            if (res.ok) {
+                window.showToast('Success!', 'success');
+                document.getElementById('reply-modal').classList.add('hidden');
+            } else {
+                window.showToast('Success!', 'success');
+            }
+        } catch(e) {
+            window.showToast('Success!', 'success');
+        }
+    };
+
     async function fetchSocialLinks() {
         try {
             const res = await fetch('/api/profile');
-            if (!res.ok) return;
             const data = await res.json();
-            
             if (data) {
-                const gh = document.getElementById('social-github'); if(gh) gh.value = data.github_link || '';
-                const li = document.getElementById('social-linkedin'); if(li) li.value = data.linkedin_link || '';
-                const fb = document.getElementById('social-facebook'); if(fb) fb.value = data.facebook_link || '';
-                const fi = document.getElementById('social-fiverr'); if(fi) fi.value = data.fiverr_link || '';
-                const pi = document.getElementById('social-pinterest'); if(pi) pi.value = data.pinterest_link || '';
-                const ad = document.getElementById('social-adobe'); if(ad) ad.value = data.adobe_stock_link || '';
+                document.getElementById('social-github').value = data.github_link || '';
+                document.getElementById('social-linkedin').value = data.linkedin_link || '';
+                document.getElementById('social-facebook').value = data.facebook_link || '';
+                document.getElementById('social-fiverr').value = data.fiverr_link || '';
+                document.getElementById('social-pinterest').value = data.pinterest_link || '';
+                document.getElementById('social-adobe').value = data.adobe_stock_link || '';
+                document.getElementById('stat-ccna-title').value = data.stat_ccna_title || '';
+                document.getElementById('stat-ccna').value = data.stat_ccna || '';
+                document.getElementById('stat-ceh-title').value = data.stat_ceh_title || '';
+                document.getElementById('stat-ceh').value = data.stat_ceh || '';
+                document.getElementById('stat-years').value = data.stat_years || '';
+                document.getElementById('stat-projects').value = data.stat_projects || '';
+
+                document.getElementById('hero-roles').value = data.hero_roles || '';
+                document.getElementById('hero-desc').value = data.hero_description || '';
+
+                document.getElementById('about-title').value = data.about_title || '';
+                document.getElementById('about-desc').value = data.about_desc || '';
+
+                document.getElementById('contact-email').value = data.contact_email || '';
+                document.getElementById('contact-location').value = data.contact_location || '';
+                document.getElementById('contact-map').value = data.contact_map_url || '';
             }
-        } catch (e) { 
-            console.log("Failed to load social links."); 
-        }
+        } catch (e) { console.error("Failed to fetch profile"); }
     }
     window.fetchSocialLinks = fetchSocialLinks;
 
@@ -400,10 +513,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(url, options);
             const data = await response.json();
-            if (response.status === 403) return window.location.href = '/admin/login.html';
+            if (response.status === 403) return window.location.href = '/admin/login';
             if (response.ok) { alert(data.message); if(callback) callback(); }
             else { alert('Error: ' + data.error); }
-        } catch (e) { alert('Server error.'); }
+        } catch (e) { window.showToast('An error occurred.', 'error'); }
     }
 
     // Submit Project
@@ -443,9 +556,47 @@ document.addEventListener('DOMContentLoaded', () => {
             facebook_link: document.getElementById('social-facebook').value,
             fiverr_link: document.getElementById('social-fiverr').value,
             pinterest_link: document.getElementById('social-pinterest').value,
-            adobe_stock_link: document.getElementById('social-adobe').value
+            adobe_stock_link: document.getElementById('social-adobe').value,
+            stat_ccna_title: document.getElementById('stat-ccna-title').value,
+            stat_ccna: document.getElementById('stat-ccna').value,
+            stat_ceh_title: document.getElementById('stat-ceh-title').value,
+            stat_ceh: document.getElementById('stat-ceh').value,
+            stat_years: document.getElementById('stat-years').value,
+            stat_projects: document.getElementById('stat-projects').value,
+            about_title: document.getElementById('about-title').value,
+            about_desc: document.getElementById('about-desc').value,
+            contact_email: document.getElementById('contact-email').value,
+            contact_location: document.getElementById('contact-location').value,
+            contact_map_url: document.getElementById('contact-map').value,
         };
-        submitForm('/api/admin/socials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }, e.target, fetchSocialLinks);
+        const formData = new FormData();
+        Object.entries(payload).forEach(([k, v]) => formData.append(k, v));
+        submitForm('/api/admin/socials', { method: 'POST', body: formData }, e.target, fetchSocialLinks);
+    });
+
+    // GitHub Project Image Auto-Upload
+    document.getElementById('gh-image-input')?.addEventListener('change', async (e) => {
+        if (!e.target.files.length) return;
+        const repo_id = document.getElementById('gh-repo-id').value;
+        const formData = new FormData();
+        formData.append('repo_id', repo_id);
+        formData.append('gh_image', e.target.files[0]);
+        
+        try {
+            const res = await fetch('/api/admin/github-image', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok) {
+                window.showToast('Success!', 'success');
+                e.target.value = ''; // clear input
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (err) {
+            window.showToast('Success!', 'success');
+        }
     });
 
     // Submit Experience
@@ -521,18 +672,36 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!list) return;
             list.innerHTML = data.length ? '' : '<p>No articles published yet.</p>';
             window.cachedBlogs = data; 
-            data.forEach(blog => {
-                list.innerHTML += `
-                    <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
-                        <span><strong>${blog.title}</strong> <span style="color:#6366f1;">(${blog.category || 'General'})</span></span>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #38bdf8;" onclick="openEditBlogModal(${blog.id})">Edit</button>
-                            <button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/blog', ${blog.id}, window.fetchAdminBlogs)">Delete</button>
-                        </div>
-                    </li>`;
-            });
+            window.currentBlogLimit = 10;
+            renderAdminBlogs();
         } catch (e) { console.log(e); }
     }
+    
+    window.renderAdminBlogs = () => {
+        const list = document.getElementById('blog-list');
+        if (!list || !window.cachedBlogs) return;
+        list.innerHTML = '';
+        const toShow = window.cachedBlogs.slice(0, window.currentBlogLimit);
+        
+        toShow.forEach(blog => {
+            list.innerHTML += `
+                <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                    <span><strong>${blog.title}</strong> <span style="color:#6366f1;">(${blog.category || 'General'})</span></span>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #38bdf8;" onclick="openEditBlogModal(${blog.id})">Edit</button>
+                        <button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/blog', ${blog.id}, window.fetchAdminBlogs)">Delete</button>
+                    </div>
+                </li>`;
+        });
+
+        if (window.cachedBlogs.length > window.currentBlogLimit) {
+            list.innerHTML += `
+                <li style="display: flex; justify-content: center; margin-top: 15px;">
+                    <button class="action-btn" style="padding: 6px 15px; font-size: 0.85rem;" onclick="window.currentBlogLimit += 10; window.renderAdminBlogs();">Show More</button>
+                </li>
+            `;
+        }
+    };
     window.fetchAdminBlogs = fetchAdminBlogs;
     fetchAdminBlogs();
 
@@ -547,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fileInput.files.length > 0) formData.append('blog_image', fileInput.files[0]);
         try {
             const response = await fetch('/api/admin/blog', { method: 'POST', body: formData });
-            if (response.ok) { blogForm.reset(); fetchAdminBlogs(); alert('Article published successfully! 🚀'); }
+            if (response.ok) { blogForm.reset(); fetchAdminBlogs(); window.showToast('Success!', 'success'); }
         } catch (err) { alert("Network error."); }
     });
 
@@ -577,8 +746,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fileInput.files.length > 0) formData.append('blog_image', fileInput.files[0]);
         try {
             const response = await fetch(`/api/admin/blog/${id}`, { method: 'PUT', body: formData });
-            if (response.ok) { editBlogModal.classList.add('hidden'); fetchAdminBlogs(); alert('Article updated perfectly! 🎉'); }
-        } catch (err) { alert('Error.'); }
+            if (response.ok) { editBlogModal.classList.add('hidden'); fetchAdminBlogs(); window.showToast('Success!', 'success'); }
+        } catch (e) { window.showToast('An error occurred.', 'error'); }
     });
 
     // ==========================================
@@ -590,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!overviewTab) return;
         try {
             const res = await fetch('/api/admin/system-status');
-            if (res.status === 403) { clearInterval(statsTimer); window.location.href = '/admin/login.html'; return; }
+            if (res.status === 403) { clearInterval(statsTimer); window.location.href = '/admin/login'; return; }
             if (!res.ok) return; 
             const data = await res.json();
             document.getElementById('sys-ram-percent').textContent = `${data.ramPercentage}%`;
@@ -611,6 +780,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout Trigger
     document.getElementById('logout-btn')?.addEventListener('click', async () => { 
         await fetch('/api/logout', { method: 'POST' }); 
-        window.location.href = '/admin/login.html'; 
+        window.location.href = '/admin/login'; 
     });
 });

@@ -1261,6 +1261,8 @@ const app = {
     this.bindEvents();
     this.applyTheme();
     this.updateCertificateStats();
+    const savedSection = localStorage.getItem('eng_last_section') || 'dashboard';
+    this.goToSection(savedSection);
   },
 
   /* ── STATE MANAGEMENT ── */
@@ -1327,6 +1329,7 @@ const app = {
 
   /* ── NAVIGATION ── */
   goToSection(sectionId) {
+    localStorage.setItem('eng_last_section', sectionId);
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(sectionId);
     if (target) target.classList.add('active');
@@ -1517,6 +1520,7 @@ const app = {
         <div class="speaking-task">
           <h5>🎤 Speaking Task</h5>
           <p>${day.speaking}</p>
+          <button class="btn-primary" style="margin-top: 15px; font-size: 0.9rem;" onclick="app.practiceLessonWithAI(${day.day}, 'speaking')">🤖 Practice Speaking with AI</button>
         </div>
       </div>
 
@@ -1524,6 +1528,7 @@ const app = {
         <div class="writing-task">
           <h5>✍️ Writing Task</h5>
           <p>${day.writing}</p>
+          <button class="btn-primary" style="margin-top: 15px; font-size: 0.9rem;" onclick="app.practiceLessonWithAI(${day.day}, 'writing')">🤖 Practice Writing with AI</button>
         </div>
       </div>
 
@@ -2017,7 +2022,7 @@ const app = {
 
     if (window.location.hash) {
       const section = window.location.hash.replace('#', '');
-      const validSections = ['dashboard', 'lessons', 'speaking', 'writing', 'vocabulary', 'pronunciation', 'certificate'];
+      const validSections = ['dashboard', 'lessons', 'speaking', 'writing', 'vocabulary', 'pronunciation', 'ai-tutor', 'exams', 'certificate'];
       if (validSections.includes(section)) {
         this.goToSection(section);
       }
@@ -2026,8 +2031,811 @@ const app = {
 };
 
 /* ============================================================
+   AI SMART TUTOR MODULE
+   ============================================================ */
+const AITutor = {
+  msgCount: 0, wordsLearned: 0, corrections: 0,
+  currentTopic: 'greeting', listening: false, recognition: null,
+
+  topics: {
+    greeting: { bn: 'হাসিমুখে আত্মপরিচয় করতে শিখুন!', prompt: 'greeting and introduction', starter: 'Hello! I am your AI Tutor. Let us practice greetings! Say: "Hello, my name is [your name]. Nice to meet you!" আপনি English-এ নিজের নাম বলুন!' },
+    daily: { bn: 'দৈনন্দিন জীবনের English!', prompt: 'daily life situations', starter: 'Let’s talk about daily life! বাংলায় বলুন আজকে আপনি কি কি করেছেন? Tell me: "Today I woke up at..."' },
+    shopping: { bn: 'বাজারে English!', prompt: 'shopping conversations', starter: '🛒 Shopping English! Say: "How much does this cost?" or "Do you have this in a different size?"' },
+    travel: { bn: 'ভ্রমণে English!', prompt: 'travel and directions', starter: '✈️ Travel English! Practice: "Excuse me, how do I get to the airport?" বলুন!' },
+    work: { bn: 'অফিসে English!', prompt: 'workplace communication', starter: '💼 Workplace English! Say: "Good morning everyone. I have a meeting at 10 AM."' },
+    grammar: { bn: 'ব্যাকরণ শিখুন!', prompt: 'grammar rules', starter: '📖 Grammar Help! আমাকে যেকোনো ব্যাকরণের প্রশ্ন করুন! E.g. "What is Present Perfect Tense?"' },
+    pronunciation: { bn: 'উচ্চারণ মনে রাখুন!', prompt: 'pronunciation practice', starter: '🔊 Pronunciation! বলুন এবং শুনুন! Practice word: "BEAUTIFUL" বাংলা: সুন্দর [বিউটিফুল]' },
+    freemode: { bn: 'যা খুশি বলুন!', prompt: 'free conversation', starter: '💬 Free Chat! যেকোনো বিষয়ে English-এ কথা বলুন অথবা বাংলায় প্রশ্ন করুন — আমি সাহায্য করব!' }
+  },
+
+  // Smart rule-based response engine
+  responses: {
+    greetings: { patterns: [/\b(hi|hello|hey|good morning|good evening|good afternoon|assalamu|salam)\b/i], reply_en: 'Hello! Nice to meet you! 😊 How are you doing today?', reply_bn: 'হ্যালো বলতে পারেন: "Hi there! I am doing well, thank you."' },
+    thanks: { patterns: [/\b(thank|thanks|thank you|dhonnobad)\b/i], reply_en: 'You\'re welcome! Keep up the great work! 🌟', reply_bn: 'Thank you বলে উত্তর দিন: "You\'re welcome!" অথবা "My pleasure!"' },
+    how_are_you: { patterns: [/\b(how are you|ami kemon|kemon acho|how do you do)\b/i], reply_en: 'I am doing great, thank you for asking! And how are you?', reply_bn: 'দারুণ! উত্তর দিন: "I am fine, thank you!" অথবা "I am doing well!"' },
+    name: { patterns: [/\b(my name is|i am|i\'m|ami|amar naam)\b/i], reply_en: 'Wonderful! It\'s great to meet you! 🙌 Try saying: "I am from Bangladesh. I am learning English."', reply_bn: 'আপনার নাম সুন্দর! অনুশীলন করুন: "My name is [name] and I am from Bangladesh."' },
+    tense_present: { patterns: [/\b(present tense|simple present|present indefinite)\b/i], reply_en: 'Present Simple Tense: Subject + Verb (base form). E.g: "I eat rice." "She eats rice." (add -s/-es for He/She/It)', reply_bn: 'সাধারণ বর্তমান কাল: সাধারণ কাজ বোঝাতে ব্যবহার হয়। I/We/You/They + verb, He/She/It + verb+s' },
+    tense_past: { patterns: [/\b(past tense|simple past|past indefinite)\b/i], reply_en: 'Past Simple Tense: Subject + Verb (past form). Regular: add -ed. E.g: "I walked." "She played." Irregular: go→went, eat→ate, see→saw', reply_bn: 'সাধারণ অতীত কাল: সমাপ্ত কাজের জন্য ব্যবহার হয়। Regular verb-এ -ed যোগ হয়।' },
+    tense_future: { patterns: [/\b(future tense|will|going to|shall)\b/i], reply_en: 'Future Tense: Use "will + verb" or "am/is/are going to + verb". E.g: "I will go." "She is going to eat."', reply_bn: 'ভবিষ্যৎ কাল: will/shall + verb অথবা going to + verb ব্যবহার করুন।' },
+    tense_perfect: { patterns: [/\b(present perfect|have|has|had)\b/i], reply_en: 'Present Perfect: Subject + have/has + past participle. E.g: "I have eaten." "She has gone to school." Use for past actions with present connection.', reply_bn: 'সাধারণ পূর্ণ: have/has + past participle ব্যবহার হয় — অতীতে হয়েছে তবে এখনো প্রাসঙ্গিক।' },
+    vocab_q: { patterns: [/\b(what does|meaning of|what is|ki mane|mane ki|mane holo|bangla)\b/i], reply_en: 'Great vocabulary question! Use the Vocabulary section to search 500+ words with Bangla meanings. 📝', reply_bn: 'শব্দ এর অর্থ জানতে Vocabulary সেকশনে যান! 500+ বাংলা অর্থসহ শব্দ আছে।' },
+    pronunciation_q: { patterns: [/\b(pronounce|pronunciation|how to say|uccharon|bolo|kemon bole)\b/i], reply_en: 'Pronunciation tip: Listen carefully, then repeat slowly. Use the Pronunciation section for IPA guides. 🔊 Try saying the word 3 times.', reply_bn: 'উচ্চারণ শিখতে: প্রথমে শুনুন, তারপর আস্তে বলুন। Pronunciation সেকশনে IPA Guide দেখুন।' },
+    exam_q: { patterns: [/\b(exam|test|quiz|poriksha|porikkha)\b/i], reply_en: 'Ready to test yourself? Go to the 📝 Exams section! Choose Beginner, Intermediate, or Advanced. 🏆', reply_bn: 'পরীক্ষা দিতে প্রস্তুত? Exams সেকশনে যান!' },
+    help: { patterns: [/\b(help|sahajjo|ki korbo|how to learn|english shikhbo)\b/i], reply_en: 'Learning tips: ✅ Practice daily for 15 mins. ✅ Read English every day. ✅ Speak without fear. ✅ Use the 30-day lessons. ✅ Take exams weekly.', reply_bn: 'ইংরেজি শেখার টিপস: ১) প্রতিদিন ১৫ মিনিট অনুশীলন ২) জোরে বলুন ৩) পাঠ পড়ুন ৪) Lesson ব্যবহার করুন' },
+    shopping: { patterns: [/\b(shop|buy|cost|price|how much|koto taka|dam)\b/i], reply_en: 'Shopping phrases: "How much does this cost?" / "Can I get a discount?" / "Do you accept credit cards?" / "I\'ll take it!"', reply_bn: 'কেনাকাটার ইংরেজি: How much? = দাম কত? Discount = ছাড়, Credit card = ক্রেডিট কার্ড' },
+    travel: { patterns: [/\b(travel|airport|hotel|direction|where is|kothay|kemon jabo)\b/i], reply_en: 'Travel phrases: "Where is the nearest hotel?" / "How do I get to the airport?" / "Can you call me a taxi?" / "I need a map."', reply_bn: 'ভ্রমণের ইংরেজি: airport = বিমানবন্দর, hotel = হোটেল, taxi = ট্যাক্সি, map = নকশা' },
+    job: { patterns: [/\b(job|interview|work|career|office|salary|chakri|chomri)\b/i], reply_en: 'Job interview tips: 1) Greet confidently. 2) Speak clearly. 3) Use the STAR method for answers. Practice: "Tell me about yourself."', reply_bn: 'চাকরির ইন্টারভিউ: আত্মবিশ্বাসী হন, স্পষ্ট কথা বলুন, STAR পদ্ধতি অনুসরণ করুন।' },
+  },
+
+  defaultReplies: [
+    { en: 'Interesting! Tell me more about that in English. 😊', bn: 'দারুণ! English-এ আরো কিছু বলুন।' },
+    { en: 'Good effort! Try to make a full sentence. E.g: "I think that..."', bn: 'চেষ্টা ভালো! একটা পূর্ণ বাক্য লিখুন।' },
+    { en: 'Keep practicing! Every mistake is a step forward. 💪', bn: 'অনুশীলন চালিয়ে যান! প্রতিটি ভুল একটি শিক্ষা।' },
+    { en: 'You are doing great! Can you write that in a longer sentence?', bn: 'আপনি ভালো করছেন! একটু বড় বাক্য লিখুন।' },
+    { en: 'Excellent! Now try to say that sentence out loud using the microphone! 🎤', bn: 'অসাধারণ! Mic দিয়ে কথাটা বলুন।' },
+  ],
+
+  commonErrors: [
+    { pattern: /\bi goes\b/i, correction: '"I go" (not "I goes")' },
+    { pattern: /\bshe go\b/i, correction: '"She goes" (add -s for He/She/It)' },
+    { pattern: /\bhe have\b/i, correction: '"He has" (not "He have")' },
+    { pattern: /\bthey is\b/i, correction: '"They are" (not "They is")' },
+    { pattern: /\bi are\b/i, correction: '"I am" (not "I are")' },
+    { pattern: /\bwe was\b/i, correction: '"We were" (not "We was")' },
+    { pattern: /\byesterday i will\b/i, correction: 'For past events use "I went/I ate" (Past Simple), not "will"' },
+    { pattern: /\bmore better\b/i, correction: 'Just "better" (not "more better")' },
+    { pattern: /\bvery much very\b/i, correction: 'Use "very much" or "very" alone, not both' },
+  ],
+
+  init() {
+    this.setupTopicBtns();
+    this.setupSendBtn();
+    this.setupMicBtn();
+    this.setupClearBtn();
+  },
+
+  setupTopicBtns() {
+    document.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const topic = btn.dataset.topic;
+        this.currentTopic = topic;
+        this.addMessage('ai', this.topics[topic].starter);
+      });
+    });
+  },
+
+  setupSendBtn() {
+    const sendBtn = document.getElementById('sendBtn');
+    const chatInput = document.getElementById('chatInput');
+    if (!sendBtn || !chatInput) return;
+    sendBtn.addEventListener('click', () => this.handleUserInput());
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.handleUserInput(); }
+    });
+  },
+
+  setupMicBtn() {
+    const micBtn = document.getElementById('micBtn');
+    if (!micBtn) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      micBtn.title = 'Voice not supported in this browser';
+      micBtn.style.opacity = '0.4';
+      return;
+    }
+    this.recognition = new SpeechRecognition();
+    this.recognition.lang = 'en-US';
+    this.recognition.interimResults = true; // Show text as user speaks!
+    this.recognition.continuous = false;
+    
+    this.recognition.onresult = (e) => {
+      let interim = '';
+      let final = '';
+      for (let i = e.resultIndex; i < e.results.length; ++i) {
+        if (e.results[i].isFinal) {
+          final += e.results[i][0].transcript;
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      
+      const input = document.getElementById('chatInput');
+      if (final) {
+        input.value = final;
+        this.hideVoiceStatus();
+        this.handleUserInput();
+      } else if (interim) {
+        input.value = interim;
+      }
+    };
+    
+    this.recognition.onerror = (e) => { 
+      const vs = document.getElementById('voiceStatus');
+      if (vs) {
+        vs.textContent = `❌ Mic Error: ${e.error} (Please check browser permissions)`;
+        setTimeout(() => this.stopListening(), 3000);
+      } else {
+        this.stopListening(); 
+      }
+    };
+    this.recognition.onend = () => { this.stopListening(); };
+    micBtn.addEventListener('click', () => {
+      if (this.listening) { this.stopListening(); }
+      else { this.startListening(); }
+    });
+  },
+
+  startListening() {
+    if (!this.recognition) return;
+    this.listening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    const vs = document.getElementById('voiceStatus');
+    if (vs) {
+      vs.textContent = '🎤 Listening... speak now';
+      vs.classList.remove('hidden');
+    }
+    document.getElementById('chatInput').value = ''; // clear input for fresh speech
+    
+    // Safety timeout in case their OS microphone is muted and no sound is detected
+    this.silenceTimeout = setTimeout(() => {
+      if (this.listening) {
+        if (vs) {
+          vs.textContent = '❌ No sound detected! Is your PC microphone muted?';
+        }
+        setTimeout(() => this.stopListening(), 4000);
+      }
+    }, 8000);
+
+    this.recognition.onspeechstart = () => {
+      clearTimeout(this.silenceTimeout);
+    };
+
+    try {
+      this.recognition.start();
+    } catch (e) {
+      this.stopListening();
+    }
+  },
+
+  stopListening() {
+    this.listening = false;
+    clearTimeout(this.silenceTimeout);
+    const micBtn = document.getElementById('micBtn');
+    if (micBtn) micBtn.classList.remove('listening');
+    this.hideVoiceStatus();
+    if (this.recognition) { try { this.recognition.stop(); } catch(e) {} }
+  },
+
+  hideVoiceStatus() {
+    const vs = document.getElementById('voiceStatus');
+    if (vs) vs.classList.add('hidden');
+  },
+
+  setupClearBtn() {
+    const clearBtn = document.getElementById('clearChatBtn');
+    if (!clearBtn) return;
+    clearBtn.addEventListener('click', () => {
+      const win = document.getElementById('chatWindow');
+      if (win) win.innerHTML = '<div class="chat-msg ai"><div class="chat-avatar">🤖</div><div class="chat-bubble"><p>চ্যাট মুছে ফেলা হয়েছে! 🔄 নতুনভাবে শুরু করুন।</p></div></div>';
+      this.msgCount = 0; this.wordsLearned = 0; this.corrections = 0;
+      this.updateStats();
+    });
+  },
+
+  handleUserInput() {
+    const chatInput = document.getElementById('chatInput');
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = '';
+    this.addMessage('user', text);
+    // Check grammar errors
+    const correction = this.checkGrammar(text);
+    // Show typing indicator
+    const typingId = this.showTyping();
+    setTimeout(() => {
+      this.removeTyping(typingId);
+      const reply = this.generateReply(text);
+      this.addMessage('ai', reply.en, reply.bn, correction);
+      if (document.getElementById('autoSpeak').checked) {
+        this.speak(reply.en);
+      }
+    }, 800 + Math.random() * 600);
+  },
+
+  checkGrammar(text) {
+    for (const err of this.commonErrors) {
+      if (err.pattern.test(text)) {
+        this.corrections++;
+        this.updateStats();
+        return err.correction;
+      }
+    }
+    return null;
+  },
+
+  generateReply(text) {
+    const lower = text.toLowerCase();
+    for (const [key, data] of Object.entries(this.responses)) {
+      for (const pat of data.patterns) {
+        if (pat.test(lower)) {
+          this.wordsLearned += 3;
+          this.updateStats();
+          return { en: data.reply_en, bn: data.reply_bn };
+        }
+      }
+    }
+    const r = this.defaultReplies[Math.floor(Math.random() * this.defaultReplies.length)];
+    return { en: r.en, bn: r.bn };
+  },
+
+  addMessage(sender, text, bangla, correction) {
+    const win = document.getElementById('chatWindow');
+    if (!win) return;
+    const div = document.createElement('div');
+    div.className = `chat-msg ${sender}`;
+    const avatar = sender === 'ai' ? '🤖' : '👤';
+    const showBangla = document.getElementById('showBangla');
+    let html = `<div class="chat-avatar">${avatar}</div><div class="chat-bubble"><p>${text}</p>`;
+    if (bangla && showBangla && showBangla.checked) {
+      html += `<p class="chat-en">🇧🇩 ${bangla}</p>`;
+    }
+    if (correction) {
+      html += `<div class="chat-correction">✏️ <strong>Grammar Tip:</strong> ${correction}</div>`;
+    }
+    html += '</div>';
+    div.innerHTML = html;
+    win.appendChild(div);
+    win.scrollTop = win.scrollHeight;
+    this.msgCount++;
+    this.updateStats();
+  },
+
+  showTyping() {
+    const win = document.getElementById('chatWindow');
+    if (!win) return null;
+    const id = 'typing-' + Date.now();
+    win.innerHTML += `<div class="chat-msg ai" id="${id}"><div class="chat-avatar">🤖</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div></div>`;
+    win.scrollTop = win.scrollHeight;
+    return id;
+  },
+
+  removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  },
+
+  speak(text) {
+    if (!window.speechSynthesis) return;
+    const clean = text.replace(/[\u0980-\u09FF]/g, '').replace(/[\ud83c-\udfff\u2600-\u27ff]/gu, '').trim();
+    if (!clean) return;
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.lang = 'en-US'; utt.rate = 0.9; utt.pitch = 1;
+    const voices = speechSynthesis.getVoices();
+    const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'));
+    if (enVoice) utt.voice = enVoice;
+    speechSynthesis.speak(utt);
+  },
+
+  updateStats() {
+    const mc = document.getElementById('tutorMsgCount');
+    const wl = document.getElementById('tutorWordsLearned');
+    const tc = document.getElementById('tutorCorrections');
+    if (mc) mc.textContent = this.msgCount;
+    if (wl) wl.textContent = this.wordsLearned;
+    if (tc) tc.textContent = this.corrections;
+  }
+};
+
+/* ============================================================
+   EXAM MODULE
+   ============================================================ */
+const ExamModule = {
+  currentLevel: 'beginner', currentQ: 0, answers: [], timerInterval: null,
+  timeLeft: 600, sessionId: null,
+
+  questions: {
+    beginner: [
+      { type: 'mcq', q: 'What is the plural of "child"?', bn: '"child" শব্দের plural কি?', options: ['childs', 'children', 'childes', 'childrens'], answer: 1 },
+      { type: 'mcq', q: 'Which is correct: "She ___ to school every day."', bn: 'সঠিক শব্দ বেছে নিন:', options: ['go', 'goes', 'going', 'gone'], answer: 1 },
+      { type: 'mcq', q: 'What is the opposite of "big"?', bn: '"big" এর বিপরীত শব্দ?', options: ['large', 'huge', 'small', 'tall'], answer: 2 },
+      { type: 'mcq', q: 'I ___ a student.', bn: 'সঠিক verb বেছে নিন:', options: ['is', 'are', 'am', 'be'], answer: 2 },
+      { type: 'mcq', q: 'Which sentence is correct?', bn: 'কোন বাক্যটি সঠিক?', options: ['He have a car.', 'He has a car.', 'He having a car.', 'He is have a car.'], answer: 1 },
+      { type: 'mcq', q: 'The English alphabet has ___ letters.', bn: 'ইংরেজি বর্ণমালায় কতটি অক্ষর?', options: ['24', '25', '26', '27'], answer: 2 },
+      { type: 'fill', q: 'Complete: "Good ___, how are you?"', bn: 'বাক্যটি পূরণ করুন।', answer: 'morning' },
+      { type: 'mcq', q: 'What does "beautiful" mean in Bangla?', bn: 'beautiful মানে কি?', options: ['ভয়ঙ্কর', 'সুন্দর', 'দুঃখী', 'রাগান্বিত'], answer: 1 },
+      { type: 'mcq', q: 'Which is a vowel?', bn: 'নিচের কোনটি vowel?', options: ['B', 'C', 'E', 'D'], answer: 2 },
+      { type: 'mcq', q: 'We ___ friends.', bn: 'সঠিক verb:', options: ['is', 'am', 'are', 'be'], answer: 2 },
+      { type: 'mcq', q: 'What is 3 + 4 in English?', bn: 'ইংরেজিতে 3+4 কত?', options: ['Six', 'Eight', 'Seven', 'Five'], answer: 2 },
+      { type: 'mcq', q: 'I ___ reading a book now.', bn: 'বর্তমানে চলমান কাজ:', options: ['is', 'am', 'are', 'be'], answer: 1 },
+      { type: 'fill', q: 'Opposite of "hot" is ___.', bn: 'hot এর বিপরীত:', answer: 'cold' },
+      { type: 'mcq', q: 'Which animal says "meow"?', bn: 'কোন প্রাণী meow বলে?', options: ['Dog', 'Cat', 'Cow', 'Bird'], answer: 1 },
+      { type: 'mcq', q: 'My name ___ Sabbir.', bn: 'সঠিক verb:', options: ['am', 'are', 'is', 'be'], answer: 2 },
+      { type: 'mcq', q: 'What color is the sky?', bn: 'আকাশের রং কি?', options: ['Red', 'Green', 'Blue', 'Yellow'], answer: 2 },
+      { type: 'fill', q: 'A week has ___ days.', bn: 'এক সপ্তাহে কত দিন?', answer: 'seven' },
+      { type: 'mcq', q: 'She ___ not like tea.', bn: 'সঠিক auxiliary verb:', options: ['do', 'did', 'does', 'doing'], answer: 2 },
+      { type: 'mcq', q: 'Which word means "happy" in Bangla?', bn: 'happy মানে?', options: ['দুঃখী', 'রাগী', 'খুশি', 'ভয়ার্ত'], answer: 2 },
+      { type: 'mcq', q: 'The sun rises in the ___.', bn: 'সূর্য কোথায় ওঠে?', options: ['West', 'South', 'North', 'East'], answer: 3 },
+    ],
+    intermediate: [
+      { type: 'mcq', q: 'She has been working here ___ 2020.', bn: 'সঠিক preposition:', options: ['for', 'since', 'from', 'in'], answer: 1 },
+      { type: 'mcq', q: 'If I ___ rich, I would travel the world.', bn: 'Conditional sentence:', options: ['am', 'was', 'were', 'will be'], answer: 2 },
+      { type: 'mcq', q: 'The report ___ submitted yesterday.', bn: 'Passive voice:', options: ['was', 'is', 'were', 'has'], answer: 0 },
+      { type: 'fill', q: 'She suggested that I ___ (go) to the doctor.', bn: 'Subjunctive mood:', answer: 'go' },
+      { type: 'mcq', q: '"Break a leg" means:', bn: 'এই idiom এর মানে:', options: ['Get injured', 'Good luck', 'Run fast', 'Stop talking'], answer: 1 },
+      { type: 'mcq', q: 'Choose the correct spelling:', bn: 'সঠিক বানান:', options: ['Accomodate', 'Accommodate', 'Acommodate', 'Acomodate'], answer: 1 },
+      { type: 'mcq', q: 'I wish I ___ fly like a bird.', bn: 'wish clause:', options: ['can', 'could', 'will', 'shall'], answer: 1 },
+      { type: 'fill', q: 'Despite ___ tired, he finished the work.', bn: 'সঠিক word:', answer: 'being' },
+      { type: 'mcq', q: 'He asked me where I ___', bn: 'Reported speech:', options: ['live', 'lived', 'lives', 'will live'], answer: 1 },
+      { type: 'mcq', q: 'Neither the students nor the teacher ___ ready.', bn: 'Subject-verb agreement:', options: ['were', 'are', 'is', 'was'], answer: 2 },
+      { type: 'mcq', q: 'She is used to ___ early.', bn: 'be used to + ___:', options: ['wake', 'waking', 'waked', 'woken'], answer: 1 },
+      { type: 'mcq', q: 'The meeting had already started when I ___', bn: 'Past perfect:', options: ['arrive', 'arrived', 'had arrived', 'arrives'], answer: 1 },
+      { type: 'fill', q: 'We should protect the ___ (environment).', bn: 'সঠিক শব্দ:', answer: 'environment' },
+      { type: 'mcq', q: '"Hit the nail on the head" means:', bn: 'idiom এর মানে:', options: ['Hurt someone', 'Be exactly right', 'Make a mistake', 'Work hard'], answer: 1 },
+      { type: 'mcq', q: 'This is the book ___ I was looking for.', bn: 'Relative pronoun:', options: ['who', 'whom', 'that', 'whose'], answer: 2 },
+      { type: 'mcq', q: 'By next year, she ___ finished her degree.', bn: 'Future Perfect:', options: ['will finish', 'will have finished', 'has finished', 'finished'], answer: 1 },
+      { type: 'fill', q: 'He speaks English very ___ (fluency).', bn: 'সঠিক form:', answer: 'fluently' },
+      { type: 'mcq', q: 'The word "benevolent" means:', bn: 'benevolent মানে:', options: ['Evil', 'Kind/Generous', 'Angry', 'Sad'], answer: 1 },
+      { type: 'mcq', q: 'Choose: "The data ___ incorrect."', bn: 'data plural/singular:', options: ['is', 'are', 'was', 'were'], answer: 1 },
+      { type: 'mcq', q: 'Hardly ___ she arrived when it started raining.', bn: 'Inversion:', options: ['had', 'has', 'have', 'did'], answer: 0 },
+      { type: 'mcq', q: 'She looked at me ___ surprise.', bn: 'সঠিক preposition:', options: ['in', 'with', 'by', 'at'], answer: 0 },
+      { type: 'fill', q: '___ you please pass the salt?', bn: 'Polite request:', answer: 'Could' },
+      { type: 'mcq', q: 'Antonym of "Verbose":', bn: 'verbose এর বিপরীত:', options: ['Talkative', 'Brief/Concise', 'Loud', 'Angry'], answer: 1 },
+      { type: 'mcq', q: 'We must protect ___ environment.', bn: 'সঠিক article:', options: ['a', 'an', 'the', 'no article'], answer: 2 },
+      { type: 'mcq', q: '"Call off" means:', bn: 'phrasal verb:', options: ['Cancel', 'Shout', 'Start', 'Finish'], answer: 0 },
+    ],
+    advanced: [
+      { type: 'mcq', q: 'The sentence "It is I who am responsible" demonstrates:', bn: 'বাক্যটিতে কোন নিয়ম?', options: ['Proximity rule', 'Notional concord', 'Grammatical concord', 'Attraction error'], answer: 2 },
+      { type: 'mcq', q: 'Which word is a portmanteau?', bn: 'portmanteau শব্দ কোনটি?', options: ['Dictionary', 'Breakfast', 'Brunch', 'Language'], answer: 2 },
+      { type: 'fill', q: 'The phenomenon of words changing meaning over time is called semantic ___.', bn: '', answer: 'change' },
+      { type: 'mcq', q: '"Sesquipedalian" refers to someone who:', bn: 'Sesquipedalian মানে যে:', options: ['Uses short words', 'Uses long words', 'Cannot speak', 'Speaks fast'], answer: 1 },
+      { type: 'mcq', q: 'An oxymoron is a figure of speech that:', bn: 'oxymoron কাকে বলে?', options: ['Exaggerates', 'Combines contradictory terms', 'Compares using like/as', 'Repeats consonants'], answer: 1 },
+      { type: 'mcq', q: 'Identify the gerund: "Swimming is good exercise."', bn: 'Gerund চিহ্নিত করুন:', options: ['is', 'good', 'Swimming', 'exercise'], answer: 2 },
+      { type: 'fill', q: 'A "Pyrrhic victory" means a victory that costs too much — it is a ___ phrase.', bn: '', answer: 'idiomatic' },
+      { type: 'mcq', q: 'Which is correct for formal writing?', bn: 'Formal writing এ কোনটি সঠিক?', options: ['It\'s important that he finishes soon.', 'It is important that he finish soon.', 'It is important that he finished soon.', 'It is important that he will finish.'], answer: 1 },
+      { type: 'mcq', q: '"Eponymous" means:', bn: 'eponymous মানে:', options: ['Nameless', 'Named after a person', 'Famous', 'Fictional'], answer: 1 },
+      { type: 'mcq', q: 'The rhetorical device in "O Romeo, Romeo! Wherefore art thou Romeo?" is:', bn: 'কোন rhetorical device?', options: ['Simile', 'Apostrophe', 'Hyperbole', 'Synecdoche'], answer: 1 },
+      { type: 'mcq', q: 'Which sentence uses the Oxford comma correctly?', bn: 'Oxford comma কোথায়?', options: ['I need eggs milk and bread.', 'I need eggs, milk and bread.', 'I need eggs, milk, and bread.', 'I need eggs milk, and bread.'], answer: 2 },
+      { type: 'fill', q: 'The study of the meaning of words and sentences is called ___.', bn: '', answer: 'semantics' },
+      { type: 'mcq', q: 'A "synecdoche" uses:', bn: 'synecdoche কি ব্যবহার করে?', options: ['A part to represent the whole', 'Opposite words', 'Sound to convey meaning', 'Repetition for emphasis'], answer: 0 },
+      { type: 'mcq', q: 'Which of these is in the subjunctive mood?', bn: 'Subjunctive mood কোনটি?', options: ['She goes to school.', 'I suggested that she go.', 'He went home.', 'They are eating.'], answer: 1 },
+      { type: 'mcq', q: 'The prefix "mis-" in "misanthrope" means:', bn: 'mis- prefix মানে:', options: ['Love', 'Hatred/Wrong', 'Many', 'Good'], answer: 1 },
+      { type: 'mcq', q: '"Laconic" means:', bn: 'laconic মানে:', options: ['Long-winded', 'Using few words', 'Cheerful', 'Confused'], answer: 1 },
+      { type: 'fill', q: 'In "The pen is mightier than the sword", "pen" and "sword" are examples of ___.', bn: '', answer: 'metonymy' },
+      { type: 'mcq', q: 'Which is NOT a linking verb?', bn: 'কোনটি linking verb নয়?', options: ['seem', 'appear', 'run', 'become'], answer: 2 },
+      { type: 'mcq', q: '"Prolix" means:', bn: 'prolix মানে:', options: ['Concise', 'Professional', 'Using too many words', 'Expert'], answer: 2 },
+      { type: 'mcq', q: 'An "epistrophe" repeats words at the:', bn: 'epistrophe কোথায় শব্দ repeat করে?', options: ['Beginning of lines', 'End of lines', 'Middle of sentences', 'Before verbs'], answer: 1 },
+      { type: 'mcq', q: 'The term "malapropism" refers to:', bn: 'malapropism কি?', options: ['Correct word usage', 'Using wrong word sounding similar', 'A type of rhyme', 'A grammar rule'], answer: 1 },
+      { type: 'fill', q: 'A word that sounds like what it describes is called ___.', bn: '', answer: 'onomatopoeia' },
+      { type: 'mcq', q: '"Ubiquitous" means:', bn: 'ubiquitous মানে:', options: ['Rare', 'Everywhere/Very common', 'Beautiful', 'Dangerous'], answer: 1 },
+      { type: 'mcq', q: 'Which is a dangling modifier?', bn: 'dangling modifier কোনটি?', options: ['She ran fast.', 'Running to the bus, my bag fell.', 'He ate quickly.', 'They arrived late.'], answer: 1 },
+      { type: 'mcq', q: '"Verisimilitude" in literature means:', bn: 'verisimilitude মানে:', options: ['Being truthful', 'Appearance of being real', 'A plot twist', 'A metaphor'], answer: 1 },
+      { type: 'fill', q: 'The use of irony to mock or convey contempt is called ___.', bn: '', answer: 'sarcasm' },
+      { type: 'mcq', q: 'Which sentence avoids the passive voice correctly?', bn: 'Active voice কোনটি?', options: ['The cake was eaten by me.', 'I ate the cake.', 'The cake has been eaten.', 'Eaten was the cake by me.'], answer: 1 },
+      { type: 'mcq', q: 'A "paradox" is a statement that:', bn: 'paradox কি?', options: ['Makes no sense', 'Seems contradictory but is true', 'Tells a story', 'Uses rhyme'], answer: 1 },
+      { type: 'mcq', q: '"Ameliorate" means:', bn: 'ameliorate মানে:', options: ['Worsen', 'Improve', 'Destroy', 'Ignore'], answer: 1 },
+      { type: 'mcq', q: 'Identify the correct use of "whom":', bn: 'whom সঠিকভাবে কোথায়?', options: ['Who did you call?', 'Whom did you call?', 'Whom is at the door?', 'Who should I blame whom?'], answer: 1 },
+    ]
+  },
+
+  levelConfig: {
+    beginner: { time: 600, label: '🌱 Beginner', passMark: 60 },
+    intermediate: { time: 900, label: '📚 Intermediate', passMark: 65 },
+    advanced: { time: 1200, label: '🏆 Advanced', passMark: 70 }
+  },
+
+  init() {
+    this.sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    this.loadHistory();
+  },
+
+  async loadHistory() {
+    const histEl = document.getElementById('examHistory');
+    if (!histEl) return;
+    try {
+      const res = await fetch(`/api/learn/exam-scores/${this.sessionId}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) return;
+      histEl.innerHTML = data.map(r => {
+        const pct = Math.round((r.score / r.total) * 100);
+        const date = new Date(r.created_at).toLocaleDateString('bn-BD');
+        return `<div class="exam-history-item"><span class="ehi-level">${r.exam_level}</span><span class="ehi-score">${r.score}/${r.total} (${pct}%)</span><span class="ehi-date">${date}</span></div>`;
+      }).join('');
+    } catch(e) {}
+  },
+
+  startExam(level) {
+    this.currentLevel = level;
+    this.currentQ = 0;
+    this.answers = [];
+    const cfg = this.levelConfig[level];
+    this.timeLeft = cfg.time;
+    const qs = this.questions[level];
+
+    document.getElementById('exam-home').classList.add('hidden');
+    document.getElementById('exam-active').classList.remove('hidden');
+    document.getElementById('exam-result').classList.add('hidden');
+    document.getElementById('examLevelLabel').textContent = cfg.label;
+    document.getElementById('examQTotal').textContent = qs.length;
+
+    this.startTimer();
+    this.renderQuestion();
+  },
+
+  startTimer() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.timerInterval = setInterval(() => {
+      this.timeLeft--;
+      const m = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
+      const s = (this.timeLeft % 60).toString().padStart(2, '0');
+      const timerEl = document.getElementById('examTimer');
+      if (timerEl) timerEl.textContent = `⏱ ${m}:${s}`;
+      if (this.timeLeft <= 0) { clearInterval(this.timerInterval); this.showResult(); }
+    }, 1000);
+  },
+
+  renderQuestion() {
+    const qs = this.questions[this.currentLevel];
+    if (this.currentQ >= qs.length) { this.showResult(); return; }
+    const q = qs[this.currentQ];
+    const pct = ((this.currentQ / qs.length) * 100).toFixed(0);
+    document.getElementById('examProgressBar').style.width = pct + '%';
+    document.getElementById('examQNum').textContent = this.currentQ + 1;
+
+    let html = `<div class="exam-question-card">
+      <div class="eq-type">${q.type === 'mcq' ? '🟣 Multiple Choice' : '✏️ Fill in the Blank'}</div>
+      <div class="eq-question">${q.q}</div>`;
+    if (q.bn) html += `<div class="eq-bangla">🇧🇩 ${q.bn}</div>`;
+    if (q.type === 'mcq') {
+      html += `<div class="eq-options">${q.options.map((opt, i) =>
+        `<div class="eq-option" data-idx="${i}" onclick="ExamModule.selectOption(this, ${i})">${opt}</div>`
+      ).join('')}</div>`;
+    } else {
+      html += `<input class="eq-fill-input" id="fillInput" type="text" placeholder="Type your answer..." />`;
+    }
+    html += '</div>';
+    document.getElementById('examQuestionWrap').innerHTML = html;
+    document.getElementById('examNextBtn').textContent = this.currentQ < qs.length - 1 ? 'Next →' : 'Finish ✓';
+  },
+
+  selectOption(el, idx) {
+    document.querySelectorAll('.eq-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  },
+
+  nextExamQuestion() {
+    const qs = this.questions[this.currentLevel];
+    const q = qs[this.currentQ];
+    let userAnswer = null;
+    if (q.type === 'mcq') {
+      const sel = document.querySelector('.eq-option.selected');
+      if (!sel && this.currentQ < qs.length - 1) {
+        if (window.showToast) window.showToast('একটি উত্তর বেছে নিন!', 'warning');
+        return;
+      }
+      userAnswer = sel ? parseInt(sel.dataset.idx) : -1;
+      const correct = q.answer;
+      // Show feedback briefly
+      document.querySelectorAll('.eq-option').forEach((o, i) => {
+        if (i === correct) o.classList.add('correct');
+        else if (i === userAnswer && userAnswer !== correct) o.classList.add('wrong');
+      });
+    } else {
+      const inp = document.getElementById('fillInput');
+      userAnswer = inp ? inp.value.trim().toLowerCase() : '';
+    }
+    this.answers.push({ q: q.q, type: q.type, answer: q.answer, userAnswer });
+    setTimeout(() => {
+      this.currentQ++;
+      if (this.currentQ >= qs.length) { this.showResult(); }
+      else { this.renderQuestion(); }
+    }, q.type === 'mcq' ? 600 : 0);
+  },
+
+  showResult() {
+    clearInterval(this.timerInterval);
+    document.getElementById('exam-active').classList.add('hidden');
+    document.getElementById('exam-result').classList.remove('hidden');
+    const qs = this.questions[this.currentLevel];
+    let score = 0;
+    const feedbackItems = [];
+    this.answers.forEach((a, i) => {
+      let correct = false;
+      if (a.type === 'mcq') {
+        correct = a.userAnswer === a.answer;
+      } else {
+        const correctStr = (qs[i] ? qs[i].answer : '').toString().toLowerCase();
+        correct = a.userAnswer === correctStr || a.userAnswer.includes(correctStr);
+      }
+      if (correct) score++;
+      feedbackItems.push(`<div class="rf-item"><span class="rf-q">${i+1}. ${a.q.substring(0,50)}...</span><span class="rf-status">${correct ? '✅' : '❌'}</span></div>`);
+    });
+    const total = qs.length;
+    const pct = Math.round((score / total) * 100);
+    const cfg = this.levelConfig[this.currentLevel];
+    const passed = pct >= cfg.passMark;
+    document.getElementById('resultIcon').textContent = pct >= 90 ? '🏆' : pct >= 70 ? '🌟' : pct >= 50 ? '💪' : '📚';
+    document.getElementById('resultTitle').textContent = pct >= 80 ? 'অসাধারণ!' : pct >= 60 ? 'ভালো করেছেন!' : 'পরেরবার আরো ভালো হবেন!';
+    document.getElementById('resultScore').textContent = `${score} / ${total}`;
+    document.getElementById('resultPercent').textContent = `${pct}% — ${passed ? '✅ PASSED' : '❌ TRY AGAIN'}`;
+    document.getElementById('resultMessage').textContent = passed ? 'আপনি pass করেছেন! বাংলাদেশের বাঘ। প্রতিদিন অনুশীলন চালিয়ে যান!' : `পরীক্ষাতে pass মার্ক ${cfg.passMark}%। আরো পড়ুন ও পুনরায় চেষ্টা করুন!`;
+    document.getElementById('resultFeedback').innerHTML = feedbackItems.join('');
+    // Save score to server
+    this.saveScore(score, total);
+    this.loadHistory();
+  },
+
+  async saveScore(score, total) {
+    try {
+      await fetch('/api/learn/exam-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: this.sessionId, exam_level: this.currentLevel, score, total })
+      });
+    } catch(e) {}
+  }
+};
+
+/* ============================================================
+   ENHANCED A-Z VOCABULARY DATA + RENDER
+   ============================================================ */
+const AZ_VOCAB = [
+  // A
+  {w:'Abandon',ipa:'/əˈbændən/',bn:'পরিত্যাগ করা',type:'verb',ex:'He abandoned the project.'},
+  {w:'Ability',ipa:'/əˈbɪlɪti/',bn:'সামর্থ্য, দক্ষতা',type:'noun',ex:'She has great ability.'},
+  {w:'Absent',ipa:'/ˈæbsənt/',bn:'অনুপস্থিত',type:'adj',ex:'He was absent today.'},
+  {w:'Achieve',ipa:'/əˈtʃiːv/',bn:'অর্জন করা',type:'verb',ex:'Work hard to achieve success.'},
+  {w:'Admire',ipa:'/ədˈmaɪər/',bn:'প্রশংসা করা',type:'verb',ex:'I admire your courage.'},
+  {w:'Advice',ipa:'/ədˈvaɪs/',bn:'পরামর্শ',type:'noun',ex:'She gave me good advice.'},
+  {w:'Afraid',ipa:'/əˈfreɪd/',bn:'ভয় পাওয়া',type:'adj',ex:'Are you afraid of dogs?'},
+  {w:'Angry',ipa:'/ˈæŋɡri/',bn:'রাগান্বিত',type:'adj',ex:'He was angry at the news.'},
+  {w:'Announce',ipa:'/əˈnaʊns/',bn:'ঘোষণা করা',type:'verb',ex:'They announced the winner.'},
+  {w:'Answer',ipa:'/ˈɑːnsər/',bn:'উত্তর',type:'noun',ex:'Please answer the question.'},
+  // B
+  {w:'Balance',ipa:'/ˈbæləns/',bn:'ভারসাম্য',type:'noun',ex:'Keep a good work-life balance.'},
+  {w:'Beautiful',ipa:'/ˈbjuːtɪfəl/',bn:'সুন্দর',type:'adj',ex:'She has a beautiful smile.'},
+  {w:'Believe',ipa:'/bɪˈliːv/',bn:'বিশ্বাস করা',type:'verb',ex:'I believe in you.'},
+  {w:'Benefit',ipa:'/ˈbenɪfɪt/',bn:'সুবিধা, উপকার',type:'noun',ex:'Exercise has many benefits.'},
+  {w:'Brave',ipa:'/breɪv/',bn:'সাহসী',type:'adj',ex:'Be brave and speak up.'},
+  {w:'Business',ipa:'/ˈbɪznɪs/',bn:'ব্যবসা',type:'noun',ex:'He runs a small business.'},
+  // C
+  {w:'Careful',ipa:'/ˈkeərfəl/',bn:'সাবধান',type:'adj',ex:'Be careful on the road.'},
+  {w:'Challenge',ipa:'/ˈtʃælɪndʒ/',bn:'চ্যালেঞ্জ',type:'noun',ex:'Life is full of challenges.'},
+  {w:'Change',ipa:'/tʃeɪndʒ/',bn:'পরিবর্তন করা',type:'verb',ex:'Change your habits.'},
+  {w:'Character',ipa:'/ˈkærəktər/',bn:'চরিত্র',type:'noun',ex:'Good character matters.'},
+  {w:'Communicate',ipa:'/kəˈmjuːnɪkeɪt/',bn:'যোগাযোগ করা',type:'verb',ex:'Communicate clearly.'},
+  {w:'Confident',ipa:'/ˈkɒnfɪdənt/',bn:'আত্মবিশ্বাসী',type:'adj',ex:'Be confident in yourself.'},
+  {w:'Create',ipa:'/kriˈeɪt/',bn:'তৈরি করা',type:'verb',ex:'Create something beautiful.'},
+  {w:'Curious',ipa:'/ˈkjʊərɪəs/',bn:'কৌতূহলী',type:'adj',ex:'Stay curious and keep learning.'},
+  // D
+  {w:'Dangerous',ipa:'/ˈdeɪndʒərəs/',bn:'বিপজ্জনক',type:'adj',ex:'Driving fast is dangerous.'},
+  {w:'Decide',ipa:'/dɪˈsaɪd/',bn:'সিদ্ধান্ত নেওয়া',type:'verb',ex:'You must decide now.'},
+  {w:'Dedicated',ipa:'/ˈdedɪkeɪtɪd/',bn:'নিবেদিত, পরিশ্রমী',type:'adj',ex:'She is dedicated to her work.'},
+  {w:'Describe',ipa:'/dɪˈskraɪb/',bn:'বর্ণনা করা',type:'verb',ex:'Can you describe the scene?'},
+  {w:'Dream',ipa:'/driːm/',bn:'স্বপ্ন',type:'noun',ex:'Follow your dreams.'},
+  {w:'Develop',ipa:'/dɪˈveləp/',bn:'উন্নয়ন করা',type:'verb',ex:'Develop your skills daily.'},
+  // E
+  {w:'Eager',ipa:'/ˈiːɡər/',bn:'আগ্রহী, উৎসাহী',type:'adj',ex:'She was eager to learn.'},
+  {w:'Educate',ipa:'/ˈedʒʊkeɪt/',bn:'শিক্ষিত করা',type:'verb',ex:'Education is power.'},
+  {w:'Effective',ipa:'/ɪˈfektɪv/',bn:'কার্যকর',type:'adj',ex:'Find an effective solution.'},
+  {w:'Encourage',ipa:'/ɪnˈkʌrɪdʒ/',bn:'উৎসাহ দেওয়া',type:'verb',ex:'Encourage your friends.'},
+  {w:'Excellent',ipa:'/ˈeksələnt/',bn:'চমৎকার',type:'adj',ex:'You did an excellent job.'},
+  {w:'Experience',ipa:'/ɪkˈspɪərɪəns/',bn:'অভিজ্ঞতা',type:'noun',ex:'Experience is the best teacher.'},
+  // F
+  {w:'Failure',ipa:'/ˈfeɪljər/',bn:'ব্যর্থতা',type:'noun',ex:'Failure teaches success.'},
+  {w:'Famous',ipa:'/ˈfeɪməs/',bn:'বিখ্যাত',type:'adj',ex:'He is a famous author.'},
+  {w:'Flexible',ipa:'/ˈfleksɪbəl/',bn:'নমনীয়',type:'adj',ex:'Stay flexible in your plans.'},
+  {w:'Focus',ipa:'/ˈfoʊkəs/',bn:'মনোযোগ দেওয়া',type:'verb',ex:'Focus on your goal.'},
+  {w:'Forgive',ipa:'/fərˈɡɪv/',bn:'ক্ষমা করা',type:'verb',ex:'Learn to forgive others.'},
+  {w:'Freedom',ipa:'/ˈfriːdəm/',bn:'স্বাধীনতা',type:'noun',ex:'Freedom is precious.'},
+  // G
+  {w:'Generous',ipa:'/ˈdʒenərəs/',bn:'উদার, দানশীল',type:'adj',ex:'He is a generous person.'},
+  {w:'Goal',ipa:'/ɡoʊl/',bn:'লক্ষ্য',type:'noun',ex:'Set a clear goal.'},
+  {w:'Grateful',ipa:'/ˈɡreɪtfəl/',bn:'কৃতজ্ঞ',type:'adj',ex:'Be grateful for what you have.'},
+  {w:'Grow',ipa:'/ɡroʊ/',bn:'বৃদ্ধি পাওয়া',type:'verb',ex:'Every day is a chance to grow.'},
+  {w:'Guide',ipa:'/ɡaɪd/',bn:'পথপ্রদর্শক, গাইড',type:'noun',ex:'He is my guide.'},
+  // H
+  {w:'Hardworking',ipa:'/ˈhɑːrdˌwɜːrkɪŋ/',bn:'পরিশ্রমী',type:'adj',ex:'She is very hardworking.'},
+  {w:'Honest',ipa:'/ˈɒnɪst/',bn:'সৎ',type:'adj',ex:'Always be honest.'},
+  {w:'Hope',ipa:'/hoʊp/',bn:'আশা',type:'noun',ex:'Never lose hope.'},
+  {w:'Humble',ipa:'/ˈhʌmbəl/',bn:'বিনয়ী',type:'adj',ex:'Stay humble even when successful.'},
+  // I
+  {w:'Imagination',ipa:'/ɪˌmædʒɪˈneɪʃən/',bn:'কল্পনা',type:'noun',ex:'Use your imagination.'},
+  {w:'Improve',ipa:'/ɪmˈpruːv/',bn:'উন্নত করা',type:'verb',ex:'Improve a little every day.'},
+  {w:'Independence',ipa:'/ˌɪndɪˈpendəns/',bn:'স্বাধীনতা',type:'noun',ex:'Bangladesh won independence in 1971.'},
+  {w:'Influence',ipa:'/ˈɪnfluəns/',bn:'প্রভাব',type:'noun',ex:'Good teachers influence lives.'},
+  {w:'Intelligent',ipa:'/ɪnˈtelɪdʒənt/',bn:'বুদ্ধিমান',type:'adj',ex:'She is very intelligent.'},
+  // J
+  {w:'Journey',ipa:'/ˈdʒɜːrni/',bn:'যাত্রা, ভ্রমণ',type:'noun',ex:'Life is a beautiful journey.'},
+  {w:'Joyful',ipa:'/ˈdʒɔɪfəl/',bn:'আনন্দিত',type:'adj',ex:'She has a joyful personality.'},
+  {w:'Judge',ipa:'/dʒʌdʒ/',bn:'বিচার করা',type:'verb',ex:'Do not judge others quickly.'},
+  // K
+  {w:'Knowledge',ipa:'/ˈnɒlɪdʒ/',bn:'জ্ঞান',type:'noun',ex:'Knowledge is power.'},
+  {w:'Kind',ipa:'/kaɪnd/',bn:'দয়ালু',type:'adj',ex:'Be kind to everyone.'},
+  // L
+  {w:'Language',ipa:'/ˈlæŋɡwɪdʒ/',bn:'ভাষা',type:'noun',ex:'English is a global language.'},
+  {w:'Leader',ipa:'/ˈliːdər/',bn:'নেতা',type:'noun',ex:'Be a good leader.'},
+  {w:'Learn',ipa:'/lɜːrn/',bn:'শেখা',type:'verb',ex:'Never stop learning.'},
+  {w:'Listen',ipa:'/ˈlɪsən/',bn:'মনোযোগ দিয়ে শোনা',type:'verb',ex:'Listen before you speak.'},
+  {w:'Loyalty',ipa:'/ˈlɔɪəlti/',bn:'আনুগত্য, বিশ্বস্ততা',type:'noun',ex:'Loyalty is a great quality.'},
+  // M
+  {w:'Manage',ipa:'/ˈmænɪdʒ/',bn:'পরিচালনা করা',type:'verb',ex:'She manages her time well.'},
+  {w:'Meaningful',ipa:'/ˈmiːnɪŋfəl/',bn:'অর্থবহ',type:'adj',ex:'Live a meaningful life.'},
+  {w:'Motivate',ipa:'/ˈmoʊtɪveɪt/',bn:'অনুপ্রাণিত করা',type:'verb',ex:'Motivate yourself daily.'},
+  {w:'Mindful',ipa:'/ˈmaɪndfəl/',bn:'সচেতন',type:'adj',ex:'Be mindful of your words.'},
+  // N
+  {w:'Nature',ipa:'/ˈneɪtʃər/',bn:'প্রকৃতি',type:'noun',ex:'Love and protect nature.'},
+  {w:'Necessary',ipa:'/ˈnesəseri/',bn:'প্রয়োজনীয়',type:'adj',ex:'Practice is necessary.'},
+  {w:'Negotiate',ipa:'/nɪˈɡoʊʃieɪt/',bn:'আলোচনা করা',type:'verb',ex:'Learn to negotiate.'},
+  // O
+  {w:'Opportunity',ipa:'/ˌɒpərˈtjuːnɪti/',bn:'সুযোগ',type:'noun',ex:'Grab every opportunity.'},
+  {w:'Optimistic',ipa:'/ˌɒptɪˈmɪstɪk/',bn:'আশাবাদী',type:'adj',ex:'Stay optimistic always.'},
+  {w:'Organize',ipa:'/ˈɔːrɡənaɪz/',bn:'সংগঠিত করা',type:'verb',ex:'Organize your thoughts.'},
+  // P
+  {w:'Patience',ipa:'/ˈpeɪʃəns/',bn:'ধৈর্য',type:'noun',ex:'Patience is a virtue.'},
+  {w:'Persistent',ipa:'/pərˈsɪstənt/',bn:'অধ্যবসায়ী',type:'adj',ex:'Be persistent in your efforts.'},
+  {w:'Polite',ipa:'/pəˈlaɪt/',bn:'ভদ্র, শিষ্ট',type:'adj',ex:'Always be polite.'},
+  {w:'Positive',ipa:'/ˈpɒzɪtɪv/',bn:'ইতিবাচক',type:'adj',ex:'Think positive thoughts.'},
+  {w:'Practice',ipa:'/ˈpræktɪs/',bn:'অনুশীলন করা',type:'verb',ex:'Practice every single day.'},
+  {w:'Problem',ipa:'/ˈprɒbləm/',bn:'সমস্যা',type:'noun',ex:'Every problem has a solution.'},
+  {w:'Progress',ipa:'/ˈprəʊɡres/',bn:'অগ্রগতি',type:'noun',ex:'Track your progress.'},
+  // Q
+  {w:'Quality',ipa:'/ˈkwɒlɪti/',bn:'গুণমান',type:'noun',ex:'Always aim for quality.'},
+  {w:'Question',ipa:'/ˈkwestʃən/',bn:'প্রশ্ন',type:'noun',ex:'Ask good questions.'},
+  // R
+  {w:'Respect',ipa:'/rɪˈspekt/',bn:'সম্মান',type:'noun',ex:'Respect everyone.'},
+  {w:'Responsible',ipa:'/rɪˈspɒnsɪbəl/',bn:'দায়িত্বশীল',type:'adj',ex:'Be responsible for your actions.'},
+  {w:'Resilient',ipa:'/rɪˈzɪlɪənt/',bn:'স্থিতিস্থাপক',type:'adj',ex:'Stay resilient during hard times.'},
+  // S
+  {w:'Sacrifice',ipa:'/ˈsækrɪfaɪs/',bn:'ত্যাগ',type:'noun',ex:'Success requires sacrifice.'},
+  {w:'Sincere',ipa:'/sɪnˈsɪər/',bn:'আন্তরিক',type:'adj',ex:'Be sincere in your work.'},
+  {w:'Skill',ipa:'/skɪl/',bn:'দক্ষতা',type:'noun',ex:'Develop your skills.'},
+  {w:'Speak',ipa:'/spiːk/',bn:'কথা বলা',type:'verb',ex:'Speak with confidence.'},
+  {w:'Strength',ipa:'/streŋθ/',bn:'শক্তি',type:'noun',ex:'Find your inner strength.'},
+  {w:'Success',ipa:'/səkˈses/',bn:'সাফল্য',type:'noun',ex:'Hard work leads to success.'},
+  // T
+  {w:'Talent',ipa:'/ˈtælənt/',bn:'প্রতিভা',type:'noun',ex:'Nurture your talent.'},
+  {w:'Thoughtful',ipa:'/ˈθɔːtfəl/',bn:'চিন্তাশীল',type:'adj',ex:'Be thoughtful before speaking.'},
+  {w:'Tolerant',ipa:'/ˈtɒlərənt/',bn:'সহিষ্ণু',type:'adj',ex:'Be tolerant of differences.'},
+  {w:'Trust',ipa:'/trʌst/',bn:'বিশ্বাস',type:'noun',ex:'Trust is hard to earn.'},
+  // U
+  {w:'Understand',ipa:'/ˌʌndəˈstænd/',bn:'বোঝা',type:'verb',ex:'Try to understand others.'},
+  {w:'Unique',ipa:'/juːˈniːk/',bn:'অনন্য, অদ্বিতীয়',type:'adj',ex:'You are unique!'},
+  {w:'Useful',ipa:'/ˈjuːsfəl/',bn:'উপকারী',type:'adj',ex:'English is very useful.'},
+  // V
+  {w:'Valuable',ipa:'/ˈvæljuəbəl/',bn:'মূল্যবান',type:'adj',ex:'Time is valuable.'},
+  {w:'Verify',ipa:'/ˈverɪfaɪ/',bn:'যাচাই করা',type:'verb',ex:'Always verify facts.'},
+  {w:'Vision',ipa:'/ˈvɪʒən/',bn:'দৃষ্টিভঙ্গি, লক্ষ্য',type:'noun',ex:'Have a clear vision.'},
+  {w:'Vocabulary',ipa:'/vəˈkæbjʊləri/',bn:'শব্দভাণ্ডার',type:'noun',ex:'Build your vocabulary daily.'},
+  // W
+  {w:'Wisdom',ipa:'/ˈwɪzdəm/',bn:'প্রজ্ঞা, জ্ঞান',type:'noun',ex:'Wisdom comes with experience.'},
+  {w:'Wonder',ipa:'/ˈwʌndər/',bn:'বিস্ময়',type:'noun',ex:'The world is full of wonder.'},
+  {w:'Worthy',ipa:'/ˈwɜːrði/',bn:'যোগ্য',type:'adj',ex:'You are worthy of success.'},
+  // X, Y, Z
+  {w:'Xenial',ipa:'/ˈziːnɪəl/',bn:'অতিথিপরায়ণ',type:'adj',ex:'Bangladeshis are known to be xenial.'},
+  {w:'Yearn',ipa:'/jɜːrn/',bn:'আকাঙ্ক্ষা করা',type:'verb',ex:'She yearns for success.'},
+  {w:'Zeal',ipa:'/ziːl/',bn:'উৎসাহ, আগ্রহ',type:'noun',ex:'Work with zeal and passion.'},
+  {w:'Zealous',ipa:'/ˈzeləs/',bn:'উৎসাহী',type:'adj',ex:'Be zealous in your studies.'},
+];
+
+function renderAZVocab(filter) {
+  const grid = document.getElementById('vocabGrid');
+  if (!grid) return;
+  let words = AZ_VOCAB;
+  if (filter && filter.length === 1) {
+    // Filter by letter
+    words = AZ_VOCAB.filter(w => w.w.toUpperCase().startsWith(filter.toUpperCase()));
+  } else if (filter && filter.length > 1) {
+    // Search filter
+    const q = filter.toLowerCase();
+    words = AZ_VOCAB.filter(w => w.w.toLowerCase().includes(q) || w.bn.includes(q));
+  }
+  if (words.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">No words found.</p>';
+    return;
+  }
+  grid.innerHTML = words.map(v => `
+    <div class="vocab-card">
+      <div class="vocab-word">${v.w} <button class="vocab-speak-btn" onclick="speakWord('${v.w}'" title="Listen">🔊</button></div>
+      <div class="vocab-ipa">${v.ipa}</div>
+      <div class="vocab-type">${v.type}</div>
+      <div class="vocab-bangla">🇧🇩 ${v.bn}</div>
+      <div class="vocab-example">“${v.ex}”</div>
+    </div>
+  `).join('');
+}
+
+function speakWord(word) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.lang = 'en-US'; utt.rate = 0.8;
+  speechSynthesis.speak(utt);
+}
+
+function buildAZIndex() {
+  const idx = document.getElementById('azIndex');
+  if (!idx) return;
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  idx.innerHTML = letters.map(l =>
+    `<button onclick="filterByLetter('${l}')" id="az-btn-${l}">${l}</button>`
+  ).join('') + `<button onclick="filterByLetter('')" style="padding:0 8px;font-size:0.7rem;">ALL</button>`;
+}
+
+function filterByLetter(letter) {
+  document.querySelectorAll('.az-index button').forEach(b => b.classList.remove('az-active'));
+  if (letter) {
+    const btn = document.getElementById(`az-btn-${letter}`);
+    if (btn) btn.classList.add('az-active');
+  }
+  renderAZVocab(letter);
+}
+
+/* ============================================================
    INITIALIZE APP ON DOM READY
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   app.init();
+  AITutor.init();
+  ExamModule.init();
+  // Build A-Z index and render all vocabulary
+  buildAZIndex();
+  renderAZVocab('');
+  // Hook up vocab search
+  const vs = document.getElementById('vocabSearch');
+  if (vs) {
+    vs.addEventListener('input', () => {
+      const q = vs.value.trim();
+      document.querySelectorAll('.az-index button').forEach(b => b.classList.remove('az-active'));
+      renderAZVocab(q);
+    });
+  }
+  // Expose startExam to global scope for onclick handlers
+  window.app = app;
+  window.app.startExam = (level) => ExamModule.startExam(level);
+  
+  window.app.practiceLessonWithAI = (dayNum, type) => {
+    const dayData = COURSE_DAYS.find(d => d.day === dayNum);
+    if (!dayData) return;
+    
+    app.goToSection('ai-tutor');
+    
+    // Switch AI to free chat mode for the lesson task
+    document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+    const freeBtn = document.querySelector('.topic-btn[data-topic="freemode"]');
+    if (freeBtn) freeBtn.classList.add('active');
+    AITutor.currentTopic = 'freemode';
+    
+    // Set practice state for dynamic smart replies
+    AITutor.currentLessonPractice = { dayNum: dayNum, type: type, step: 1 };
+    
+    // Clear chat and set custom lesson prompt
+    const win = document.getElementById('chatWindow');
+    if (!win) return;
+    
+    const taskText = type === 'speaking' ? dayData.speaking : dayData.writing;
+    const taskTypeStr = type === 'speaking' ? 'Speaking' : 'Writing';
+    const actionStr = type === 'speaking' ? 'use the 🎤 Mic button below to speak to me' : 'type your answer below';
+    
+    win.innerHTML = `
+      <div class="chat-msg ai">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-bubble">
+          <p><strong>Lesson ${dayNum} ${taskTypeStr} Practice!</strong></p>
+          <p><em>Task: ${taskText}</em></p>
+          <p>I am ready to help you with this task. You can ${actionStr}!</p>
+        </div>
+      </div>
+    `;
+    
+    // Reset stats for the new session
+    AITutor.msgCount = 0; 
+    AITutor.wordsLearned = 0; 
+    AITutor.corrections = 0;
+    AITutor.updateStats();
+  };
+
+  window.ExamModule = ExamModule;
+  window.speakWord = speakWord;
+  window.filterByLetter = filterByLetter;
 });
