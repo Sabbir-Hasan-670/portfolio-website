@@ -837,8 +837,18 @@ app.post('/api/n8n/blog', async (req, res) => {
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, async () => {
     console.log("🚀 Server running on http://localhost:" + PORT);
-    // Auto-create exam_scores table if it doesn't exist
+    
+    // Auto-create missing tables if they don't exist
     try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS github_images (
+                repo_id VARCHAR(255) PRIMARY KEY,
+                image_path VARCHAR(255) DEFAULT '',
+                is_pinned BOOLEAN DEFAULT FALSE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
+        console.log("✅ github_images table ready.");
+        
         await db.query(`
             CREATE TABLE IF NOT EXISTS exam_scores (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -850,7 +860,7 @@ app.listen(PORT, async () => {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
         console.log("✅ exam_scores table ready.");
-    } catch (e) { console.error("exam_scores table error:", e.message); }
+    } catch (e) { console.error("Database table initialization error:", e.message); }
 });
 
 // ==========================================
