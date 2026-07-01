@@ -7,7 +7,7 @@ A dynamic, responsive personal portfolio website featuring a public-facing profe
 ## 📸 Project Previews
 
 ### Public Portfolio
-<img width="1920" height="8193" alt="screencapture-sabbirhasan-2026-07-02-00_52_26" src="https://github.com/user-attachments/assets/45c53efa-2b08-4704-84c0-8b6665d2dc0d" />
+<img width="1920" height="3521" alt="sa" src="https://github.com/user-attachments/assets/93038872-b8e9-4c57-9985-0d65c6ac7547" />
 
 ### Secure System Access
 <img width="1901" height="891" alt="Screenshot 2026-06-01 020759" src="https://github.com/user-attachments/assets/4478d624-535c-44cc-88a9-a7db8b0ae3b7" />
