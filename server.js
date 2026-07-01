@@ -192,25 +192,34 @@ app.get('/api/projects', async (req, res) => {
         const [images] = await db.query('SELECT * FROM github_images');
         const imageMap = {};
         const pinMap = {};
+        const pinnedAtMap = {};
         images.forEach(img => {
             imageMap[img.repo_id] = img.image_path;
             pinMap[img.repo_id] = img.is_pinned;
+            pinnedAtMap[img.repo_id] = img.pinned_at;
         });
         
         const ghProjectsWithImages = cachedGithubProjects.map(proj => {
             return {
                 ...proj,
                 image_path: imageMap[proj.id] || proj.image_path,
-                is_pinned: pinMap[proj.id] ? 1 : 0
+                is_pinned: pinMap[proj.id] ? 1 : 0,
+                pinned_at: pinnedAtMap[proj.id] || null
             };
         });
         
         const allProjects = [...dbProjects, ...ghProjectsWithImages];
         
-        // Sort: Pinned first, then by date (created_at) descending
+        // Sort: Pinned first (sorted by pinned_at DESC so recently pinned goes to top), then by date (created_at) descending
         allProjects.sort((a, b) => {
             if (a.is_pinned && !b.is_pinned) return -1;
             if (!a.is_pinned && b.is_pinned) return 1;
+            
+            if (a.is_pinned && b.is_pinned) {
+                const pinA = new Date(a.pinned_at || 0).getTime();
+                const pinB = new Date(b.pinned_at || 0).getTime();
+                return pinA - pinB; // Oldest pins at the top
+            }
             
             const dateA = new Date(a.created_at || 0).getTime();
             const dateB = new Date(b.created_at || 0).getTime();
@@ -226,17 +235,17 @@ app.get('/api/projects', async (req, res) => {
 app.post('/api/admin/projects/pin', upload.none(), requireAuth, async (req, res) => {
     try {
         const { id, type, is_pinned } = req.body;
-        const pinnedVal = is_pinned === 'true' || is_pinned === true ? 1 : 0;
+        const pinnedVal = (is_pinned === 'true' || is_pinned === true || is_pinned === 1 || is_pinned === '1') ? 1 : 0;
         
         if (type === 'gh') {
             // Upsert into github_images
             await db.query(`
-                INSERT INTO github_images (repo_id, is_pinned) 
-                VALUES (?, ?) 
-                ON DUPLICATE KEY UPDATE is_pinned = ?
+                INSERT INTO github_images (repo_id, is_pinned, pinned_at) 
+                VALUES (?, ?, CURRENT_TIMESTAMP) 
+                ON DUPLICATE KEY UPDATE is_pinned = ?, pinned_at = CURRENT_TIMESTAMP
             `, [id, pinnedVal, pinnedVal]);
         } else {
-            await db.query('UPDATE projects SET is_pinned=? WHERE id=?', [pinnedVal, id]);
+            await db.query('UPDATE projects SET is_pinned=?, pinned_at=CURRENT_TIMESTAMP WHERE id=?', [pinnedVal, id]);
         }
         res.json({ message: 'Pin status updated successfully' });
     } catch (err) {
@@ -490,16 +499,7 @@ app.put('/api/admin/education/:id', requireAuth, upload.none(), async (req, res)
 });
 
 // 📜 --- CERTIFICATES ROUTES ---
-app.post('/api/admin/github-image', upload.single('image'), requireAuth, async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
-        const { repo_id } = req.body;
-        const imagePath = '/uploads/' + req.file.filename;
 
-        await db.query('INSERT INTO github_images (repo_id, image_path) VALUES (?, ?) ON DUPLICATE KEY UPDATE image_path = ?', [repo_id, imagePath, imagePath]);
-        res.json({ message: 'GitHub Project image updated successfully' });
-    } catch (err) { res.status(500).json({ error: 'Failed to update GitHub image' }); }
-});
 
 app.post('/api/admin/github-image/remove', express.json(), requireAuth, async (req, res) => {
     try {
