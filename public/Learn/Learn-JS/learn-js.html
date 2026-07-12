@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript A-Z বাংলা — সম্পূর্ণ বাংলায় জাভাস্ক্রিপ্ট শিখুন</title>
+  <meta name="description" content="JavaScript A থেকে Z পর্যন্ত সম্পূর্ণ বাংলায় শিখুন। Variables থেকে Async/Await, DOM থেকে ES6+ — সব কিছু ইন্টারেক্টিভ কনসোল ও কুইজ সহ।" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="learn-js.css?v=1" />
+</head>
+<body class="dark-mode">
+
+<header class="topnav" id="topnav">
+  <div class="nav-brand">
+    <span class="brand-icon">🟡</span>
+    <span class="brand-name">JSPath</span>
+    <span class="brand-tag">JavaScript A-Z বাংলা</span>
+    <a href="/" class="btn-back">← পোর্টফোলিওতে ফিরুন</a>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="#dashboard"  class="nav-link active" data-section="dashboard">ড্যাশবোর্ড</a>
+    <a href="#lessons"    class="nav-link" data-section="lessons">পাঠ্যক্রম</a>
+    <a href="#console"    class="nav-link" data-section="console">🖥️ JS কনসোল</a>
+    <a href="#reference"  class="nav-link" data-section="reference">রেফারেন্স</a>
+    <a href="#cheatsheet" class="nav-link" data-section="cheatsheet">চিট শিট</a>
+    <a href="#quiz"       class="nav-link" data-section="quiz">📝 কুইজ</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="টপিক খুঁজুন…" autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="থিম পরিবর্তন">☀️</button>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>পাঠ্যক্রম</h3>
+      <div class="level-badges">
+        <span class="badge beginner">মৌলিক</span>
+        <span class="badge intermediate">মধ্যবর্তী</span>
+        <span class="badge advanced">উন্নত</span>
+      </div>
+    </div>
+    <ul class="day-list" id="dayList"></ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ========== DASHBOARD ========== -->
+    <section class="section active" id="dashboard">
+      <div class="hero-banner">
+        <div class="hero-text">
+          <div class="js-badge">JAVASCRIPT A-Z</div>
+          <h1>🟡 জাভাস্ক্রিপ্ট শিখুন</h1>
+          <p>ওয়েব ডেভেলপমেন্টের সবচেয়ে জনপ্রিয় ভাষা — সম্পূর্ণ বাংলায়। Beginner থেকে Professional পর্যন্ত সব কিছু এখানেই।</p>
+          <div class="hero-btns">
+            <button class="btn-hero-primary" onclick="jsApp.goToSection('lessons')">📖 শেখা শুরু করুন</button>
+            <button class="btn-hero-secondary" onclick="jsApp.goToSection('console')">🖥️ কনসোলে খেলুন</button>
+          </div>
+        </div>
+        <div class="hero-graphic">
+          <div class="code-preview">
+            <div class="code-line"><span class="kw">const</span> <span class="var">name</span> = <span class="str">"Sabbir"</span>;</div>
+            <div class="code-line"><span class="kw">function</span> <span class="fn">greet</span>(<span class="var">n</span>) {</div>
+            <div class="code-line pl">  <span class="kw">return</span> <span class="str">`হ্যালো, <span class="tpl">${n}</span>!`</span>;</div>
+            <div class="code-line">}</div>
+            <div class="code-line"><span class="cmt">// ফলাফল দেখুন:</span></div>
+            <div class="code-line"><span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="var">name</span>));</div>
+            <div class="code-output">▶ হ্যালো, Sabbir!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><span class="stat-num">৩০+</span><span class="stat-label">পাঠ</span></div>
+        <div class="stat-card"><span class="stat-num">৫০+</span><span class="stat-label">কোড উদাহরণ</span></div>
+        <div class="stat-card"><span class="stat-num">৪০+</span><span class="stat-label">কুইজ প্রশ্ন</span></div>
+        <div class="stat-card"><span class="stat-num">১</span><span class="stat-label">লাইভ কনসোল</span></div>
+      </div>
+
+      <!-- Module Overview -->
+      <h2 class="section-title">📚 পাঠ্যক্রম ওভারভিউ</h2>
+      <div class="overview-grid">
+        <div class="ov-card beginner-card">
+          <div class="ov-level">মৌলিক স্তর</div>
+          <h3>🌱 Foundation</h3>
+          <ul>
+            <li>✅ JavaScript পরিচিতি ও ইতিহাস</li>
+            <li>✅ Variables: var, let, const</li>
+            <li>✅ Data Types (Number, String, Boolean)</li>
+            <li>✅ Operators ও Expressions</li>
+            <li>✅ Conditional Statements (if/else, switch)</li>
+            <li>✅ Loops (for, while, do-while)</li>
+          </ul>
+        </div>
+        <div class="ov-card intermediate-card">
+          <div class="ov-level">মধ্যবর্তী স্তর</div>
+          <h3>⚡ Core JavaScript</h3>
+          <ul>
+            <li>✅ Functions ও Arrow Functions</li>
+            <li>✅ Arrays ও Array Methods</li>
+            <li>✅ Objects ও Destructuring</li>
+            <li>✅ DOM Manipulation</li>
+            <li>✅ Events ও Event Listeners</li>
+            <li>✅ Error Handling (try/catch)</li>
+          </ul>
+        </div>
+        <div class="ov-card advanced-card">
+          <div class="ov-level">উন্নত স্তর</div>
+          <h3>🚀 Advanced JavaScript</h3>
+          <ul>
+            <li>✅ ES6+ Features (Spread, Rest, Template Literals)</li>
+            <li>✅ Promises ও Async/Await</li>
+            <li>✅ Fetch API ও HTTP Requests</li>
+            <li>✅ Closures ও Scope</li>
+            <li>✅ Prototype ও OOP Concepts</li>
+            <li>✅ Modules (import/export)</li>
+          </ul>
+        </div>
+        <div class="ov-card pro-card">
+          <div class="ov-level">প্রফেশনাল</div>
+          <h3>💼 Web Dev Ready</h3>
+          <ul>
+            <li>✅ localStorage ও sessionStorage</li>
+            <li>✅ Regular Expressions (RegEx)</li>
+            <li>✅ JSON Handling</li>
+            <li>✅ Browser APIs (Geolocation, etc.)</li>
+            <li>✅ JavaScript Design Patterns</li>
+            <li>✅ Performance ও Best Practices</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== LESSONS ========== -->
+    <section class="section" id="lessons">
+      <div class="lesson-header-row">
+        <h2>📖 পাঠ্যক্রম</h2>
+        <div class="module-filter" id="moduleFilter">
+          <button class="filter-btn active" onclick="jsApp.filterModule(0)">সব</button>
+          <button class="filter-btn" onclick="jsApp.filterModule(1)">🌱 মৌলিক</button>
+          <button class="filter-btn" onclick="jsApp.filterModule(2)">⚡ মধ্যবর্তী</button>
+          <button class="filter-btn" onclick="jsApp.filterModule(3)">🚀 উন্নত</button>
+          <button class="filter-btn" onclick="jsApp.filterModule(4)">💼 প্রফেশনাল</button>
+        </div>
+      </div>
+      <div class="lesson-detail" id="lessonDetail">
+        <div class="lesson-placeholder">
+          <span>👈</span>
+          <p>বাম দিক থেকে যেকোনো পাঠ বেছে নিন শুরু করতে।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CONSOLE ========== -->
+    <section class="section" id="console">
+      <div class="section-header">
+        <h2>🖥️ JavaScript লাইভ কনসোল</h2>
+        <p>এখানে সরাসরি JavaScript কোড লিখুন এবং রান করুন। শেখার সবচেয়ে ভালো উপায়!</p>
+      </div>
+
+      <div class="console-container">
+        <!-- Snippets Bar -->
+        <div class="snippet-bar">
+          <span class="snippet-label">দ্রুত উদাহরণ:</span>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('hello')">Hello World</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('variables')">Variables</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('loop')">Loop</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('function')">Function</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('array')">Array</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('object')">Object</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('promise')">Promise</button>
+          <button class="snippet-btn" onclick="jsApp.loadSnippet('fetch')">Fetch API</button>
+        </div>
+
+        <div class="console-split">
+          <!-- Editor -->
+          <div class="console-editor-wrap">
+            <div class="editor-header">
+              <span>📝 কোড এডিটর</span>
+              <div class="editor-actions">
+                <button class="btn-run" id="runBtn" onclick="jsApp.runCode()">▶ রান করুন</button>
+                <button class="btn-clear-editor" onclick="jsApp.clearEditor()">🗑 মুছুন</button>
+              </div>
+            </div>
+            <div class="editor-wrap">
+              <div class="line-numbers" id="lineNumbers">1</div>
+              <textarea id="codeEditor" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="// এখানে JavaScript কোড লিখুন...
+// উদাহরণ:
+let name = 'বাংলাদেশ';
+console.log('হ্যালো, ' + name + '!');"></textarea>
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="console-output-wrap">
+            <div class="output-header">
+              <span>📤 আউটপুট</span>
+              <button class="btn-clear-out" onclick="jsApp.clearOutput()">পরিষ্কার করুন</button>
+            </div>
+            <div class="output-area" id="outputArea">
+              <div class="output-welcome">
+                <span class="out-icon">🟡</span>
+                <p>কোড লিখুন এবং রান করুন।</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== REFERENCE ========== -->
+    <section class="section" id="reference">
+      <div class="section-header">
+        <h2>📚 JS রেফারেন্স গাইড</h2>
+        <p>গুরুত্বপূর্ণ মেথড ও ফিচারের দ্রুত রেফারেন্স।</p>
+      </div>
+      <div class="ref-tabs">
+        <button class="ref-tab active" onclick="jsApp.showRef('array')">Array Methods</button>
+        <button class="ref-tab" onclick="jsApp.showRef('string')">String Methods</button>
+        <button class="ref-tab" onclick="jsApp.showRef('object')">Object Methods</button>
+        <button class="ref-tab" onclick="jsApp.showRef('dom')">DOM Methods</button>
+        <button class="ref-tab" onclick="jsApp.showRef('es6')">ES6+ Features</button>
+      </div>
+      <div class="ref-content" id="refContent"></div>
+    </section>
+
+    <!-- ========== CHEAT SHEET ========== -->
+    <section class="section" id="cheatsheet">
+      <div class="section-header">
+        <h2>⚡ JavaScript চিট শিট</h2>
+        <p>দ্রুত রিভিশনের জন্য সব গুরুত্বপূর্ণ সিনট্যাক্স এক জায়গায়।</p>
+      </div>
+      <div class="cheatsheet-grid" id="cheatsheetGrid"></div>
+    </section>
+
+    <!-- ========== QUIZ ========== -->
+    <section class="section" id="quiz">
+      <div class="section-header">
+        <h2>📝 JavaScript মক টেস্ট</h2>
+        <p>৪০+ প্রশ্নের ভাণ্ডার থেকে প্রতিবার র‍্যান্ডমলি ১০টি প্রশ্ন। আপনার জ্ঞান পরীক্ষা করুন!</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizIntro" class="quiz-intro">
+          <h3>প্রস্তুত তো? 🟡</h3>
+          <p>এখানে JavaScript পরীক্ষার মতো MCQ দেওয়া হবে। প্রতিবার নতুন সেটের প্রশ্ন পাবেন।</p>
+          <div class="quiz-settings">
+            <div class="setting-row">
+              <label>প্রশ্নের সংখ্যা:</label>
+              <select id="quizCount">
+                <option value="5">৫ টি (দ্রুত)</option>
+                <option value="10" selected>১০ টি (স্বাভাবিক)</option>
+                <option value="20">২০ টি (বিস্তারিত)</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <label>সময় সীমা:</label>
+              <select id="quizTime">
+                <option value="180">৩ মিনিট</option>
+                <option value="300" selected>৫ মিনিট</option>
+                <option value="600">১০ মিনিট</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="jsQuiz.startQuiz()">কুইজ শুরু করুন</button>
+        </div>
+
+        <div id="quizPlay" class="quiz-play" style="display:none;">
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+          </div>
+          <div class="quiz-status">
+            <span id="quizQuestionCount">প্রশ্ন ১ / ১০</span>
+            <span id="quizTimer" class="timer-badge">⏱ ০৫:০০</span>
+          </div>
+          <h3 id="quizQuestionText" class="quiz-question-text">লোড হচ্ছে...</h3>
+          <div id="quizOptions" class="quiz-options"></div>
+          <div class="quiz-actions">
+            <button class="btn-secondary" id="quizNextBtn" onclick="jsQuiz.nextQuestion()" disabled>পরবর্তী প্রশ্ন ➡️</button>
+          </div>
+        </div>
+
+        <div id="quizResult" class="quiz-result" style="display:none;">
+          <h3>আপনার রেজাল্ট 🏆</h3>
+          <div class="score-circle" id="scoreCircle">
+            <span id="quizScore">0%</span>
+          </div>
+          <p id="quizMessage"></p>
+          <div class="review-answers" id="quizReview"></div>
+          <div class="result-actions">
+            <button class="btn-primary" onclick="jsQuiz.restartQuiz()">🔄 আবার চেষ্টা করুন</button>
+            <button class="btn-secondary" onclick="jsApp.goToSection('lessons')">📖 পড়াশোনায় ফিরুন</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="learn-js.js?v=1"></script>
+</body>
+</html>

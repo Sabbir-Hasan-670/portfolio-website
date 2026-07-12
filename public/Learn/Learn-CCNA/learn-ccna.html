@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNA 200-301 Bangla — সম্পূর্ণ বাংলায় নেটওয়ার্কিং শিখুন</title>
+  <meta name="description" content="CCNA 200-301 সম্পূর্ণ বাংলায় শিখুন। Routing, Switching, Security, Wireless, Automation সব কিছু A থেকে Z পর্যন্ত ল্যাব সহ।" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="learn-ccna.css?v=1" />
+</head>
+<body class="dark-mode">
+
+<header class="topnav" id="topnav">
+  <div class="nav-brand">
+    <span class="brand-icon">🌐</span>
+    <span class="brand-name">NetPath</span>
+    <span class="brand-tag">CCNA 200-301 বাংলা</span>
+    <a href="/" class="btn-back">← পোর্টফোলিওতে ফিরুন</a>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="#dashboard" class="nav-link active" data-section="dashboard">ড্যাশবোর্ড</a>
+    <a href="#lessons"   class="nav-link" data-section="lessons">পাঠ্যক্রম</a>
+    <a href="#lab"       class="nav-link" data-section="lab">🖥️ CLI ল্যাব</a>
+    <a href="#commands"  class="nav-link" data-section="commands">কমান্ড গাইড</a>
+    <a href="#cheatsheet" class="nav-link" data-section="cheatsheet">চিট শিট</a>
+    <a href="#quiz"       class="nav-link" data-section="quiz">📝 মক টেস্ট</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="টপিক খুঁজুন…" autocomplete="off" />
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="থিম পরিবর্তন">☀️</button>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>পাঠ্যক্রম</h3>
+      <div class="level-badges">
+        <span class="badge beginner">মডিউল ১-৩</span>
+        <span class="badge intermediate">মডিউল ৪-৬</span>
+        <span class="badge advanced">মডিউল ৭-৯</span>
+      </div>
+    </div>
+    <ul class="day-list" id="dayList"></ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ========== DASHBOARD ========== -->
+    <section class="section active" id="dashboard">
+      <div class="hero-banner">
+        <div class="hero-text">
+          <div class="cisco-badge">CISCO CERTIFIED NETWORK ASSOCIATE</div>
+          <h1>CCNA 200-301 🌐<br><span class="bn-sub">সম্পূর্ণ বাংলায় শিখুন</span></h1>
+          <p>নেটওয়ার্কিং-এর A থেকে Z পর্যন্ত। Routing, Switching, Wireless, Security, এবং Automation — সব কিছু সহজ বাংলায়, ইন্টারেক্টিভ CLI ল্যাব সহ।</p>
+          <button class="btn-primary" onclick="app.resumeJourney()">শেখা শুরু করুন →</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card"><span class="stat-num" id="statCompleted">0</span><span class="stat-label">সম্পন্ন</span></div>
+          <div class="stat-card"><span class="stat-num" id="statProgress">0%</span><span class="stat-label">অগ্রগতি</span></div>
+          <div class="stat-card"><span class="stat-num">60</span><span class="stat-label">মোট পাঠ</span></div>
+          <div class="stat-card"><span class="stat-num">500+</span><span class="stat-label">কমান্ড</span></div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <h2>আপনার অগ্রগতি</h2>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+        <p id="progressText">0 of 60 পাঠ সম্পন্ন হয়েছে</p>
+      </div>
+
+      <!-- Module Overview -->
+      <div class="module-overview">
+        <h2>কোর্স মডিউল</h2>
+        <div class="overview-grid">
+          <div class="overview-card" onclick="app.filterModule(1)">
+            <div class="ov-icon">🖥️</div>
+            <div class="ov-module-badge">মডিউল ১</div>
+            <h3>Network Fundamentals</h3>
+            <p>নেটওয়ার্কের মূল ধারণা, OSI Model, TCP/IP, Cables, IP Addressing।</p>
+          </div>
+          <div class="overview-card" onclick="app.filterModule(2)">
+            <div class="ov-icon">🔀</div>
+            <div class="ov-module-badge">মডিউল ২</div>
+            <h3>Network Access</h3>
+            <p>Switching Concepts, VLANs, STP, EtherChannel, Wireless LAN।</p>
+          </div>
+          <div class="overview-card" onclick="app.filterModule(3)">
+            <div class="ov-icon">🗺️</div>
+            <div class="ov-module-badge">মডিউল ৩</div>
+            <h3>IP Connectivity (Routing)</h3>
+            <p>Static Routes, OSPF, EIGRP, RIP, Router Configuration A-Z।</p>
+          </div>
+          <div class="overview-card" onclick="app.filterModule(4)">
+            <div class="ov-icon">🌍</div>
+            <div class="ov-module-badge">মডিউল ৪</div>
+            <h3>IP Services</h3>
+            <p>NAT, DHCP, DNS, NTP, SNMP, Syslog, QoS।</p>
+          </div>
+          <div class="overview-card" onclick="app.filterModule(5)">
+            <div class="ov-icon">🛡️</div>
+            <div class="ov-module-badge">মডিউল ৫</div>
+            <h3>Security Fundamentals</h3>
+            <p>ACL, Port Security, AAA, VPN, Threats & Mitigation।</p>
+          </div>
+          <div class="overview-card ai-card" onclick="app.filterModule(6)">
+            <div class="ov-icon">🤖</div>
+            <div class="ov-module-badge">মডিউল ৬</div>
+            <h3>Automation & Programmability</h3>
+            <p>SDN, REST API, JSON, Python Netmiko, Ansible, Puppet।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== LESSONS ========== -->
+    <section class="section" id="lessons">
+      <div class="lesson-header-row">
+        <h2>📖 পাঠ্যক্রম</h2>
+        <div class="module-filter" id="moduleFilter">
+          <button class="filter-btn active" onclick="app.filterModule(0)">সব</button>
+          <button class="filter-btn" onclick="app.filterModule(1)">মডিউল ১</button>
+          <button class="filter-btn" onclick="app.filterModule(2)">মডিউল ২</button>
+          <button class="filter-btn" onclick="app.filterModule(3)">মডিউল ৩</button>
+          <button class="filter-btn" onclick="app.filterModule(4)">মডিউল ৪</button>
+          <button class="filter-btn" onclick="app.filterModule(5)">মডিউল ৫</button>
+          <button class="filter-btn" onclick="app.filterModule(6)">মডিউল ৬</button>
+        </div>
+      </div>
+      <div class="lesson-detail" id="lessonDetail">
+        <div class="lesson-placeholder">
+          <span>👈</span>
+          <p>বাম দিক থেকে যেকোনো পাঠ বেছে নিন শুরু করতে।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CLI LAB ========== -->
+    <section class="section" id="lab">
+      <div class="lab-header">
+        <h2>🖥️ Cisco IOS CLI ল্যাব সিমুলেটর</h2>
+        <p class="lab-desc">বাস্তব Cisco Router/Switch এর মতো কমান্ড টাইপ করে প্র্যাকটিস করুন। Device বেছে নিন, কমান্ড লিখুন, এবং শিখুন!</p>
+      </div>
+
+      <div class="lab-workspace">
+        <!-- Lab Config Panel -->
+        <div class="lab-config-panel">
+          <h3>ল্যাব কনফিগারেশন</h3>
+          <div class="device-selector">
+            <label>ডিভাইস বেছে নিন:</label>
+            <div class="device-btns">
+              <button class="dev-btn active" onclick="app.setDevice('router')" id="devRouter">🔵 Router</button>
+              <button class="dev-btn" onclick="app.setDevice('switch')" id="devSwitch">🟢 Switch</button>
+            </div>
+          </div>
+          <div class="lab-scenario-list">
+            <label>ল্যাব সিনারিও:</label>
+            <div id="scenarioList"></div>
+          </div>
+          <button class="btn-clear-lab" onclick="app.clearTerminal()">🗑️ টার্মিনাল ক্লিয়ার</button>
+          <button class="btn-reset-lab" onclick="app.resetDevice()">🔄 ডিভাইস রিসেট</button>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal-wrap">
+          <div class="terminal-titlebar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <div class="term-title" id="termTitle">Router — Cisco IOS Simulator</div>
+            <div class="term-hint">💡 <code>?</code> টাইপ করুন সব কমান্ড দেখতে</div>
+          </div>
+          <div class="terminal" id="terminal">
+            <div class="term-output" id="termOutput"></div>
+            <div class="term-input-line">
+              <span class="term-prompt" id="termPrompt">Router></span>
+              <input type="text" class="term-input" id="termInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="কমান্ড লিখুন…" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Guide -->
+      <div class="lab-guide">
+        <h3>📋 এই ল্যাবে কী কী করতে পারবেন</h3>
+        <div class="lab-guide-grid">
+          <div class="lab-guide-item"><code>enable</code> / <code>en</code> — Privileged EXEC Mode এ যান</div>
+          <div class="lab-guide-item"><code>configure terminal</code> / <code>conf t</code> — Global Config Mode</div>
+          <div class="lab-guide-item"><code>hostname R1</code> — ডিভাইসের নাম পরিবর্তন করুন</div>
+          <div class="lab-guide-item"><code>interface g0/0</code> — Interface Mode তে যান</div>
+          <div class="lab-guide-item"><code>ip address 192.168.1.1 255.255.255.0</code> — IP দিন</div>
+          <div class="lab-guide-item"><code>no shutdown</code> — Interface চালু করুন</div>
+          <div class="lab-guide-item"><code>show ip interface brief</code> — সব Interface দেখুন</div>
+          <div class="lab-guide-item"><code>show running-config</code> — চলমান Config দেখুন</div>
+          <div class="lab-guide-item"><code>ip route 0.0.0.0 0.0.0.0 192.168.1.254</code> — Default Route</div>
+          <div class="lab-guide-item"><code>router ospf 1</code> — OSPF শুরু করুন</div>
+          <div class="lab-guide-item"><code>vlan 10</code> — VLAN তৈরি করুন (Switch)</div>
+          <div class="lab-guide-item"><code>show vlan brief</code> — VLAN দেখুন (Switch)</div>
+          <div class="lab-guide-item"><code>write memory</code> / <code>wr</code> — Config সেভ করুন</div>
+          <div class="lab-guide-item"><code>exit</code> / <code>end</code> — আগের Mode এ ফিরুন</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== COMMAND GUIDE ========== -->
+    <section class="section" id="commands">
+      <h2>📚 Cisco IOS কমান্ড গাইড (বাংলা)</h2>
+      <div class="cmd-filter-row">
+        <button class="cmd-cat-btn active" onclick="app.filterCmds('all')">সব</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('basic')">বেসিক</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('routing')">Routing</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('switching')">Switching</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('security')">Security</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('show')">Show Commands</button>
+        <button class="cmd-cat-btn" onclick="app.filterCmds('troubleshoot')">Troubleshoot</button>
+      </div>
+      <div class="cmd-table-wrap" id="cmdTableWrap"></div>
+    </section>
+
+    <!-- ========== CHEATSHEET ========== -->
+    <section class="section" id="cheatsheet">
+      <div class="section-header">
+        <h2>⚡ কুইক চিট শিট</h2>
+        <p>রিভিশনের জন্য শর্টকাট।</p>
+      </div>
+      <div class="cheatsheet-grid" id="cheatsheetGrid"></div>
+    </section>
+
+    <!-- ========== QUIZ / MOCK TEST ========== -->
+    <section class="section" id="quiz">
+      <div class="section-header">
+        <h2>📝 CCNA মক টেস্ট</h2>
+        <p>পরীক্ষার প্রস্তুতির জন্য আপনার জ্ঞান যাচাই করুন।</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizIntro" class="quiz-intro">
+          <h3>প্রস্তুত তো?</h3>
+          <p>এখানে CCNA পরীক্ষার মতো কিছু গুরুত্বপূর্ণ MCQ দেওয়া হলো। শেষে আপনার স্কোর এবং সঠিক উত্তর দেখতে পারবেন।</p>
+          <button class="btn-primary" onclick="quizApp.startQuiz()">কুইজ শুরু করুন</button>
+        </div>
+        
+        <div id="quizPlay" class="quiz-play" style="display: none;">
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+          </div>
+          <div class="quiz-status">
+            <span id="quizQuestionCount">প্রশ্ন ১ / ১০</span>
+            <span id="quizTimer">সময়: ০৫:০০</span>
+          </div>
+          
+          <h3 id="quizQuestionText" class="quiz-question-text">প্রশ্ন লোড হচ্ছে...</h3>
+          <div id="quizOptions" class="quiz-options">
+            <!-- Options will be injected here -->
+          </div>
+          
+          <div class="quiz-actions">
+            <button class="btn-secondary" id="quizNextBtn" onclick="quizApp.nextQuestion()" disabled>পরবর্তী প্রশ্ন</button>
+          </div>
+        </div>
+
+        <div id="quizResult" class="quiz-result" style="display: none;">
+          <h3>আপনার রেজাল্ট</h3>
+          <div class="score-circle">
+            <span id="quizScore">0%</span>
+          </div>
+          <p id="quizMessage">দারুণ! আপনি পরীক্ষা সম্পন্ন করেছেন।</p>
+          <div class="review-answers" id="quizReview">
+            <!-- Review will be injected here -->
+          </div>
+          <button class="btn-primary" onclick="quizApp.restartQuiz()">আবার চেষ্টা করুন</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="learn-ccna.js?v=1"></script>
+</body>
+</html>
