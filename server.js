@@ -193,10 +193,12 @@ app.get('/api/projects', async (req, res) => {
         const imageMap = {};
         const pinMap = {};
         const pinnedAtMap = {};
+        const liveUrlMap = {};
         images.forEach(img => {
             imageMap[img.repo_id] = img.image_path;
             pinMap[img.repo_id] = img.is_pinned;
             pinnedAtMap[img.repo_id] = img.pinned_at;
+            liveUrlMap[img.repo_id] = img.live_url;
         });
         
         const ghProjectsWithImages = cachedGithubProjects.map(proj => {
@@ -204,7 +206,8 @@ app.get('/api/projects', async (req, res) => {
                 ...proj,
                 image_path: imageMap[proj.id] || proj.image_path,
                 is_pinned: pinMap[proj.id] ? 1 : 0,
-                pinned_at: pinnedAtMap[proj.id] || null
+                pinned_at: pinnedAtMap[proj.id] || null,
+                live_url: liveUrlMap[proj.id] || proj.live_url
             };
         });
         
