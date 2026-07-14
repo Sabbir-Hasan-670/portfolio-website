@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="display: flex; gap: 8px;">
                     <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: ${pinBtnColor};" onclick="togglePin('${proj.id}', ${isGithub}, ${proj.is_pinned})">${pinBtnText}</button>
                     
-                    ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #9f5bff;" onclick="document.getElementById('gh-repo-id').value='${proj.id}'; document.getElementById('gh-image-input').click();">Image</button>`}
+                    ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #9f5bff;" onclick="document.getElementById('gh-repo-id').value='${proj.id}'; document.getElementById('gh-image-input').click();">Img</button>
+                    <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #00d2ff;" onclick="setGithubLiveUrl('${proj.id}', '${proj.live_url || ''}')">Link</button>`}
                     
                     ${hasCustomImage ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="removeGithubImage('${proj.id}')">Remove Image</button>` : ''}
 
@@ -783,3 +784,25 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/admin/login'; 
     });
 });
+
+    window.setGithubLiveUrl = async (repoId, currentUrl) => {
+        const url = prompt("Enter Live Demo URL for this GitHub project:", currentUrl);
+        if (url === null) return;
+        
+        try {
+            const res = await fetch('/api/admin/github/live-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ repo_id: repoId, live_url: url })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast(data.message, 'success');
+                fetchProjects();
+            } else {
+                showToast(data.error || 'Failed to update', 'error');
+            }
+        } catch (e) {
+            showToast('Network error', 'error');
+        }
+    };

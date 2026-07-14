@@ -498,6 +498,25 @@ app.put('/api/admin/education/:id', requireAuth, upload.none(), async (req, res)
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
+
+app.post('/api/admin/github/live-url', express.json(), requireAuth, async (req, res) => {
+    try {
+        const { repo_id, live_url } = req.body;
+        if (!repo_id) return res.status(400).json({ error: 'Missing repo_id' });
+        
+        await db.query(`
+            INSERT INTO github_images (repo_id, live_url) 
+            VALUES (?, ?) 
+            ON DUPLICATE KEY UPDATE live_url = ?
+        `, [repo_id, live_url || '', live_url || '']);
+        
+        res.json({ message: 'Live URL updated successfully!' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to update live URL' });
+    }
+});
+
 // 📜 --- CERTIFICATES ROUTES ---
 
 
@@ -845,11 +864,13 @@ app.listen(PORT, async () => {
                 repo_id VARCHAR(255) PRIMARY KEY,
                 image_path VARCHAR(255) DEFAULT '',
                 is_pinned BOOLEAN DEFAULT FALSE,
-                pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                live_url VARCHAR(500) DEFAULT ''
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
         console.log("✅ github_images table ready.");
         try { await db.query(`ALTER TABLE github_images ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
+        try { await db.query(`ALTER TABLE github_images ADD COLUMN live_url VARCHAR(500) DEFAULT ''`); } catch(e) {}
         
         await db.query(`
             CREATE TABLE IF NOT EXISTS exam_scores (

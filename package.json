@@ -21,7 +21,6 @@
     "node": "^24.16.0",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.9",
-    "ssh2": "^1.17.0",
     "systeminformation": "^5.31.7"
   },
   "devDependencies": {
