@@ -1,4 +1,6 @@
 const express = require('express');
+const { authenticator } = require('otplib');
+const QRCode = require('qrcode');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const path = require('path');

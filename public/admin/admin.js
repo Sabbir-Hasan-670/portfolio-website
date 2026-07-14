@@ -192,3 +192,4 @@ window.deleteCertificate = async (id) => {
 loadAdminEducation();
 loadAdminCertificates();
 });
+,\n                        totp_token: document.getElementById('admin-totp') ? document.getElementById('admin-totp').value : ''

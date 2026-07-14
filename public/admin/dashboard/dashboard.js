@@ -918,3 +918,125 @@ if (removeCvBtn) {
         }
     });
 }
+
+
+// ==========================================
+// 2FA MANAGEMENT
+// ==========================================
+async function check2FAStatus() {
+    try {
+        const res = await fetch('/api/admin/2fa/status');
+        const data = await res.json();
+        
+        const badge = document.getElementById('2fa-badge');
+        const enableBtn = document.getElementById('btn-enable-2fa');
+        const disableBtn = document.getElementById('btn-disable-2fa');
+        
+        if (!badge) return; // Not on the security tab
+        
+        if (data.enabled) {
+            badge.textContent = 'Enabled ✅';
+            badge.style.background = 'rgba(74, 222, 128, 0.2)';
+            badge.style.color = '#4ade80';
+            enableBtn.style.display = 'none';
+            disableBtn.style.display = 'inline-block';
+        } else {
+            badge.textContent = 'Disabled ❌';
+            badge.style.background = 'rgba(248, 113, 113, 0.2)';
+            badge.style.color = '#f87171';
+            enableBtn.style.display = 'inline-block';
+            disableBtn.style.display = 'none';
+        }
+    } catch (e) {
+        console.error("Failed to check 2FA status");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    check2FAStatus();
+    
+    const enableBtn = document.getElementById('btn-enable-2fa');
+    const disableBtn = document.getElementById('btn-disable-2fa');
+    const modal = document.getElementById('modal-2fa');
+    const closeBtn = document.getElementById('close-2fa-modal');
+    const verifyBtn = document.getElementById('btn-verify-2fa');
+    
+    if (enableBtn) {
+        enableBtn.addEventListener('click', async () => {
+            try {
+                const res = await fetch('/api/admin/2fa/generate', { method: 'POST' });
+                const data = await res.json();
+                if (data.qrCodeUrl) {
+                    document.getElementById('qr-code-img').src = data.qrCodeUrl;
+                    document.getElementById('verify-totp-input').value = '';
+                    document.getElementById('verify-2fa-msg').textContent = '';
+                    modal.style.display = 'flex';
+                }
+            } catch (e) {
+                showToast("Failed to generate 2FA");
+            }
+        });
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+    
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', async () => {
+            const token = document.getElementById('verify-totp-input').value;
+            if (!token) return;
+            
+            verifyBtn.innerHTML = 'Verifying...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('token', token);
+                
+                const res = await fetch('/api/admin/2fa/verify', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('verify-2fa-msg').style.color = '#4ade80';
+                    document.getElementById('verify-2fa-msg').textContent = '2FA Enabled!';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        check2FAStatus();
+                        showToast('Google Authenticator Enabled');
+                    }, 1000);
+                } else {
+                    document.getElementById('verify-2fa-msg').style.color = '#f87171';
+                    document.getElementById('verify-2fa-msg').textContent = data.error || 'Invalid code';
+                }
+            } catch (e) {
+                document.getElementById('verify-2fa-msg').textContent = 'Server error';
+            } finally {
+                verifyBtn.innerHTML = 'Verify & Enable';
+            }
+        });
+    }
+    
+    if (disableBtn) {
+        disableBtn.addEventListener('click', async () => {
+            const confirmed = await customConfirm("Are you sure you want to disable 2FA?");
+            if (!confirmed) return;
+            
+            try {
+                const res = await fetch('/api/admin/2fa/disable', { method: 'POST' });
+                if (res.ok) {
+                    showToast("2FA Disabled Successfully");
+                    check2FAStatus();
+                } else {
+                    showToast("Failed to disable 2FA");
+                }
+            } catch (e) {
+                showToast("Server error");
+            }
+        });
+    }
+});
