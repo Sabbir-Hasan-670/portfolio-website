@@ -902,6 +902,21 @@ app.listen(PORT, async () => {
                     cv_file_path VARCHAR(255) DEFAULT ''
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             `);
+
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN hero_roles VARCHAR(500) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN hero_description TEXT'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_ccna_title VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_ceh_title VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_ccna VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_ceh VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_years VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN stat_projects VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN about_title VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN about_desc TEXT'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN contact_location VARCHAR(255) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN contact_map_url VARCHAR(500) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE admin_profile ADD COLUMN contact_email VARCHAR(255) DEFAULT ""'); } catch(e) {}
+
             
             await db.query(`
                 INSERT IGNORE INTO admin_profile (
