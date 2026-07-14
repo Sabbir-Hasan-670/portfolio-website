@@ -1040,3 +1040,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+// ==========================================
+// AVATAR AND CV STATUS MANAGEMENT
+// ==========================================
+async function checkUploadStatus() {
+    try {
+        const res = await fetch('/api/profile');
+        const data = await res.json();
+        
+        const avatarStatus = document.getElementById('avatar-status');
+        const cvStatus = document.getElementById('cv-status');
+        const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+        const removeCvBtn = document.getElementById('remove-cv-btn');
+        
+        if (avatarStatus && data.profile_pic_path) {
+            avatarStatus.textContent = '✅ Uploaded';
+            avatarStatus.style.background = 'rgba(74, 222, 128, 0.2)';
+            avatarStatus.style.color = '#4ade80';
+            removeAvatarBtn.style.display = 'block';
+        } else if (avatarStatus) {
+            avatarStatus.textContent = '❌ Not Uploaded';
+            avatarStatus.style.background = 'rgba(248, 113, 113, 0.2)';
+            avatarStatus.style.color = '#f87171';
+            removeAvatarBtn.style.display = 'none';
+        }
+        
+        if (cvStatus && data.cv_file_path) {
+            cvStatus.textContent = '✅ Uploaded';
+            cvStatus.style.background = 'rgba(74, 222, 128, 0.2)';
+            cvStatus.style.color = '#4ade80';
+            removeCvBtn.style.display = 'block';
+        } else if (cvStatus) {
+            cvStatus.textContent = '❌ Not Uploaded';
+            cvStatus.style.background = 'rgba(248, 113, 113, 0.2)';
+            cvStatus.style.color = '#f87171';
+            removeCvBtn.style.display = 'none';
+        }
+    } catch (e) {
+        console.error("Failed to fetch profile data for upload status");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkUploadStatus();
+    
+    const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+    if (removeAvatarBtn) {
+        removeAvatarBtn.addEventListener('click', async () => {
+            const confirmed = await customConfirm("Remove avatar image?");
+            if (confirmed) {
+                try {
+                    const res = await fetch('/api/admin/remove-avatar', { method: 'POST' });
+                    if (res.ok) {
+                        showToast("Avatar removed");
+                        checkUploadStatus();
+                    } else {
+                        showToast("Failed to remove avatar");
+                    }
+                } catch (e) {
+                    showToast("Error removing avatar");
+                }
+            }
+        });
+    }
+    
+    const removeCvBtn = document.getElementById('remove-cv-btn');
+    if (removeCvBtn) {
+        removeCvBtn.addEventListener('click', async () => {
+            const confirmed = await customConfirm("Remove CV document?");
+            if (confirmed) {
+                try {
+                    const res = await fetch('/api/admin/remove-cv', { method: 'POST' });
+                    if (res.ok) {
+                        showToast("CV removed");
+                        checkUploadStatus();
+                    } else {
+                        showToast("Failed to remove CV");
+                    }
+                } catch (e) {
+                    showToast("Error removing CV");
+                }
+            }
+        });
+    }
+});
