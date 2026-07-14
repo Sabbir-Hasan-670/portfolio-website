@@ -1026,3 +1026,61 @@ app.get('/api/learn/exam-scores/:session_id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch scores' });
     }
 });
+
+// ==========================================
+// 2FA MANAGEMENT ROUTES
+// ==========================================
+
+app.get('/api/admin/2fa/status', requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT two_factor_enabled FROM admin_profile WHERE id = 1');
+        res.json({ enabled: rows[0]?.two_factor_enabled === 1 });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch 2FA status' });
+    }
+});
+
+app.post('/api/admin/2fa/generate', requireAuth, async (req, res) => {
+    try {
+        const secret = authenticator.generateSecret();
+        const otpauthUrl = authenticator.keyuri(process.env.ADMIN_USERNAME, 'Portfolio Admin', secret);
+        
+        await db.query('UPDATE admin_profile SET two_factor_secret = ? WHERE id = 1', [secret]);
+        
+        const qrCodeUrl = await qrcode.toDataURL(otpauthUrl);
+        res.json({ secret, qrCodeUrl });
+    } catch (err) {
+        console.error("2FA Generate Error:", err);
+        res.status(500).json({ error: 'Failed to generate 2FA secret' });
+    }
+});
+
+app.post('/api/admin/2fa/verify', requireAuth, upload.none(), async (req, res) => {
+    const { token } = req.body;
+    try {
+        const [rows] = await db.query('SELECT two_factor_secret FROM admin_profile WHERE id = 1');
+        const secret = rows[0]?.two_factor_secret;
+        
+        if (!secret) return res.status(400).json({ error: '2FA not initialized' });
+        
+        const isValid = authenticator.verify({ token, secret });
+        if (isValid) {
+            await db.query('UPDATE admin_profile SET two_factor_enabled = 1 WHERE id = 1');
+            res.json({ success: true, message: '2FA enabled successfully!' });
+        } else {
+            res.status(400).json({ error: 'Invalid verification code' });
+        }
+    } catch (err) {
+        console.error("2FA Verify Error:", err);
+        res.status(500).json({ error: 'Failed to verify 2FA code' });
+    }
+});
+
+app.post('/api/admin/2fa/disable', requireAuth, async (req, res) => {
+    try {
+        await db.query('UPDATE admin_profile SET two_factor_enabled = 0, two_factor_secret = NULL WHERE id = 1');
+        res.json({ success: true, message: '2FA disabled successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to disable 2FA' });
+    }
+});
