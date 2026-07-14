@@ -1049,7 +1049,7 @@ app.post('/api/admin/2fa/generate', requireAuth, async (req, res) => {
         
         await db.query('UPDATE admin_profile SET two_factor_secret = ? WHERE id = 1', [secret]);
         
-        const qrCodeUrl = await qrcode.toDataURL(otpauthUrl);
+        const qrCodeUrl = await QRCode.toDataURL(otpauthUrl);
         res.json({ secret, qrCodeUrl });
     } catch (err) {
         console.error("2FA Generate Error:", err);
