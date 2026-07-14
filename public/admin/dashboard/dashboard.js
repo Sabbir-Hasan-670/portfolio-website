@@ -1059,7 +1059,7 @@ async function checkUploadStatus() {
             avatarStatus.textContent = '✅ Uploaded';
             avatarStatus.style.background = 'rgba(74, 222, 128, 0.2)';
             avatarStatus.style.color = '#4ade80';
-            removeAvatarBtn.style.display = 'block';
+            removeAvatarBtn.style.display = 'flex';
         } else if (avatarStatus) {
             avatarStatus.textContent = '❌ Not Uploaded';
             avatarStatus.style.background = 'rgba(248, 113, 113, 0.2)';
@@ -1071,7 +1071,7 @@ async function checkUploadStatus() {
             cvStatus.textContent = '✅ Uploaded';
             cvStatus.style.background = 'rgba(74, 222, 128, 0.2)';
             cvStatus.style.color = '#4ade80';
-            removeCvBtn.style.display = 'block';
+            removeCvBtn.style.display = 'flex';
         } else if (cvStatus) {
             cvStatus.textContent = '❌ Not Uploaded';
             cvStatus.style.background = 'rgba(248, 113, 113, 0.2)';
