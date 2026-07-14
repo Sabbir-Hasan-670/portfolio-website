@@ -937,6 +937,22 @@ app.listen(PORT, async () => {
                 )
             `);
             console.log("✅ admin_profile table ready & default row ensured.");
+
+        try {
+            await db.query(`
+                UPDATE admin_profile SET 
+                    hero_roles = 'Multidisciplinary IT Specialist, Graphic Designer, Web Developer, Network Security Enthusiast', 
+                    hero_description = 'CCNA-trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast. Building secure and scalable digital experiences from Bangladesh.', 
+                    stat_ccna_title = 'CCNA', stat_ccna = '200-301 TRAINED', 
+                    stat_ceh_title = 'CEH', stat_ceh = 'CYBERSECURITY', 
+                    stat_years = '3+', stat_projects = '20+', 
+                    about_title = 'CS Graduate · CCNA Trained · IT Professional', 
+                    about_desc = 'Write your about text here...'
+                WHERE id = 1 AND (hero_roles = '' OR hero_roles IS NULL)
+            `);
+            console.log("✅ admin_profile row updated with defaults if it was empty.");
+        } catch(e) { console.error("Admin Profile Update Error:", e); }
+
         } catch(e) { console.error("Admin Profile Init Error:", e); }
 
         
