@@ -941,16 +941,16 @@ app.listen(PORT, async () => {
         try {
             await db.query(`
                 UPDATE admin_profile SET 
-                    hero_roles = 'Multidisciplinary IT Specialist, Graphic Designer, Web Developer, Network Security Enthusiast', 
-                    hero_description = 'CCNA-trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast. Building secure and scalable digital experiences from Bangladesh.', 
-                    stat_ccna_title = 'CCNA', stat_ccna = '200-301 TRAINED', 
-                    stat_ceh_title = 'CEH', stat_ceh = 'CYBERSECURITY', 
-                    stat_years = '3+', stat_projects = '20+', 
-                    about_title = 'CS Graduate · CCNA Trained · IT Professional', 
-                    about_desc = 'Write your about text here...'
-                WHERE id = 1 AND (hero_roles = '' OR hero_roles IS NULL)
+                    about_desc = 'Computer Science graduate and CCNA‑trained professional bridging the gap between secure network engineering and full‑stack development. From configuring robust network topologies to building dynamic software solutions, I thrive on solving complex technical problems.\n\nHolding certifications from Google, Udemy and TCM Security across Ethical Hacking, Digital Marketing, and Malware Analysis. Fluent in English, Bangla, and Hindi.'
+                WHERE id = 1 AND (about_desc = 'Write your about text here...' OR about_desc IS NULL OR about_desc = '');
             `);
-            console.log("✅ admin_profile row updated with defaults if it was empty.");
+            await db.query(`
+                UPDATE admin_profile SET contact_location = 'Faridpur, Dhaka, Bangladesh' WHERE id = 1 AND (contact_location IS NULL OR contact_location = '');
+            `);
+            await db.query(`
+                UPDATE admin_profile SET contact_email = 'sabbirhasan800@gmail.com' WHERE id = 1 AND (contact_email IS NULL OR contact_email = '');
+            `);
+            console.log("✅ admin_profile row updated with missing defaults if it was empty.");
         } catch(e) { console.error("Admin Profile Update Error:", e); }
 
         } catch(e) { console.error("Admin Profile Init Error:", e); }
