@@ -874,6 +874,56 @@ app.listen(PORT, async () => {
         console.log("✅ github_images table ready.");
         try { await db.query(`ALTER TABLE github_images ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
         try { await db.query(`ALTER TABLE github_images ADD COLUMN live_url VARCHAR(500) DEFAULT ''`); } catch(e) {}
+
+        try {
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS admin_profile (
+                    id INT PRIMARY KEY DEFAULT 1,
+                    github_link VARCHAR(255) DEFAULT '',
+                    linkedin_link VARCHAR(255) DEFAULT '',
+                    facebook_link VARCHAR(255) DEFAULT '',
+                    fiverr_link VARCHAR(255) DEFAULT '',
+                    pinterest_link VARCHAR(255) DEFAULT '',
+                    adobe_stock_link VARCHAR(255) DEFAULT '',
+                    stat_ccna_title VARCHAR(255) DEFAULT '',
+                    stat_ceh_title VARCHAR(255) DEFAULT '',
+                    stat_ccna VARCHAR(255) DEFAULT '',
+                    stat_ceh VARCHAR(255) DEFAULT '',
+                    stat_years VARCHAR(255) DEFAULT '',
+                    stat_projects VARCHAR(255) DEFAULT '',
+                    about_title VARCHAR(255) DEFAULT '',
+                    about_desc TEXT,
+                    contact_location VARCHAR(255) DEFAULT '',
+                    contact_map_url VARCHAR(500) DEFAULT '',
+                    contact_email VARCHAR(255) DEFAULT '',
+                    hero_roles VARCHAR(500) DEFAULT '',
+                    hero_description TEXT,
+                    profile_pic_path VARCHAR(255) DEFAULT '',
+                    cv_file_path VARCHAR(255) DEFAULT ''
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            `);
+            
+            await db.query(`
+                INSERT IGNORE INTO admin_profile (
+                    id, hero_roles, hero_description, 
+                    stat_ccna_title, stat_ccna, 
+                    stat_ceh_title, stat_ceh, 
+                    stat_years, stat_projects, 
+                    about_title, about_desc
+                ) VALUES (
+                    1, 
+                    'Multidisciplinary IT Specialist, Graphic Designer, Web Developer, Network Security Enthusiast', 
+                    'CCNA-trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast. Building secure and scalable digital experiences from Bangladesh.', 
+                    'CCNA', '200-301 TRAINED', 
+                    'CEH', 'CYBERSECURITY', 
+                    '3+', '20+', 
+                    'CS Graduate · CCNA Trained · IT Professional',
+                    'Write your about text here...'
+                )
+            `);
+            console.log("✅ admin_profile table ready & default row ensured.");
+        } catch(e) { console.error("Admin Profile Init Error:", e); }
+
         
         await db.query(`
             CREATE TABLE IF NOT EXISTS exam_scores (
