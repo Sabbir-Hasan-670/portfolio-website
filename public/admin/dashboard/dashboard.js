@@ -820,13 +820,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.setGithubLiveUrl = async (repoId, currentUrl) => {
         document.getElementById('link-modal-repo-id').value = repoId;
-        document.getElementById('link-modal-url').value = currentUrl && currentUrl !== 'undefined' ? currentUrl : '';
+        const hasUrl = currentUrl && currentUrl !== 'undefined' && currentUrl.trim() !== '';
+        document.getElementById('link-modal-url').value = hasUrl ? currentUrl : '';
+        
+        const removeBtn = document.getElementById('remove-link-btn');
+        if (removeBtn) {
+            if (hasUrl) removeBtn.classList.remove('hidden');
+            else removeBtn.classList.add('hidden');
+        }
+        
         document.getElementById('link-modal').classList.remove('hidden');
     };
 
-    window.submitGithubLiveUrl = async () => {
+    window.submitGithubLiveUrl = async (isRemove = false) => {
         const repoId = document.getElementById('link-modal-repo-id').value;
-        const url = document.getElementById('link-modal-url').value.trim();
+        const url = isRemove ? '' : document.getElementById('link-modal-url').value.trim();
         
         try {
             const res = await fetch('/api/admin/github/live-url', {

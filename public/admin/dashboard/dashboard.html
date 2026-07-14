@@ -495,7 +495,8 @@
             </div>
             <div class="modal-actions" style="margin-top: 25px; justify-content: center; gap: 15px;">
                 <button type="button" class="logout-btn" onclick="document.getElementById('link-modal').classList.add('hidden')">Cancel</button>
-                <button type="button" class="action-btn" onclick="submitGithubLiveUrl()">Save Link 🔗</button>
+                <button type="button" class="delete-btn hidden" id="remove-link-btn" style="padding: 10px 20px;" onclick="submitGithubLiveUrl(true)">Remove 🗑️</button>
+                <button type="button" class="action-btn" onclick="submitGithubLiveUrl(false)">Save Link 🔗</button>
             </div>
         </div>
     </div>
