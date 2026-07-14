@@ -844,10 +844,12 @@ app.listen(PORT, async () => {
             CREATE TABLE IF NOT EXISTS github_images (
                 repo_id VARCHAR(255) PRIMARY KEY,
                 image_path VARCHAR(255) DEFAULT '',
-                is_pinned BOOLEAN DEFAULT FALSE
+                is_pinned BOOLEAN DEFAULT FALSE,
+                pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
         console.log("✅ github_images table ready.");
+        try { await db.query(`ALTER TABLE github_images ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
         
         await db.query(`
             CREATE TABLE IF NOT EXISTS exam_scores (
