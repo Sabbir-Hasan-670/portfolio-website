@@ -1,3 +1,32 @@
+
+// Global Loader Logic
+window.showLoader = function() {
+    const loader = document.getElementById('global-loader');
+    if (loader) loader.style.display = 'flex';
+};
+window.hideLoader = function() {
+    const loader = document.getElementById('global-loader');
+    if (loader) loader.style.display = 'none';
+};
+
+// Intercept fetch for global loader (only for non-GET requests to show upload progress)
+const originalFetch = window.fetch;
+window.fetch = async function(...args) {
+    const options = args[1];
+    let isUploading = false;
+    if (options && options.method && options.method !== 'GET') {
+        isUploading = true;
+        showLoader();
+    }
+    try {
+        const response = await originalFetch(...args);
+        return response;
+    } finally {
+        if (isUploading) hideLoader();
+    }
+};
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
@@ -785,9 +814,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+    
     window.setGithubLiveUrl = async (repoId, currentUrl) => {
-        const url = prompt("Enter Live Demo URL for this GitHub project:", currentUrl);
-        if (url === null) return;
+        document.getElementById('link-modal-repo-id').value = repoId;
+        document.getElementById('link-modal-url').value = currentUrl && currentUrl !== 'undefined' ? currentUrl : '';
+        document.getElementById('link-modal').classList.remove('hidden');
+    };
+
+    window.submitGithubLiveUrl = async () => {
+        const repoId = document.getElementById('link-modal-repo-id').value;
+        const url = document.getElementById('link-modal-url').value.trim();
         
         try {
             const res = await fetch('/api/admin/github/live-url', {
@@ -798,6 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (res.ok) {
                 showToast(data.message, 'success');
+                document.getElementById('link-modal').classList.add('hidden');
                 fetchProjects();
             } else {
                 showToast(data.error || 'Failed to update', 'error');
@@ -806,3 +843,4 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Network error', 'error');
         }
     };
+

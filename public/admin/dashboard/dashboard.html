@@ -11,6 +11,17 @@
 </head>
 <body class="dashboard-body" id="main-body">
 
+    <!-- Global Loader Overlay -->
+    <div id="global-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 15, 30, 0.85); z-index: 99999; backdrop-filter: blur(5px); justify-content: center; align-items: center; flex-direction: column;">
+        <div class="loader-spinner" style="width: 50px; height: 50px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="color: #38bdf8; margin-top: 15px; font-weight: 600; letter-spacing: 1px; animation: pulse 1.5s infinite;">Processing...</p>
+        <style>
+            @keyframes spin { 100% { transform: rotate(360deg); } }
+            @keyframes pulse { 50% { opacity: 0.5; } }
+        </style>
+    </div>
+
+
     <div class="dashboard-wrapper">
         
         <aside class="dash-nav">
@@ -472,5 +483,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="dashboard.js"></script>
     
-<script src="/toast.js"></script></body>
+<script src="/toast.js"></script>
+    <!-- Link Modal -->
+    <div id="link-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 20px; color: #38bdf8;">Set Live Demo URL</h3>
+            <input type="hidden" id="link-modal-repo-id">
+            <div class="input-group">
+                <input type="url" id="link-modal-url" placeholder="https://example.com" autocomplete="off" style="width: 100%; box-sizing: border-box;">
+                <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Website URL</label>
+            </div>
+            <div class="modal-actions" style="margin-top: 25px; justify-content: center; gap: 15px;">
+                <button type="button" class="logout-btn" onclick="document.getElementById('link-modal').classList.add('hidden')">Cancel</button>
+                <button type="button" class="action-btn" onclick="submitGithubLiveUrl()">Save Link 🔗</button>
+            </div>
+        </div>
+    </div>
+
+</body>
 </html>
