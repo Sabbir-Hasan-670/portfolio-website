@@ -698,6 +698,28 @@ app.post('/api/admin/upload-pic', requireAuth, upload.single('profile_image'), a
     } catch (err) { res.status(500).json({ error: 'Server error updating picture.' }); }
 });
 
+
+// ==================== REMOVE AVATAR & CV ====================
+app.post('/api/admin/remove-avatar', requireAuth, async (req, res) => {
+    try {
+        await db.query('UPDATE admin_profile SET profile_pic_path = NULL WHERE id = 1');
+        res.json({ success: true, message: 'Avatar removed' });
+    } catch (error) {
+        console.error("Remove Avatar Error:", error);
+        res.status(500).json({ error: 'Failed to remove avatar' });
+    }
+});
+
+app.post('/api/admin/remove-cv', requireAuth, async (req, res) => {
+    try {
+        await db.query('UPDATE admin_profile SET cv_file_path = NULL WHERE id = 1');
+        res.json({ success: true, message: 'CV removed' });
+    } catch (error) {
+        console.error("Remove CV Error:", error);
+        res.status(500).json({ error: 'Failed to remove CV' });
+    }
+});
+
 app.post('/api/admin/upload-cv', requireAuth, upload.single('cv_document'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     const newCvPath = '/uploads/' + req.file.filename;

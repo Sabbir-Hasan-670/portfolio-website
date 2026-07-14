@@ -855,3 +855,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+
+
+
+// ==================== AUTO LOGOUT (1 min idle) ====================
+let idleTimeout;
+function resetIdleTimeout() {
+    clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(() => {
+        // Idle for 1 minute (60,000ms)
+        fetch('/api/logout', { method: 'POST' })
+            .then(() => {
+                alert('You have been logged out due to inactivity for security reasons.');
+                window.location.href = '/admin/login.html';
+            })
+            .catch(err => {
+                console.error(err);
+                window.location.href = '/admin/login.html';
+            });
+    }, 60000);
+}
+['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+    document.addEventListener(evt, resetIdleTimeout, true);
+});
+resetIdleTimeout(); // Init
+
+// ==================== REMOVE AVATAR / CV ====================
+const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+if (removeAvatarBtn) {
+    removeAvatarBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to remove your avatar?')) return;
+        try {
+            const res = await fetch('/api/admin/remove-avatar', { method: 'POST' });
+            if (res.ok) {
+                alert('Avatar removed successfully!');
+                fetchProfile(); // Refresh status
+            } else {
+                alert('Failed to remove avatar.');
+            }
+        } catch(e) {
+            console.error(e);
+            alert('Error removing avatar.');
+        }
+    });
+}
+
+const removeCvBtn = document.getElementById('remove-cv-btn');
+if (removeCvBtn) {
+    removeCvBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to remove your CV?')) return;
+        try {
+            const res = await fetch('/api/admin/remove-cv', { method: 'POST' });
+            if (res.ok) {
+                alert('CV removed successfully!');
+                fetchProfile(); // Refresh status
+            } else {
+                alert('Failed to remove CV.');
+            }
+        } catch(e) {
+            console.error(e);
+            alert('Error removing CV.');
+        }
+    });
+}
