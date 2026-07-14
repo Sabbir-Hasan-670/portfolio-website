@@ -1,5 +1,5 @@
 const express = require('express');
-const { authenticator } = require('otplib');
+const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
@@ -1042,8 +1042,10 @@ app.get('/api/admin/2fa/status', requireAuth, async (req, res) => {
 
 app.post('/api/admin/2fa/generate', requireAuth, async (req, res) => {
     try {
-        const secret = authenticator.generateSecret();
-        const otpauthUrl = authenticator.keyuri(process.env.ADMIN_USERNAME, 'Portfolio Admin', secret);
+        const secretObj = speakeasy.generateSecret({ name: 'Portfolio Admin (' + process.env.ADMIN_USERNAME + ')' });
+        const secret = secretObj.base32;
+        const otpauthUrl = secretObj.otpauth_url;
+        // otpauthUrl generated above
         
         await db.query('UPDATE admin_profile SET two_factor_secret = ? WHERE id = 1', [secret]);
         
@@ -1063,7 +1065,7 @@ app.post('/api/admin/2fa/verify', requireAuth, upload.none(), async (req, res) =
         
         if (!secret) return res.status(400).json({ error: '2FA not initialized' });
         
-        const isValid = authenticator.verify({ token, secret });
+        const isValid = speakeasy.totp.verify({ secret: secret, encoding: 'base32', token: token, window: 1 });
         if (isValid) {
             await db.query('UPDATE admin_profile SET two_factor_enabled = 1 WHERE id = 1');
             res.json({ success: true, message: '2FA enabled successfully!' });

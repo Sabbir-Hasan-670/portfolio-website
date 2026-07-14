@@ -21,8 +21,8 @@
     "node": "^24.16.0",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.9",
-    "otplib": "^13.4.1",
     "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
     "systeminformation": "^5.31.7"
   },
   "devDependencies": {
