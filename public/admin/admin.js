@@ -5,15 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Get values from both inputs
             const usernameInput = document.getElementById('admin-username').value;
             const passwordInput = document.getElementById('admin-password').value;
+            const totpInput = document.getElementById('admin-totp') ? document.getElementById('admin-totp').value : '';
             
             const msgElement = document.getElementById('login-msg');
             const btn = document.querySelector('.login-btn');
             const card = document.querySelector('.login-card');
             
-            // Loading Animation State
             const originalBtnText = btn.innerHTML;
             btn.innerHTML = 'Authenticating...';
             btn.style.opacity = '0.7';
@@ -21,55 +20,60 @@ document.addEventListener('DOMContentLoaded', () => {
             msgElement.classList.remove('show');
 
             try {
-                // Send BOTH username and password to your Node.js server
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         username: usernameInput, 
-                        password: passwordInput 
+                        password: passwordInput,
+                        totp_token: totpInput
                     })
                 });
 
                 const result = await response.json();
                 msgElement.classList.add('show');
 
-                if (response.ok) {
-                    // Success State
-                    msgElement.textContent = "Access Granted. Initializing Dashboard...";
-                    msgElement.style.color = "#4ade80"; // Neon Green
+                if (result.require_2fa) {
+                    msgElement.textContent = result.message;
+                    msgElement.style.color = "#38bdf8"; // Info Blue
+                    document.getElementById('password-group').style.display = 'none';
+                    document.getElementById('totp-group').style.display = 'block';
+                    document.getElementById('admin-totp').focus();
                     
-                    // Button morphs into a success indicator
-                    btn.innerHTML = 'Unlocked ✓';
+                    btn.innerHTML = 'Verify 2FA';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    return;
+                }
+
+                if (response.ok) {
+                    msgElement.textContent = "Access Granted. Initializing Dashboard...";
+                    msgElement.style.color = "#4ade80"; 
+                    
+                    btn.innerHTML = 'Unlocked ✔️';
                     btn.style.background = '#4ade80';
                     btn.style.borderColor = '#4ade80';
                     btn.style.color = '#0f172a';
                     
-                    // Wait 1.5 seconds so the user sees the animation, then redirect
                     setTimeout(() => {
                         window.location.href = '/admin/dashboard/dashboard';
                     }, 1500);
 
                 } else {
-                    // Error State
                     msgElement.textContent = result.error || "Authentication Failed.";
-                    msgElement.style.color = "#f87171"; // Neon Red
+                    msgElement.style.color = "#f87171"; 
                     
-                    // Reset Button
                     btn.innerHTML = originalBtnText;
                     btn.style.opacity = '1';
                     btn.style.pointerEvents = 'auto';
                     
-                    // Trigger the CSS Shake Animation
                     card.style.animation = 'shake 0.4s';
                     
-                    // Remove the animation class after it finishes so it can shake again next time
                     setTimeout(() => {
                         card.style.animation = '';
                     }, 400);
                 }
             } catch (error) {
-                // Server Error State
                 msgElement.textContent = "Server connection lost.";
                 msgElement.style.color = "#f87171";
                 msgElement.classList.add('show');
@@ -81,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================
+// ==========================================
 // ADMIN EDUCATION MANAGEMENT
 // ==========================================
 const eduForm = document.getElementById('admin-education-form');
@@ -170,7 +174,7 @@ if (certForm) {
 
         const res = await fetch('/api/admin/certificates', {
             method: 'POST',
-            body: formData // Correctly sends as multipart/form-data for file uploads
+            body: formData
         });
 
         if (res.ok) {
@@ -188,8 +192,6 @@ window.deleteCertificate = async (id) => {
     }
 };
 
-// Call these inside your existing dashboard initialization function
 loadAdminEducation();
 loadAdminCertificates();
 });
-,\n                        totp_token: document.getElementById('admin-totp') ? document.getElementById('admin-totp').value : ''

@@ -16,9 +16,13 @@
                     <input type="text" id="admin-username" required autocomplete="off">
                     <label for="admin-username">Username</label>
                 </div>
-                <div class="input-group">
+                <div class="input-group" id="password-group">
                     <input type="password" id="admin-password" required>
                     <label for="admin-password">Password</label>
+                </div>
+                <div class="input-group" id="totp-group" style="display: none;">
+                    <input type="text" id="admin-totp" autocomplete="off" placeholder="6-digit code">
+                    <label for="admin-totp">2FA Code</label>
                 </div>
                 <button type="submit" class="login-btn">
                     Authenticate <span class="arrow">→</span>
@@ -32,4 +36,3 @@
     <script src="admin.js"></script> 
 </body>
 </html>
-\n\n\n                <div class="input-group" id="totp-group" style="display: none;">\n                    <input type="text" id="admin-totp" autocomplete="off" placeholder="6-digit code">\n                    <label for="admin-totp">2FA Code</label>\n                </div>
