@@ -425,11 +425,30 @@ app.get('/api/blog/:identifier', async (req, res) => {
 // ==========================================
 // AUTHENTICATION ROUTES
 // ==========================================
-app.post('/api/login', upload.none(), (req, res) => {
-    const { username, password } = req.body;
+app.post('/api/login', upload.none(), async (req, res) => {
+    const { username, password, totp_token } = req.body;
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
-        req.session.isAuthenticated = true;
-        res.json({ success: true, message: 'Logged in!' });
+        try {
+            const [rows] = await db.query('SELECT two_factor_enabled, two_factor_secret FROM admin_profile WHERE id = 1');
+            const admin = rows[0] || {};
+            
+            if (admin.two_factor_enabled) {
+                if (!totp_token) {
+                    return res.json({ require_2fa: true, message: 'Please enter your 2FA code.' });
+                }
+                
+                const isValid = speakeasy.totp.verify({ secret: admin.two_factor_secret, encoding: 'base32', token: totp_token, window: 1 });
+                if (!isValid) {
+                    return res.status(401).json({ error: 'Invalid 2FA code.' });
+                }
+            }
+            
+            req.session.isAuthenticated = true;
+            res.json({ success: true, message: 'Logged in!' });
+        } catch (err) {
+            console.error("Login Error:", err);
+            res.status(500).json({ error: 'Server error during authentication.' });
+        }
     } else res.status(401).json({ error: 'Incorrect credentials.' });
 });
 
