@@ -146,6 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const pinBtnText = proj.is_pinned ? 'Unpin' : 'Pin';
             const pinBtnColor = proj.is_pinned ? '#f39c12' : '#7f8c8d';
             const hasCustomImage = isGithub && proj.image_path && !proj.image_path.startsWith('https://');
+            const hasLink = proj.live_url && proj.live_url.trim() !== '';
+            const linkBtnColor = hasLink ? '#2ecc71' : '#00d2ff';
+            const linkBtnText = hasLink ? 'Link ✓' : 'Link';
 
             list.innerHTML += `
             <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
@@ -154,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: ${pinBtnColor};" onclick="togglePin('${proj.id}', ${isGithub}, ${proj.is_pinned})">${pinBtnText}</button>
                     
                     ${!isGithub ? `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #2ecc71;" onclick="editProject(${proj.id})">Edit</button>` : `<button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #9f5bff;" onclick="document.getElementById('gh-repo-id').value='${proj.id}'; document.getElementById('gh-image-input').click();">Img</button>
-                    <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #00d2ff;" onclick="setGithubLiveUrl('${proj.id}', '${proj.live_url || ''}')">Link</button>`}
+                    <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: ${linkBtnColor};" onclick="setGithubLiveUrl('${proj.id}', '${proj.live_url || ''}')">${linkBtnText}</button>`}
                     
                     ${hasCustomImage ? `<button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="removeGithubImage('${proj.id}')">Remove Image</button>` : ''}
 
