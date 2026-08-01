@@ -4,7 +4,7 @@
    NOTHING from previous designs kept
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Google Fonts loaded in HTML <head> — no @import needed here */
 
 :root {
     /* Brand new palette - Midnight Blue / Dark Slate */
@@ -57,7 +57,7 @@ body {
         radial-gradient(ellipse 80% 50% at 20% 10%, rgba(41,121,255,0.15) 0%, transparent 60%),
         radial-gradient(ellipse 60% 40% at 80% 80%, rgba(200,255,0,0.08) 0%, transparent 60%),
         radial-gradient(ellipse 50% 60% at 50% 50%, rgba(255,45,120,0.05) 0%, transparent 70%);
-    background-attachment: fixed;
+    background-attachment: fixed; /* desktop only — see @media below */
 }
 
 /* Scroll Progress */
@@ -98,6 +98,12 @@ body {
     margin: 0 auto;
     padding: 0 2rem;
     padding-top: 5rem;
+}
+
+/* Off-screen sections load lazily for rendering performance */
+.section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
 }
 
 /* ============================================
@@ -481,6 +487,7 @@ body {
     padding: 1.5rem;
     backdrop-filter: blur(20px);
     transition: all 0.3s ease;
+    will-change: transform;
 }
 .hero-stat-card:hover {
     border-color: rgba(159,91,255,0.3);
@@ -554,10 +561,12 @@ body {
     display: flex; width: max-content;
     animation: scrollLeft 30s linear infinite;
     margin-bottom: 0.6rem;
+    will-change: transform;
 }
 .hero-marquee-reverse {
     animation: scrollRight 36s linear infinite;
     margin-top: 0.6rem;
+    will-change: transform;
 }
 .marquee-group { display:flex; gap:0.6rem; padding-right:0.6rem; }
 
@@ -653,6 +662,7 @@ body {
     height: 100%;
     transition: all 0.35s var(--ease);
     overflow: hidden; position: relative;
+    will-change: transform;
 }
 
 .projects-grid > div:hover,
@@ -1010,4 +1020,48 @@ body {
     .hero-visual { grid-template-columns: 1fr; }
     .hero-stat-card.wide { grid-column: 1; }
     .navbar .nav-inner { padding: 0.7rem 1rem; }
+}
+
+/* ============================================
+   MOBILE PERFORMANCE — Disable heavy effects
+   on touch/mobile devices to prevent jank
+   ============================================ */
+@media (hover: none), (max-width: 768px) {
+    /* background-attachment:fixed causes repaint on every scroll on mobile */
+    body { background-attachment: scroll; }
+
+    /* Reduce blur on mobile GPU performance */
+    .navbar { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .hero-stat-card,
+    .project-card,
+    .glass-card,
+    .service-card,
+    .cert-card,
+    .blog-card,
+    .electric-timeline > div,
+    .contact-form { backdrop-filter: none; }
+
+    /* Disable hover transforms on mobile (no hover state anyway) */
+    .hero-stat-card:hover,
+    .project-card:hover,
+    .service-card:hover,
+    .cert-card:hover,
+    .blog-card:hover {
+        transform: none;
+    }
+
+    /* Pause marquee on mobile to save battery */
+    .hero-marquee-track { animation-play-state: running; }
+}
+
+/* Pause all animations when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .hero-marquee-track { animation: none; }
+    #starCanvas { display: none; }
+    .about-image-glow { animation: none; }
 }

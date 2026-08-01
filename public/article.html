@@ -3,11 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+
+    <!-- ===== PRIMARY SEO ===== -->
+    <title>Article | Sabbir Hasan Blog</title>
+    <meta name="description" content="Read an in-depth article by Sabbir Hasan on technology, cybersecurity, networking, and web development.">
+    <meta name="author" content="Sabbir Hasan">
+    <meta name="robots" content="index, follow">
+
+    <!-- ===== OPEN GRAPH (Updated dynamically by JS) ===== -->
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Sabbir Hasan Blog">
+    <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
+
+    <!-- ===== TWITTER CARD ===== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://sabbirhasan.com/og-image.png">
+
+    <!-- ===== MOBILE ===== -->
+    <meta name="theme-color" content="#060913">
+
+    <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <meta name="description" content="Read an article on Sabbir Hasan's blog.">
+
+    <!-- ===== PERFORMANCE ===== -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,7 +49,7 @@
                 <div class="nav-links" id="navLinks">
                     <a href="/" class="nav-visible-btn">Home</a>
                     <a href="/blog" class="nav-visible-btn">Blog</a>
-                    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+                    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
                     <div class="nav-menu-dropdown" id="navDropdown">
                         <a href="/#about">About</a>
                         <a href="/#projects">Projects</a>
@@ -48,6 +70,7 @@
         </footer>
     </div>
 
-    <script src="main.js?v=2.0"></script>
-<script src="/toast.js"></script></body>
+    <script src="main.js" defer></script>
+    <script src="/toast.js" defer></script>
+</body>
 </html>

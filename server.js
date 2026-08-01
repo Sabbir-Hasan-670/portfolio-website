@@ -10,11 +10,38 @@ const session = require('express-session');
 const fs = require('fs');
 const os = require('os');
 const si = require('systeminformation');
-const cron = require('node-cron'); 
+const cron = require('node-cron');
+const compression = require('compression');
 
 dotenv.config();
 
 const app = express();
+
+// ==========================================
+// ⚡ GZIP COMPRESSION (Speed Boost)
+// ==========================================
+app.use(compression({
+    level: 6,
+    threshold: 1024, // Only compress responses > 1kb
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+    }
+}));
+
+// ==========================================
+// 🔒 SECURITY & PERFORMANCE HEADERS
+// ==========================================
+app.use((req, res, next) => {
+    // Security headers
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'SAMEORIGIN');
+    res.set('X-XSS-Protection', '1; mode=block');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+});
+
 app.use(express.json());
 
 // Remove .html from URLs
@@ -32,12 +59,92 @@ app.get('/admin', (req, res) => {
     res.redirect(301, '/admin/login');
 });
 
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-app.use(express.static(path.join(__dirname, 'public'), { 
-  extensions: ['html'],
-  setHeaders: (res, path) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  }
+// ==========================================
+// 📦 SMART STATIC FILE SERVING WITH CACHING
+// ==========================================
+
+// Uploaded images — cache 30 days
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
+    maxAge: '30d',
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+        res.set('Cache-Control', 'public, max-age=2592000, immutable');
+    }
+}));
+
+// robots.txt
+app.get('/robots.txt', (req, res) => {
+    const host = req.protocol + '://' + req.get('host');
+    res.set('Content-Type', 'text/plain');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(`User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: ${host}/sitemap.xml
+`);
+});
+
+// sitemap.xml — dynamic
+app.get('/sitemap.xml', async (req, res) => {
+    const host = req.protocol + '://' + req.get('host');
+    const now = new Date().toISOString().split('T')[0];
+    let urls = [
+        { loc: `${host}/`,        priority: '1.0', changefreq: 'weekly'  },
+        { loc: `${host}/blog`,    priority: '0.9', changefreq: 'daily'   },
+        { loc: `${host}/about`,   priority: '0.7', changefreq: 'monthly' },
+        { loc: `${host}/contact`, priority: '0.6', changefreq: 'monthly' },
+    ];
+    try {
+        const [posts] = await db.query('SELECT slug, id, created_at FROM blog_posts WHERE status="published" ORDER BY created_at DESC LIMIT 100');
+        posts.forEach(post => {
+            const slug = post.slug || post.id;
+            const lastmod = post.created_at ? new Date(post.created_at).toISOString().split('T')[0] : now;
+            urls.push({ loc: `${host}/article?slug=${slug}`, priority: '0.6', changefreq: 'monthly', lastmod });
+        });
+    } catch (e) { /* DB not available, skip posts */ }
+
+    const urlEntries = urls.map(u => `
+  <url>
+    <loc>${u.loc}</loc>
+    <lastmod>${u.lastmod || now}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('');
+
+    res.set('Content-Type', 'application/xml');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlEntries}
+</urlset>`);
+});
+
+// Static files with smart caching per file type
+app.use(express.static(path.join(__dirname, 'public'), {
+    extensions: ['html'],
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+        // CSS, JS, fonts — cache 7 days (with ETag for invalidation)
+        if (filePath.endsWith('.css') || filePath.endsWith('.js')) {
+            res.set('Cache-Control', 'public, max-age=604800, must-revalidate');
+        }
+        // SVG, images — cache 30 days
+        else if (/\.(svg|png|jpg|jpeg|gif|webp|ico|woff2|woff|ttf)$/i.test(filePath)) {
+            res.set('Cache-Control', 'public, max-age=2592000, immutable');
+        }
+        // HTML pages — short cache (1 hour) since content is dynamic
+        else if (filePath.endsWith('.html')) {
+            res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+        }
+        // Default — no cache for unknown types
+        else {
+            res.set('Cache-Control', 'no-cache');
+        }
+    }
 }));
 
 // Sessions (The Lock)
@@ -92,7 +199,10 @@ const db = mysql.createPool({
     host: process.env.DB_HOST, 
     user: process.env.DB_USER, 
     password: process.env.DB_PASSWORD, 
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    connectionLimit: 100,
+    queueLimit: 0,
+    waitForConnections: true
 });
 
 function createSlug(title) {
@@ -172,70 +282,82 @@ updateGithubCache();
 // ==========================================
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-app.get('/api/profile', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM admin_profile LIMIT 1');
-        res.json(rows[0] || {});
-    } catch (err) { res.status(500).json({ error: 'Failed to fetch profile' }); }
-});
+// Simple in-memory cache to prevent DB connection pool exhaustion on heavy public traffic
+const apiCache = {};
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes cache
 
-app.get('/api/experience', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM experience ORDER BY id DESC');
-        res.json(rows);
-    } catch (err) { res.status(500).json({ error: 'Failed to fetch experience' }); }
-});
+function withCache(key, fn) {
+    return async (req, res) => {
+        const now = Date.now();
+        if (apiCache[key] && apiCache[key].expiry > now) {
+            return res.json(apiCache[key].data);
+        }
+        try {
+            const data = await fn(req, res);
+            apiCache[key] = { expiry: now + CACHE_TTL, data };
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to fetch' });
+        }
+    };
+}
 
-app.get('/api/projects', async (req, res) => {
-    try {
-        const [dbProjects] = await db.query('SELECT * FROM projects ORDER BY id DESC');
+app.get('/api/profile', withCache('profile', async () => {
+    const [rows] = await db.query('SELECT * FROM admin_profile LIMIT 1');
+    return rows[0] || {};
+}));
+
+app.get('/api/experience', withCache('experience', async () => {
+    const [rows] = await db.query('SELECT * FROM experience ORDER BY id DESC');
+    return rows;
+}));
+
+app.get('/api/projects', withCache('projects', async () => {
+    const [dbProjects] = await db.query('SELECT * FROM projects ORDER BY id DESC');
+    
+    // Inject github_images and is_pinned into cachedGithubProjects
+    const [images] = await db.query('SELECT * FROM github_images');
+    const imageMap = {};
+    const pinMap = {};
+    const pinnedAtMap = {};
+    const liveUrlMap = {};
+    images.forEach(img => {
+        imageMap[img.repo_id] = img.image_path;
+        pinMap[img.repo_id] = img.is_pinned;
+        pinnedAtMap[img.repo_id] = img.pinned_at;
+        liveUrlMap[img.repo_id] = img.live_url;
+    });
+    
+    const ghProjectsWithImages = cachedGithubProjects.map(proj => {
+        return {
+            ...proj,
+            image_path: imageMap[proj.id] || proj.image_path,
+            is_pinned: pinMap[proj.id] ? 1 : 0,
+            pinned_at: pinnedAtMap[proj.id] || null,
+            live_url: liveUrlMap[proj.id] || proj.live_url
+        };
+    });
+    
+    const allProjects = [...dbProjects, ...ghProjectsWithImages];
+    
+    // Sort: Pinned first (sorted by pinned_at DESC so recently pinned goes to top), then by date (created_at) descending
+    allProjects.sort((a, b) => {
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
         
-        // Inject github_images and is_pinned into cachedGithubProjects
-        const [images] = await db.query('SELECT * FROM github_images');
-        const imageMap = {};
-        const pinMap = {};
-        const pinnedAtMap = {};
-        const liveUrlMap = {};
-        images.forEach(img => {
-            imageMap[img.repo_id] = img.image_path;
-            pinMap[img.repo_id] = img.is_pinned;
-            pinnedAtMap[img.repo_id] = img.pinned_at;
-            liveUrlMap[img.repo_id] = img.live_url;
-        });
+        if (a.is_pinned && b.is_pinned) {
+            const pinA = new Date(a.pinned_at || 0).getTime();
+            const pinB = new Date(b.pinned_at || 0).getTime();
+            return pinA - pinB; // Oldest pins at the top
+        }
         
-        const ghProjectsWithImages = cachedGithubProjects.map(proj => {
-            return {
-                ...proj,
-                image_path: imageMap[proj.id] || proj.image_path,
-                is_pinned: pinMap[proj.id] ? 1 : 0,
-                pinned_at: pinnedAtMap[proj.id] || null,
-                live_url: liveUrlMap[proj.id] || proj.live_url
-            };
-        });
-        
-        const allProjects = [...dbProjects, ...ghProjectsWithImages];
-        
-        // Sort: Pinned first (sorted by pinned_at DESC so recently pinned goes to top), then by date (created_at) descending
-        allProjects.sort((a, b) => {
-            if (a.is_pinned && !b.is_pinned) return -1;
-            if (!a.is_pinned && b.is_pinned) return 1;
-            
-            if (a.is_pinned && b.is_pinned) {
-                const pinA = new Date(a.pinned_at || 0).getTime();
-                const pinB = new Date(b.pinned_at || 0).getTime();
-                return pinA - pinB; // Oldest pins at the top
-            }
-            
-            const dateA = new Date(a.created_at || 0).getTime();
-            const dateB = new Date(b.created_at || 0).getTime();
-            return dateB - dateA;
-        });
-        
-        res.json(allProjects);
-    } catch (err) { 
-        res.status(500).json({ error: 'Failed to fetch projects' }); 
-    }
-});
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        return dateB - dateA;
+    });
+    
+    return allProjects;
+}));
 
 app.post('/api/admin/projects/pin', upload.none(), requireAuth, async (req, res) => {
     try {
@@ -294,29 +416,25 @@ app.post('/api/admin/inbox/reply', express.json(), requireAuth, async (req, res)
     }
 });
 
-app.get('/api/education', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM education ORDER BY id DESC');
-        res.json(rows);
-    } catch (err) { res.status(500).json({ error: 'Failed to fetch education' }); }
-});
+app.get('/api/education', withCache('education', async () => {
+    const [rows] = await db.query('SELECT * FROM education ORDER BY id DESC');
+    return rows;
+}));
 
-app.get('/api/certificates', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM certificates ORDER BY id DESC');
-        res.json(rows);
-    } catch (err) { res.status(500).json({ error: 'Failed to fetch certificates' }); }
-});
+app.get('/api/certificates', withCache('certificates', async () => {
+    const [rows] = await db.query('SELECT * FROM certificates ORDER BY id DESC');
+    return rows;
+}));
 
-app.get('/api/services', async (req, res) => {
+app.get('/api/services', withCache('services', async () => {
     try {
         const [rows] = await db.query('SELECT * FROM services ORDER BY id DESC');
-        res.json(rows || []);
-    } catch (err) { 
+        return rows;
+    } catch (err) {
         console.error("Database services layer notice:", err.message);
-        res.json([]); 
+        return [];
     }
-});
+}));
 
 // ✉️ BACKEND SMTP MAIL ROUTE
 app.post('/api/contact', upload.none(), async (req, res) => {
@@ -392,12 +510,10 @@ app.post('/api/contact', upload.none(), async (req, res) => {
 // ==========================================
 // BLOG API ROUTES (PUBLIC)
 // ==========================================
-app.get('/api/blog', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM blog_posts ORDER BY id DESC');
-        res.json(rows);
-    } catch (err) { res.status(500).json({ error: 'Failed to fetch blogs' }); }
-});
+app.get('/api/blog', withCache('blog', async () => {
+    const [rows] = await db.query('SELECT * FROM blog_posts WHERE status = "published" ORDER BY created_at DESC');
+    return rows;
+}));
 
 app.get('/api/blog/:identifier', async (req, res) => {
     try {

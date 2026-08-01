@@ -4,17 +4,34 @@
     if (!sc) return;
     const sctx = sc.getContext('2d');
     let stars = [], shootingStars = [];
-    const starCount = 250;
+    const starCount = 180; // Reduced from 250 for better performance
     let mouseX = 0, mouseY = 0;
+    let animFrameId = null;
+    let isVisible = !document.hidden;
 
     function resize() { sc.width = window.innerWidth; sc.height = window.innerHeight; }
     resize();
-    window.addEventListener('resize', () => { resize(); initStars(); });
+    window.addEventListener('resize', () => { resize(); initStars(); }, { passive: true });
 
-    // Mouse parallax
+    // Throttled mouse parallax (max 60fps update)
+    let lastMouseUpdate = 0;
     document.addEventListener('mousemove', (e) => {
+        const now = performance.now();
+        if (now - lastMouseUpdate < 16) return; // ~60fps throttle
+        lastMouseUpdate = now;
         mouseX = (e.clientX - window.innerWidth / 2) * 0.01;
         mouseY = (e.clientY - window.innerHeight / 2) * 0.01;
+    }, { passive: true });
+
+    // ⚡ Page Visibility API — pause animation when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+        isVisible = !document.hidden;
+        if (isVisible && !animFrameId) {
+            animate();
+        } else if (!isVisible && animFrameId) {
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
+        }
     });
 
     class Star {
@@ -92,10 +109,11 @@
     initStars();
 
     function animate() {
+        if (!isVisible) { animFrameId = null; return; }
         sctx.clearRect(0, 0, sc.width, sc.height);
         stars.forEach(s => { s.update(); s.draw(); });
         shootingStars.forEach(s => { s.update(); s.draw(); });
-        requestAnimationFrame(animate);
+        animFrameId = requestAnimationFrame(animate);
     }
     animate();
 })();
@@ -141,7 +159,7 @@ window.setTypingRoles = (rolesStr) => {
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         progressBar.style.width = scrolled + '%';
-    });
+    }, { passive: true }); // passive: true prevents scroll blocking
 })();
 
 // 👁️ Scroll Reveal with Stagger
@@ -163,7 +181,7 @@ function observeNewReveals() {
 // 📱 Navbar & Mobile Menu
 const navbar = document.getElementById('navbar');
 if (navbar) {
-    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
 }
 
 const hamburger = document.getElementById('hamburger');
@@ -688,13 +706,17 @@ function initContactForm() {
 
 // ═══════════════════════════════════════════
 // 🚀 MAIN RUNTIME EXECUTION GATEWAY
+// Parallel API calls for maximum speed
 // ═══════════════════════════════════════════
-fetchProfile();
-fetchProjects();
-fetchExperience();
-fetchEducation();
-fetchServices();
-fetchCertificates();
-fetchAllPosts();
-fetchSingleArticle();
+Promise.all([
+    fetchProfile(),
+    fetchProjects(),
+    fetchExperience(),
+    fetchEducation(),
+    fetchServices(),
+    fetchCertificates(),
+    fetchAllPosts(),
+    fetchSingleArticle()
+]).catch(() => {}); // Silent catch — individual functions handle their own errors
+
 initContactForm();

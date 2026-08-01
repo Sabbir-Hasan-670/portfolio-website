@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@147.79.18.49 "find / -name 'server.js' -type f -path '*/protfolio/*' 2>/dev/null"
+expect "password:"
+send "S.abbir@670\r"
+expect eof
