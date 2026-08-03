@@ -1065,3 +1065,82 @@ body {
     #starCanvas { display: none; }
     .about-image-glow { animation: none; }
 }
+
+/* ============================================
+   SEO & CLEAN CODE UTILITIES (Replacing inline styles)
+   ============================================ */
+.hero-intro-label {
+    color: var(--text2);
+    font-size: 0.45em;
+    font-weight: 400;
+    display: block;
+    letter-spacing: 2px;
+    margin-bottom: 0.2em;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+}
+
+.icon-express {
+    filter: invert(0.5);
+}
+
+.nav-link-ccna {
+    color: #1ba0d7 !important;
+    font-weight: 600 !important;
+}
+
+.nav-link-js {
+    color: #F7DF1E !important;
+    font-weight: 600 !important;
+}
+
+.hero-stat-card-wide-pad {
+    padding: 1.2rem 1.5rem;
+}
+
+.about-emoji-avatar {
+    font-size: 5rem;
+}
+
+.github-graph-img {
+    display: none;
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 0.4rem;
+    aspect-ratio: 720 / 120;
+}
+
+.github-loading-text {
+    color: var(--text3);
+}
+
+.blog-detail-img {
+    display: block;
+    margin: 0 auto 2rem auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 450px;
+    border-radius: var(--r-md);
+    object-fit: cover;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* Static SEO Card Layouts (visible before JS loads, hydrated seamlessly) */
+.seo-static-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 1.5rem;
+    transition: var(--ease);
+}
+.seo-static-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    color: var(--text1);
+    margin-bottom: 0.5rem;
+}
+.seo-static-card p {
+    font-size: 0.9rem;
+    color: var(--text2);
+    line-height: 1.5;
+}

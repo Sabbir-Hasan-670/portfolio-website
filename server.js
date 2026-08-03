@@ -73,6 +73,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
     }
 }));
 
+// llms.txt — for AI search engines & LLMs (GEO)
+app.get('/llms.txt', (req, res) => {
+    res.set('Content-Type', 'text/plain; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'public/llms.txt'));
+});
+
 // robots.txt
 app.get('/robots.txt', (req, res) => {
     const host = req.protocol + '://' + req.get('host');
@@ -82,6 +89,16 @@ app.get('/robots.txt', (req, res) => {
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+
+# AI & LLM Assistants (GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
 
 Sitemap: ${host}/sitemap.xml
 `);

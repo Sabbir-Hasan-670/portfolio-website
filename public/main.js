@@ -342,7 +342,7 @@ async function fetchProfile() {
             const username = data.github_link.replace(/\/$/, '').split('/').pop();
             const aboutImgContainer = document.getElementById('about-image');
             if (aboutImgContainer) {
-                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" style="width:100%; height:100%; object-fit:cover; border-radius:22px;">`;
+                aboutImgContainer.innerHTML = `<img src="https://github.com/${username}.png" alt="Sabbir Hasan - Profile Picture" width="400" height="400" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:22px;">`;
             }
 
             const graphImg = document.getElementById('github-graph-mini');
@@ -375,7 +375,7 @@ async function fetchProjects() {
             card.style.transitionDelay = `${index * 0.08}s`;
             card.innerHTML = `
                 ${isGithub ? '<div style="color:var(--accent2); font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; padding:1rem 1.5rem 0; display:flex; align-items:center; gap:6px;"><span style="display:inline-block;width:6px;height:6px;background:var(--accent2);border-radius:50%;"></span> Auto-Imported</div>' : ''}
-                <div class="project-image">${proj.image_path ? `<img src="${proj.image_path}" alt="${proj.title}">` : '🚀'}</div>
+                <div class="project-image">${proj.image_path ? `<img src="${proj.image_path}" alt="${proj.title}" loading="lazy" decoding="async" width="600" height="340">` : '🚀'}</div>
                 <div class="project-body">
                     <h3>${proj.title}</h3>
                     <p>${proj.description || ''}</p>
@@ -498,7 +498,7 @@ async function fetchCertificates() {
         data.forEach((cert, index) => {
             grid.innerHTML += `
                 <div class="cert-card reveal" style="transition-delay:${index * 0.1}s">
-                    ${cert.image_path ? `<img src="${cert.image_path}" alt="${cert.title}">` : ''}
+                    ${cert.image_path ? `<img src="${cert.image_path}" alt="${cert.title}" loading="lazy" decoding="async" width="400" height="300">` : ''}
                     <div class="cert-body">
                         <h3>${cert.title}</h3>
                         <p>${cert.issuer || ''}</p>
@@ -584,7 +584,7 @@ function renderPage(filteredPosts, page) {
 
         const postSlug = post.slug || post.id;
         card.innerHTML = `
-            ${post.image_path ? `<div style="overflow:hidden;"><img src="${post.image_path}" class="blog-img" alt="${post.title}"></div>` : ''}
+            ${post.image_path ? `<div style="overflow:hidden;"><img src="${post.image_path}" class="blog-img" alt="${post.title}" loading="lazy" decoding="async" width="600" height="340"></div>` : ''}
             <div class="blog-body">
                 <span class="blog-category">${post.category || 'General'}</span>
                 <h3 class="blog-title">${post.title}</h3>
@@ -649,7 +649,7 @@ async function fetchSingleArticle() {
             <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center;">
                 <span class="blog-category" style="margin-bottom: 1.5rem; display: inline-block;">${category}</span>
                 <h1 class="blog-title" style="margin-bottom: 2rem; text-align: center; background: linear-gradient(135deg, #fff, var(--text2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; line-height: 1.3; width: 100%;">${title}</h1>
-                ${image ? `<img src="${image}" class="blog-img" style="display: block; margin: 0 auto 2rem auto; max-width: 100%; height: auto; max-height: 450px; border-radius: var(--radius); object-fit: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5);" alt="${title}">` : ''}
+                ${image ? `<img src="${image}" class="blog-detail-img" alt="${title}" loading="lazy" decoding="async" width="800" height="450">` : ''}
                 <div class="blog-excerpt" style="color: var(--text); font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; text-align: left; width: 100%; max-width: 750px; letter-spacing: 0.3px; margin-top: 1rem;">${content}</div>
             </div>
         `;

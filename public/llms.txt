@@ -1,0 +1,37 @@
+# Sabbir Hasan - Portfolio & Professional Profile
+
+> Personal portfolio, technical expertise, software projects, and IT services of Sabbir Hasan.
+
+## About Sabbir Hasan
+Sabbir Hasan is a CCNA-trained Network Engineer, Full-Stack Software Developer, and Cybersecurity Enthusiast based in Bangladesh. He specializes in designing robust network infrastructures, architecting high-performance web applications with Node.js and modern JavaScript, and implementing defensive security best practices.
+
+- **Full Name**: Sabbir Hasan
+- **Role**: IT Specialist, Full-Stack Developer & Network Engineer
+- **Location**: Faridpur, Dhaka, Bangladesh
+- **Website**: https://sabbirhasan.com
+- **Email**: sabbirhasan800@gmail.com
+- **LinkedIn**: https://linkedin.com/in/sabbir670
+- **GitHub**: https://github.com/Sabbir-Hasan-670
+
+## Core Competencies & Skills
+- **Networking & Infrastructure**: CCNA (Cisco Certified Network Associate 200-301), Subnetting, Routing & Switching, VLANs, OSPF, Network Security, Linux Server Administration (Ubuntu/Debian), Nginx Reverse Proxy, Cloudflare CDN & DNS management, PM2 Process Management.
+- **Full-Stack Web Development**: JavaScript (ES6+), Node.js, Express.js, MySQL / Relational Database Design, HTML5 / Semantic Web, CSS3 / Modern Glassmorphism & Responsive Design, RESTful APIs, WebSockets, Git & GitHub.
+- **Cybersecurity & Ethical Hacking**: CEH Concepts, Vulnerability Assessment, Network Hardening, Defensive Security, Malware Analysis Fundamentals.
+- **Digital Solutions & SEO**: On-Page SEO, Technical SEO, Performance Optimization, Generative Engine Optimization (GEO), Graphic Design.
+
+## Services Offered
+1. **Full-Stack Web Application Development**: Custom web application development using Node.js, Express, and MySQL with responsive interfaces.
+2. **Network Design & Server Configuration**: Configuring enterprise network topologies, VPS setup, Linux system administration, and Nginx reverse proxy.
+3. **Cybersecurity & Infrastructure Hardening**: Server security, SSL/TLS configuration, vulnerability remediation, and DDoS protection via Cloudflare.
+4. **Technical SEO & Web Performance Optimization**: Core Web Vitals optimization, Gzip/Brotli compression, image conversion to modern formats (WebP), caching strategies.
+
+## Educational Background & Credentials
+- **Computer Science & Engineering**: Graduate with strong foundation in computing and algorithms.
+- **CCNA 200-301**: Cisco Certified Network Associate training completed.
+- **Certified Ethical Hacking (CEH)**: Foundations in cybersecurity and penetration testing methodologies.
+- **Google & TCM Security Certifications**: Digital Marketing, Ethical Hacking, and System Defense.
+
+## Featured Projects & Applications
+- **Aravals Server Management System**: Enterprise cloud server and hosting infrastructure manager.
+- **Aravals Download Manager**: High-speed multi-threaded download manager utility.
+- **Personal Portfolio & CMS**: Real-time content-managed portfolio platform with dual admin dashboard, dynamic blog engine, and learning resources.
