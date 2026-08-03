@@ -16,6 +16,7 @@ const compression = require('compression');
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ==========================================
 // ⚡ GZIP COMPRESSION (Speed Boost)
@@ -82,7 +83,7 @@ app.get('/llms.txt', (req, res) => {
 
 // robots.txt
 app.get('/robots.txt', (req, res) => {
-    const host = req.protocol + '://' + req.get('host');
+    const host = 'https://sabbirhasan.com';
     res.set('Content-Type', 'text/plain');
     res.set('Cache-Control', 'public, max-age=86400');
     res.send(`User-agent: *
@@ -106,7 +107,7 @@ Sitemap: ${host}/sitemap.xml
 
 // sitemap.xml — dynamic
 app.get('/sitemap.xml', async (req, res) => {
-    const host = req.protocol + '://' + req.get('host');
+    const host = 'https://sabbirhasan.com';
     const now = new Date().toISOString().split('T')[0];
     let urls = [
         { loc: `${host}/`,        priority: '1.0', changefreq: 'weekly'  },
