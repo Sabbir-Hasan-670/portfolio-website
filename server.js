@@ -47,6 +47,36 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Remove .html from URLs
+app.set('trust proxy', 1);
+
+// ==========================================
+// ⚡ GZIP COMPRESSION (Speed Boost)
+// ==========================================
+app.use(compression({
+    level: 6,
+    threshold: 1024, // Only compress responses > 1kb
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+    }
+}));
+
+// ==========================================
+// 🔒 SECURITY & PERFORMANCE HEADERS
+// ==========================================
+app.use((req, res, next) => {
+    // Security headers
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'SAMEORIGIN');
+    res.set('X-XSS-Protection', '1; mode=block');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+});
+
+app.use(express.json());
+
+// Remove .html from URLs
 app.use((req, res, next) => {
     if (req.path.endsWith('.html') && req.path.length > 5) {
         const newPath = req.path.slice(0, -5);
@@ -89,10 +119,14 @@ app.get('/robots.txt', (req, res) => {
     res.set('Cache-Control', 'public, max-age=86400');
     res.send(`User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /admin/
+Disallow: /login
+Disallow: /dashboard
+Disallow: /api
 Disallow: /api/
 
-# AI & LLM Assistants (GEO)
+# AI & LLM Search Assistants (GEO)
 User-agent: GPTBot
 Allow: /
 

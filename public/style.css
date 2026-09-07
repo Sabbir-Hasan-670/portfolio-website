@@ -329,27 +329,29 @@ body {
     50% { opacity:0.5; transform:scale(0.6); }
 }
 
-/* Huge name — Syne bold */
+/* Huge name & semantic H1 — Syne bold */
 .hero-name {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(3rem, 7vw, 6rem);
+    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
     font-weight: 800;
-    letter-spacing: -3px;
-    line-height: 1.0;
-    margin-bottom: 0.5rem;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    margin-bottom: 0.8rem;
     color: var(--text1);
 }
-/* Hide the default "highlight" span — we style it differently */
-.hero-name .highlight {
+.hero-name-primary {
     display: block;
-    background: none;
-    -webkit-background-clip: unset;
-    background-clip: unset;
-    -webkit-text-fill-color: unset;
     color: var(--text1);
-    animation: none;
-    /* Make name vibrant with shadow glow */
     text-shadow: 0 0 60px rgba(159,91,255,0.4);
+}
+.hero-name-subtitle {
+    display: block;
+    font-size: clamp(1.15rem, 2.4vw, 1.85rem);
+    font-weight: 700;
+    color: var(--lime);
+    letter-spacing: -0.5px;
+    margin-top: 0.4rem;
+    text-shadow: 0 0 25px rgba(200,255,0,0.35);
 }
 
 .hero-title-wrapper {

@@ -109,16 +109,18 @@ function processCodeBlocks(content) {
  * Render Complete Blog Listing Page HTML
  */
 function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, currentCategory, categories, siteUrl }) {
+    const displayCategory = currentCategory ? currentCategory.split(/[- ]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : null;
+
     const canonicalUrl = currentCategory
         ? (currentPage > 1 ? `${siteUrl}/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${currentPage}` : `${siteUrl}/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}`)
         : (currentPage > 1 ? `${siteUrl}/blog/page/${currentPage}` : `${siteUrl}/blog`);
 
-    const pageTitle = currentCategory 
-        ? `${escapeHtml(currentCategory)} Articles (Page ${currentPage}) | Sabbir Hasan`
+    const pageTitle = displayCategory 
+        ? `${escapeHtml(displayCategory)} Articles (Page ${currentPage}) | Sabbir Hasan`
         : (currentPage > 1 ? `Latest Articles — Page ${currentPage} | Sabbir Hasan Blog` : `Blog | Sabbir Hasan — Networking, Cybersecurity & Tech Articles`);
 
-    const pageDesc = currentCategory
-        ? `Read in-depth ${escapeHtml(currentCategory)} tutorials, articles and practical guides by Sabbir Hasan.`
+    const pageDesc = displayCategory
+        ? `Read in-depth ${escapeHtml(displayCategory)} tutorials, articles and practical guides by Sabbir Hasan.`
         : `Read latest technical articles by Sabbir Hasan on CCNA networking, cybersecurity, full-stack web development, and Linux administration from Bangladesh.`;
 
     const prevPageUrl = currentPage > 1
@@ -287,9 +289,9 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
         <main class="section blog-listing-section">
             <header class="section-header reveal active">
-                <p class="section-label">Knowledge Base &amp; Tutorials</p>
-                <h1 class="section-title">Technical <span>Articles</span></h1>
-                <p class="section-desc">Practical guides, network engineering configurations, cybersecurity breakdowns, and full-stack development insights.</p>
+                <p class="section-label">${displayCategory ? 'Category: ' + escapeHtml(displayCategory) : 'Knowledge Base &amp; Tutorials'}</p>
+                <h1 class="section-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Technical <span>Articles</span>'}</h1>
+                <p class="section-desc">${displayCategory ? 'In-depth tutorials, practical guides, and technical insights filed under ' + escapeHtml(displayCategory) + '.' : 'Practical guides, network engineering configurations, cybersecurity breakdowns, and full-stack development insights.'}</p>
             </header>
 
             <!-- SEARCH & FILTERS -->

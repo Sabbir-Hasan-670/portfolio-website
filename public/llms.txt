@@ -16,7 +16,7 @@ Sabbir Hasan is a CCNA-trained Network Engineer, Full-Stack Software Developer, 
 ## Core Competencies & Skills
 - **Networking & Infrastructure**: CCNA (Cisco Certified Network Associate 200-301), Subnetting, Routing & Switching, VLANs, OSPF, Network Security, Linux Server Administration (Ubuntu/Debian), Nginx Reverse Proxy, Cloudflare CDN & DNS management, PM2 Process Management.
 - **Full-Stack Web Development**: JavaScript (ES6+), Node.js, Express.js, MySQL / Relational Database Design, HTML5 / Semantic Web, CSS3 / Modern Glassmorphism & Responsive Design, RESTful APIs, WebSockets, Git & GitHub.
-- **Cybersecurity & Ethical Hacking**: CEH Concepts, Vulnerability Assessment, Network Hardening, Defensive Security, Malware Analysis Fundamentals.
+- **Cybersecurity & Ethical Hacking**: Penetration Testing Methodologies, Vulnerability Assessment, Network Hardening, Defensive Security, Malware Analysis Fundamentals.
 - **Digital Solutions & SEO**: On-Page SEO, Technical SEO, Performance Optimization, Generative Engine Optimization (GEO), Graphic Design.
 
 ## Services Offered
@@ -26,10 +26,10 @@ Sabbir Hasan is a CCNA-trained Network Engineer, Full-Stack Software Developer, 
 4. **Technical SEO & Web Performance Optimization**: Core Web Vitals optimization, Gzip/Brotli compression, image conversion to modern formats (WebP), caching strategies.
 
 ## Educational Background & Credentials
-- **Computer Science & Engineering**: Graduate with strong foundation in computing and algorithms.
-- **CCNA 200-301**: Cisco Certified Network Associate training completed.
-- **Certified Ethical Hacking (CEH)**: Foundations in cybersecurity and penetration testing methodologies.
-- **Google & TCM Security Certifications**: Digital Marketing, Ethical Hacking, and System Defense.
+- **B.Tech in Computer Science & Engineering**: Lovely Professional University, India — Strong foundation in computing, distributed systems, networks, and software engineering.
+- **CCNA 200-301 Training**: Cisco Certified Network Associate training completed (Cisco Networking Academy).
+- **Applied Cybersecurity & Penetration Testing**: Hands-on coursework and applied labs in ethical hacking, vulnerability scanning, and network defense (TCM Security & Udemy).
+- **Google Certification**: Digital Marketing and Technical SEO.
 
 ## Featured Projects & Applications
 - **Aravals Server Management System**: Enterprise cloud server and hosting infrastructure manager.
