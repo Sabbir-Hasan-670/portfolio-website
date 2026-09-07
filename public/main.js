@@ -119,7 +119,7 @@
 })();
 
 // ⌨️ Typing Effect
-window.typingTitles = ['Multidisciplinary IT Specialist', 'Graphic Designer', 'Web Developer', 'Network Security Enthusiast'];
+window.typingTitles = ['Network Engineer', 'Full-Stack Developer', 'Cybersecurity Specialist', 'Linux Server Administrator', 'Technical SEO Specialist'];
 window.setTypingRoles = (rolesStr) => {
     if (rolesStr) {
         const arr = rolesStr.split(',').map(r => r.trim()).filter(r => r);

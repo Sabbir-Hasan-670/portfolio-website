@@ -1404,10 +1404,10 @@ app.listen(PORT, async () => {
                     about_title, about_desc
                 ) VALUES (
                     1, 
-                    'Multidisciplinary IT Specialist, Graphic Designer, Web Developer, Network Security Enthusiast', 
+                    'Network Engineer, Full-Stack Developer, Cybersecurity Specialist, Linux Server Administrator, Technical SEO Specialist', 
                     'CCNA-trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast. Building secure and scalable digital experiences from Bangladesh.', 
                     'CCNA', '200-301 TRAINED', 
-                    'CEH', 'CYBERSECURITY', 
+                    'Cyber', 'Security Labs', 
                     '3+', '20+', 
                     'CS Graduate · CCNA Trained · IT Professional',
                     'Write your about text here...'
@@ -1418,11 +1418,11 @@ app.listen(PORT, async () => {
         try {
             await db.query(`
                 UPDATE admin_profile SET 
-                    about_desc = 'Computer Science graduate and CCNA‑trained professional bridging the gap between secure network engineering and full‑stack development. From configuring robust network topologies to building dynamic software solutions, I thrive on solving complex technical problems.\n\nHolding certifications from Google, Udemy and TCM Security across Ethical Hacking, Digital Marketing, and Malware Analysis. Fluent in English, Bangla, and Hindi.'
+                    about_desc = 'Computer Science graduate and CCNA‑trained professional bridging the gap between secure network engineering and full‑stack development. From configuring robust network topologies to building dynamic software solutions, I thrive on solving complex technical problems.\n\nCertified in Digital Marketing & Technical SEO by Google, with hands-on coursework and lab training from Cisco Networking Academy, TCM Security, and Udemy in Network Engineering, Ethical Hacking, and Malware Analysis. Fluent in English, Bangla, and Hindi.'
                 WHERE id = 1 AND (about_desc = 'Write your about text here...' OR about_desc IS NULL OR about_desc = '');
             `);
             await db.query(`
-                UPDATE admin_profile SET contact_location = 'Faridpur, Dhaka, Bangladesh' WHERE id = 1 AND (contact_location IS NULL OR contact_location = '');
+                UPDATE admin_profile SET contact_location = 'Faridpur, Bangladesh' WHERE id = 1 AND (contact_location IS NULL OR contact_location = '');
             `);
             await db.query(`
                 UPDATE admin_profile SET contact_email = 'sabbirhasan800@gmail.com' WHERE id = 1 AND (contact_email IS NULL OR contact_email = '');
