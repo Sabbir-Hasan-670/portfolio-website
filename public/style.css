@@ -329,29 +329,31 @@ body {
     50% { opacity:0.5; transform:scale(0.6); }
 }
 
-/* Huge name & semantic H1 — Syne bold */
+/* Hero semantic H1 typography */
 .hero-name {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
-    font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1.1;
     margin-bottom: 0.8rem;
+    line-height: 1.1;
     color: var(--text1);
 }
 .hero-name-primary {
     display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.6rem, 5vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
     color: var(--text1);
-    text-shadow: 0 0 60px rgba(159,91,255,0.4);
+    text-shadow: 0 0 50px rgba(159,91,255,0.35);
 }
 .hero-name-subtitle {
     display: block;
-    font-size: clamp(1.15rem, 2.4vw, 1.85rem);
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(1.05rem, 2vw, 1.45rem);
     font-weight: 700;
     color: var(--lime);
-    letter-spacing: -0.5px;
-    margin-top: 0.4rem;
-    text-shadow: 0 0 25px rgba(200,255,0,0.35);
+    letter-spacing: 0.2px;
+    margin-top: 0.5rem;
+    text-shadow: 0 0 20px rgba(200,255,0,0.35);
 }
 
 .hero-title-wrapper {
@@ -506,12 +508,13 @@ body {
 
 .stat-number {
     font-family: 'Syne', sans-serif;
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 2.8vw, 2.3rem);
     font-weight: 800;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     color: var(--text1);
     line-height: 1;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
+    white-space: nowrap;
 }
 .stat-number.lime { color: var(--lime); }
 .stat-number.pink { color: var(--pink); }
