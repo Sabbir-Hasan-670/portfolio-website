@@ -719,4 +719,18 @@ Promise.all([
     fetchSingleArticle()
 ]).catch(() => {}); // Silent catch — individual functions handle their own errors
 
+// 🔄 Seamless Marquee Runner (Smooth infinite horizontal scroll without duplicate source HTML)
+function initTechMarquee() {
+    const track = document.getElementById('techMarqueeTrack');
+    if (!track) return;
+    const group = track.querySelector('.marquee-group');
+    if (group && !track.querySelector('.marquee-group-clone')) {
+        const clone = group.cloneNode(true);
+        clone.classList.add('marquee-group-clone');
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+    }
+}
+initTechMarquee();
+
 initContactForm();

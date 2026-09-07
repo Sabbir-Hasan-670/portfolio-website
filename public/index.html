@@ -52,7 +52,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- ===== CRITICAL CSS ===== -->
-    <link rel="stylesheet" href="/style.css?v=3.0">
+    <link rel="stylesheet" href="/style.css?v=4.0">
 
     <!-- ===== JSON-LD STRUCTURED DATA (Google Rich Results & GEO) ===== -->
     <script type="application/ld+json">
@@ -225,20 +225,22 @@
             </div>
         </div>
 
-        <!-- Tech Stack Showcase — Single clean semantic container, zero duplication -->
-        <div class="hero-tech-belt" id="heroTechBelt">
-            <div class="tech-belt-track">
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="HTML5"> HTML5</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="CSS3"> CSS3</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="JavaScript"> JavaScript</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="Node.js"> Node.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" width="17" height="17" loading="lazy" decoding="async" class="icon-express" alt="Express.js"> Express.js</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="MySQL"> MySQL</div>
-                <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="React"> React</div>
-                <div class="skill-pill">🌐 Network Engineering (CCNA)</div>
-                <div class="skill-pill">🛡️ Ethical Hacking &amp; Cybersecurity</div>
-                <div class="skill-pill">🖥️ Linux Server Administration</div>
-                <div class="skill-pill">⚡ Technical SEO</div>
+        <!-- Tech Stack Marquee (Single semantic HTML group, zero duplication, infinite smooth scroll) -->
+        <div class="hero-marquee-wrap" style="grid-column: 1 / -1; width: 100%; overflow: hidden;">
+            <div class="hero-marquee-track" id="techMarqueeTrack" style="display: flex; width: max-content;">
+                <div class="marquee-group" style="display: flex; gap: 0.65rem; padding-right: 0.65rem; flex-shrink: 0;">
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="HTML5"> HTML5</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="CSS3"> CSS3</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="JavaScript"> JavaScript</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="Node.js"> Node.js</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" width="17" height="17" loading="lazy" decoding="async" class="icon-express" alt="Express.js"> Express.js</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="MySQL"> MySQL</div>
+                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="React"> React</div>
+                    <div class="skill-pill">🌐 Network Engineering (CCNA)</div>
+                    <div class="skill-pill">🛡️ Ethical Hacking &amp; Cybersecurity</div>
+                    <div class="skill-pill">🖥️ Linux Server Administration</div>
+                    <div class="skill-pill">⚡ Technical SEO</div>
+                </div>
             </div>
         </div>
 
