@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== PRIMARY SEO ===== -->
+    <title>IPv4 Subnet Calculator | CIDR &amp; IP Range Calculator | Sabbir Hasan</title>
+    <meta name="description" content="Free online IPv4 Subnet Calculator and CIDR tool for network engineers and CCNA students. Calculate network address, broadcast IP, usable host range, wildcard mask, and Cisco configuration.">
+    <meta name="keywords" content="IPv4 Subnet Calculator, CIDR Calculator, Subnetting CCNA, Wildcard Mask, IP Range, Cisco Subnetting, Sabbir Hasan">
+    <meta name="author" content="Sabbir Hasan">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sabbirhasan.com/tools/subnet-calculator">
+
+    <!-- ===== OPEN GRAPH ===== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sabbirhasan.com/tools/subnet-calculator">
+    <meta property="og:title" content="IPv4 Subnet Calculator &amp; CIDR Tool | Sabbir Hasan">
+    <meta property="og:description" content="Calculate network address, broadcast IP, usable hosts, wildcard mask, and Cisco IOS commands instantly.">
+    <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
+    <meta property="og:site_name" content="Sabbir Hasan">
+
+    <!-- ===== TWITTER CARD ===== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="IPv4 Subnet Calculator | Sabbir Hasan">
+    <meta name="twitter:description" content="Free, fast, client-side IPv4 Subnet and CIDR Calculator with Cisco command generator.">
+    <meta name="twitter:image" content="https://sabbirhasan.com/og-image.png">
+
+    <!-- ===== THEME & FAVICON ===== -->
+    <meta name="theme-color" content="#060913">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- ===== FONTS & STYLES ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- WebApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "IPv4 Subnet Calculator",
+      "url": "https://sabbirhasan.com/tools/subnet-calculator",
+      "applicationCategory": "NetworkingApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript",
+      "description": "Calculate IPv4 network address, broadcast IP, usable host range, wildcard mask, and Cisco configuration.",
+      "author": {
+        "@type": "Person",
+        "name": "Sabbir Hasan",
+        "url": "https://sabbirhasan.com/about"
+      }
+    }
+    </script>
+
+    <style>
+    .calc-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 5rem 1.25rem;
+    }
+    .calc-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-xl);
+        padding: 2.5rem;
+        backdrop-filter: blur(20px);
+        margin-bottom: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .calc-inputs-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    @media (max-width: 640px) {
+        .calc-inputs-grid { grid-template-columns: 1fr; }
+        .calc-card { padding: 1.5rem; }
+    }
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .input-group label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: var(--lime);
+        font-weight: 600;
+    }
+    .calc-input, .calc-select {
+        padding: 0.85rem 1.2rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        color: var(--text1);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.25s;
+    }
+    .calc-input:focus, .calc-select:focus {
+        border-color: var(--lime);
+        box-shadow: 0 0 16px rgba(200, 255, 0, 0.2);
+        background: rgba(255, 255, 255, 0.07);
+    }
+    .calc-select option {
+        background: #0d121f;
+        color: #ffffff;
+    }
+    .quick-presets-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        align-items: center;
+    }
+    .preset-label {
+        font-size: 0.8rem;
+        color: var(--text3);
+        margin-right: 0.2rem;
+    }
+    .preset-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: var(--text2);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.76rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .preset-btn:hover {
+        border-color: var(--lime);
+        color: var(--lime);
+        background: rgba(200, 255, 0, 0.06);
+    }
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .result-item-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 1rem 1.2rem;
+        position: relative;
+        transition: border-color 0.2s;
+    }
+    .result-item-card:hover {
+        border-color: rgba(200, 255, 0, 0.3);
+    }
+    .res-label {
+        font-size: 0.74rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .res-val {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text1);
+        word-break: break-all;
+    }
+    .res-val.highlight {
+        color: var(--lime);
+    }
+    .copy-item-btn {
+        position: absolute;
+        right: 0.8rem;
+        top: 0.8rem;
+        background: transparent;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: color 0.2s;
+    }
+    .copy-item-btn:hover {
+        color: var(--lime);
+    }
+    .cisco-box {
+        margin-top: 2rem;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: var(--r-md);
+        padding: 1.2rem;
+    }
+    .cisco-box-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.6rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--lime);
+        font-weight: 700;
+    }
+    .cisco-code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.88rem;
+        color: #e6edf3;
+        line-height: 1.6;
+        margin: 0;
+        white-space: pre-wrap;
+    }
+    .edu-content-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-xl);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(16px);
+    }
+    .edu-content-card h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.5rem;
+        color: var(--text1);
+        margin-bottom: 1rem;
+    }
+    .edu-content-card p {
+        color: var(--text2);
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+        font-size: 0.95rem;
+    }
+    .cheat-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        font-size: 0.86rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .cheat-table th, .cheat-table td {
+        padding: 0.65rem 0.9rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        text-align: left;
+    }
+    .cheat-table th {
+        background: rgba(200, 255, 0, 0.08);
+        color: var(--lime);
+    }
+    .cheat-table tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="aurora-mesh">
+        <div class="aurora-blob aurora-blob-1"></div>
+        <div class="aurora-blob aurora-blob-2"></div>
+        <div class="aurora-blob aurora-blob-3"></div>
+    </div>
+    <canvas id="starCanvas"></canvas>
+
+    <div class="main-content">
+        <!-- NAVIGATION -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="/" class="nav-logo">SH.</a>
+                <div class="nav-links" id="navLinks">
+                    <a href="/" class="nav-visible-btn">Home</a>
+                    <a href="/about" class="nav-visible-btn">About</a>
+                    <a href="/resume" class="nav-visible-btn">Resume</a>
+                    <a href="/blog" class="nav-visible-btn">Blog</a>
+                    <a href="/tools" class="nav-visible-btn" style="color:var(--lime);">Tools</a>
+                    <a href="/contact" class="nav-cta">Contact</a>
+                    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+                    <div class="nav-menu-dropdown" id="navDropdown">
+                        <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/#projects">Projects</a>
+                        <a href="/#experience">Experience</a>
+                        <a href="/#education">Education</a>
+                        <a href="/tools">Interactive Tools</a>
+                        <a href="/contact" class="nav-cta">Let's Talk</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="calc-container">
+            <!-- BREADCRUMBS -->
+            <nav class="breadcrumb-bar" aria-label="Breadcrumbs">
+                <ol class="breadcrumb-list">
+                    <li><a href="/">Home</a></li>
+                    <li><span class="sep">/</span></li>
+                    <li><a href="/tools">Tools</a></li>
+                    <li><span class="sep">/</span></li>
+                    <li aria-current="page" class="active">IPv4 Subnet Calculator</li>
+                </ol>
+            </nav>
+
+            <header class="section-header reveal active" style="text-align: center; margin-bottom: 2.5rem;">
+                <p class="section-label">Networking &amp; CCNA Utility</p>
+                <h1 class="section-title">IPv4 Subnet &amp; <span>CIDR Calculator</span></h1>
+                <p class="section-desc">Instantly compute network boundaries, broadcast addresses, usable host counts, wildcard masks, and Cisco IOS configuration snippets.</p>
+            </header>
+
+            <!-- CALCULATOR CARD -->
+            <div class="calc-card">
+                <div class="calc-inputs-grid">
+                    <div class="input-group">
+                        <label for="ipInput">IP Address</label>
+                        <input type="text" id="ipInput" class="calc-input" placeholder="e.g. 192.168.10.0" value="192.168.10.0" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div class="input-group">
+                        <label for="cidrSelect">Subnet Mask / CIDR</label>
+                        <select id="cidrSelect" class="calc-select"></select>
+                    </div>
+                </div>
+
+                <!-- QUICK PRESETS -->
+                <div class="quick-presets-bar">
+                    <span class="preset-label">Quick Presets:</span>
+                    <button type="button" class="preset-btn" onclick="applyPreset('192.168.1.0', 24)">/24 (254 hosts)</button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('172.16.0.0', 16)">/16 (Class B)</button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('10.0.0.0', 8)">/8 (Class A)</button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('192.168.1.0', 26)">/26 (62 hosts)</button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('10.0.0.0', 30)">/30 (P2P Link)</button>
+                </div>
+
+                <!-- CALCULATION RESULTS GRID -->
+                <div class="results-grid" id="resultsGrid">
+                    <div class="result-item-card">
+                        <div class="res-label">Network Address</div>
+                        <div class="res-val highlight" id="resNetwork">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resNetwork')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">Broadcast Address</div>
+                        <div class="res-val highlight" id="resBroadcast">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resBroadcast')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">First Usable Host</div>
+                        <div class="res-val" id="resFirstHost">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resFirstHost')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">Last Usable Host</div>
+                        <div class="res-val" id="resLastHost">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resLastHost')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">Usable Hosts Count</div>
+                        <div class="res-val highlight" id="resUsableHosts">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resUsableHosts')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">Subnet Mask (Decimal)</div>
+                        <div class="res-val" id="resSubnetMask">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resSubnetMask')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">Wildcard Mask</div>
+                        <div class="res-val" id="resWildcard">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resWildcard')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card">
+                        <div class="res-label">IP Class &amp; Scope</div>
+                        <div class="res-val" id="resIpClass">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resIpClass')" title="Copy">📋</button>
+                    </div>
+
+                    <div class="result-item-card" style="grid-column: 1 / -1;">
+                        <div class="res-label">Binary Subnet Mask</div>
+                        <div class="res-val" style="font-size: 0.85rem; color: #a5b4fc;" id="resBinaryMask">-</div>
+                        <button class="copy-item-btn" onclick="copyValue('resBinaryMask')" title="Copy">📋</button>
+                    </div>
+                </div>
+
+                <!-- CISCO IOS SNIPPET -->
+                <div class="cisco-box">
+                    <div class="cisco-box-header">
+                        <span>⚡ Cisco IOS Interface Configuration Example</span>
+                        <button type="button" class="copy-code-btn" onclick="copyCiscoConfig(this)">📋 Copy Config</button>
+                    </div>
+                    <pre class="cisco-code" id="ciscoSnippet"></pre>
+                </div>
+            </div>
+
+            <!-- EDUCATIONAL GUIDE & CHEAT SHEET -->
+            <article class="edu-content-card">
+                <h2>Understanding IPv4 Subnetting &amp; CIDR</h2>
+                <p>
+                    Subnetting is the process of dividing a single large IP network into smaller, manageable sub-networks (subnets). In modern network architecture and the <strong>CCNA 200-301 curriculum</strong>, Classless Inter-Domain Routing (CIDR) notation (e.g. <code>/24</code>) defines how many bits are dedicated to the network portion versus the host portion.
+                </p>
+                <p>
+                    The total number of usable hosts in any standard subnet is calculated with the formula: <strong>2<sup>(32 - prefix)</sup> - 2</strong>. The <code>- 2</code> subtracts the <em>Network ID</em> (all host bits 0) and the <em>Broadcast Address</em> (all host bits 1), which cannot be assigned to individual devices.
+                </p>
+
+                <h3 style="color: var(--lime); font-size: 1.15rem; margin: 1.5rem 0 0.8rem 0;">Common Subnet Cheat Sheet</h3>
+                <div style="overflow-x: auto;">
+                    <table class="cheat-table">
+                        <thead>
+                            <tr>
+                                <th>Prefix</th>
+                                <th>Subnet Mask</th>
+                                <th>Total IPs</th>
+                                <th>Usable Hosts</th>
+                                <th>Common Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td><td>Point-to-point router links</td></tr>
+                            <tr><td>/29</td><td>255.255.255.248</td><td>8</td><td>6</td><td>Small DMZ, WAN blocks</td></tr>
+                            <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td><td>Branch office subnets</td></tr>
+                            <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td><td>Department VLANs</td></tr>
+                            <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td><td>Medium VLAN subnets</td></tr>
+                            <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td><td>Standard LAN / Office Network</td></tr>
+                            <tr><td>/16</td><td>255.255.0.0</td><td>65,536</td><td>65,534</td><td>Enterprise core network</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/">Home</a>
+                    <a href="/about">About</a>
+                    <a href="/resume">Resume</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/tools">Tools</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/tools/subnet-calculator.js"></script>
+    <script src="/main.js" defer></script>
+    <script src="/toast.js" defer></script>
+</body>
+</html>

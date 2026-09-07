@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== PRIMARY SEO ===== -->
+    <title>Developer Utilities | JSON Formatter, Base64 &amp; URL Encoder | Sabbir Hasan</title>
+    <meta name="description" content="Free online developer tools: format and validate JSON, encode/decode Base64 strings, and encode URLs. 100% private and client-side by Sabbir Hasan.">
+    <meta name="keywords" content="JSON Formatter, Base64 Encoder, URL Encoder, Developer Tools, Sabbir Hasan">
+    <meta name="author" content="Sabbir Hasan">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sabbirhasan.com/tools/dev-utilities">
+
+    <!-- ===== OPEN GRAPH ===== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sabbirhasan.com/tools/dev-utilities">
+    <meta property="og:title" content="Developer Utilities | Sabbir Hasan">
+    <meta property="og:description" content="Free, secure, client-side JSON formatting and Base64 conversion tools.">
+    <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
+    <meta property="og:site_name" content="Sabbir Hasan">
+
+    <!-- ===== THEME & FAVICON ===== -->
+    <meta name="theme-color" content="#060913">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- ===== FONTS & STYLES ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+    .dev-util-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 5rem 1.25rem;
+    }
+    .util-tab-nav {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .util-tab-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: var(--text2);
+        padding: 0.6rem 1.4rem;
+        border-radius: var(--r-full);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .util-tab-btn:hover {
+        border-color: var(--lime);
+        color: var(--lime);
+    }
+    .util-tab-btn.active {
+        background: var(--lime);
+        color: var(--bg);
+        border-color: var(--lime);
+        box-shadow: 0 0 16px rgba(200, 255, 0, 0.25);
+    }
+    .util-panel {
+        display: none;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-xl);
+        padding: 2.5rem;
+        backdrop-filter: blur(20px);
+        margin-bottom: 3rem;
+    }
+    .util-panel.active {
+        display: block;
+    }
+    .editor-textarea {
+        width: 100%;
+        min-height: 220px;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: var(--r-md);
+        padding: 1.2rem;
+        color: #e6edf3;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        resize: vertical;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .editor-textarea:focus {
+        border-color: var(--lime);
+        box-shadow: 0 0 16px rgba(200, 255, 0, 0.15);
+    }
+    .util-actions-row {
+        display: flex;
+        gap: 0.8rem;
+        margin: 1.2rem 0;
+        flex-wrap: wrap;
+    }
+    .util-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        color: var(--text1);
+        padding: 0.55rem 1.2rem;
+        border-radius: var(--r-sm);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .util-btn:hover {
+        background: var(--lime);
+        color: var(--bg);
+        border-color: var(--lime);
+    }
+    .util-status {
+        margin-top: 0.6rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.82rem;
+    }
+    .status-success { color: #10b981; }
+    .status-error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="aurora-mesh">
+        <div class="aurora-blob aurora-blob-1"></div>
+        <div class="aurora-blob aurora-blob-2"></div>
+        <div class="aurora-blob aurora-blob-3"></div>
+    </div>
+    <canvas id="starCanvas"></canvas>
+
+    <div class="main-content">
+        <!-- NAVIGATION -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="/" class="nav-logo">SH.</a>
+                <div class="nav-links" id="navLinks">
+                    <a href="/" class="nav-visible-btn">Home</a>
+                    <a href="/about" class="nav-visible-btn">About</a>
+                    <a href="/resume" class="nav-visible-btn">Resume</a>
+                    <a href="/blog" class="nav-visible-btn">Blog</a>
+                    <a href="/tools" class="nav-visible-btn" style="color:var(--lime);">Tools</a>
+                    <a href="/contact" class="nav-cta">Contact</a>
+                    <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+                    <div class="nav-menu-dropdown" id="navDropdown">
+                        <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/#projects">Projects</a>
+                        <a href="/#experience">Experience</a>
+                        <a href="/#education">Education</a>
+                        <a href="/tools">Interactive Tools</a>
+                        <a href="/contact" class="nav-cta">Let's Talk</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="dev-util-container">
+            <!-- BREADCRUMBS -->
+            <nav class="breadcrumb-bar" aria-label="Breadcrumbs">
+                <ol class="breadcrumb-list">
+                    <li><a href="/">Home</a></li>
+                    <li><span class="sep">/</span></li>
+                    <li><a href="/tools">Tools</a></li>
+                    <li><span class="sep">/</span></li>
+                    <li aria-current="page" class="active">Developer Utilities</li>
+                </ol>
+            </nav>
+
+            <header class="section-header reveal active" style="text-align: center; margin-bottom: 2rem;">
+                <p class="section-label">Web &amp; Security Utilities</p>
+                <h1 class="section-title">Developer <span>Utilities</span></h1>
+                <p class="section-desc">Client-side JSON formatter, Base64 conversion, and URL encoding tools with zero server tracking.</p>
+            </header>
+
+            <div class="util-tab-nav">
+                <button type="button" class="util-tab-btn active" onclick="switchTab('json')">JSON Formatter</button>
+                <button type="button" class="util-tab-btn" onclick="switchTab('base64')">Base64 Converter</button>
+                <button type="button" class="util-tab-btn" onclick="switchTab('url')">URL Encoder / Decoder</button>
+            </div>
+
+            <!-- PANEL 1: JSON FORMATTER -->
+            <div id="panel-json" class="util-panel active">
+                <h2 style="font-family:'Syne',sans-serif; color:var(--text1); font-size:1.35rem; margin-bottom:1rem;">JSON Formatter &amp; Validator</h2>
+                <textarea id="jsonInput" class="editor-textarea" placeholder="Paste your raw or unformatted JSON here..." spellcheck="false"></textarea>
+                <div class="util-actions-row">
+                    <button type="button" class="util-btn" onclick="formatJson(2)">Beautify (2 Spaces)</button>
+                    <button type="button" class="util-btn" onclick="formatJson(4)">Beautify (4 Spaces)</button>
+                    <button type="button" class="util-btn" onclick="minifyJson()">Minify</button>
+                    <button type="button" class="util-btn" onclick="copyFromTextarea('jsonInput')">Copy JSON</button>
+                    <button type="button" class="util-btn" onclick="clearTextarea('jsonInput', 'jsonStatus')">Clear</button>
+                </div>
+                <div id="jsonStatus" class="util-status"></div>
+            </div>
+
+            <!-- PANEL 2: BASE64 CONVERTER -->
+            <div id="panel-base64" class="util-panel">
+                <h2 style="font-family:'Syne',sans-serif; color:var(--text1); font-size:1.35rem; margin-bottom:1rem;">Base64 Encoder &amp; Decoder</h2>
+                <textarea id="base64Input" class="editor-textarea" placeholder="Enter plain text or Base64 encoded string..." spellcheck="false"></textarea>
+                <div class="util-actions-row">
+                    <button type="button" class="util-btn" onclick="encodeBase64()">Encode to Base64</button>
+                    <button type="button" class="util-btn" onclick="decodeBase64()">Decode from Base64</button>
+                    <button type="button" class="util-btn" onclick="copyFromTextarea('base64Input')">Copy</button>
+                    <button type="button" class="util-btn" onclick="clearTextarea('base64Input', 'base64Status')">Clear</button>
+                </div>
+                <div id="base64Status" class="util-status"></div>
+            </div>
+
+            <!-- PANEL 3: URL ENCODER / DECODER -->
+            <div id="panel-url" class="util-panel">
+                <h2 style="font-family:'Syne',sans-serif; color:var(--text1); font-size:1.35rem; margin-bottom:1rem;">URL Encoder &amp; Decoder</h2>
+                <textarea id="urlInput" class="editor-textarea" placeholder="Enter URL or string to encode/decode..." spellcheck="false"></textarea>
+                <div class="util-actions-row">
+                    <button type="button" class="util-btn" onclick="encodeUrlComponent()">URL Encode</button>
+                    <button type="button" class="util-btn" onclick="decodeUrlComponent()">URL Decode</button>
+                    <button type="button" class="util-btn" onclick="copyFromTextarea('urlInput')">Copy</button>
+                    <button type="button" class="util-btn" onclick="clearTextarea('urlInput', 'urlStatus')">Clear</button>
+                </div>
+                <div id="urlStatus" class="util-status"></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/">Home</a>
+                    <a href="/about">About</a>
+                    <a href="/resume">Resume</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/tools">Tools</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+    function switchTab(tab) {
+        document.querySelectorAll('.util-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.util-panel').forEach(p => p.classList.remove('active'));
+
+        const targetBtn = Array.from(document.querySelectorAll('.util-tab-btn')).find(b => b.innerText.toLowerCase().includes(tab));
+        if (targetBtn) targetBtn.classList.add('active');
+
+        const panel = document.getElementById('panel-' + tab);
+        if (panel) panel.classList.add('active');
+    }
+
+    // JSON Formatter
+    function formatJson(space) {
+        const input = document.getElementById('jsonInput');
+        const status = document.getElementById('jsonStatus');
+        try {
+            const parsed = JSON.parse(input.value);
+            input.value = JSON.stringify(parsed, null, space);
+            status.className = 'util-status status-success';
+            status.innerText = '✅ Valid JSON — Successfully formatted!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Invalid JSON: ' + e.message;
+        }
+    }
+
+    function minifyJson() {
+        const input = document.getElementById('jsonInput');
+        const status = document.getElementById('jsonStatus');
+        try {
+            const parsed = JSON.parse(input.value);
+            input.value = JSON.stringify(parsed);
+            status.className = 'util-status status-success';
+            status.innerText = '✅ Successfully minified!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Invalid JSON: ' + e.message;
+        }
+    }
+
+    // Base64
+    function encodeBase64() {
+        const input = document.getElementById('base64Input');
+        const status = document.getElementById('base64Status');
+        try {
+            input.value = btoa(unescape(encodeURIComponent(input.value)));
+            status.className = 'util-status status-success';
+            status.innerText = '✅ Encoded to Base64!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Encoding error: ' + e.message;
+        }
+    }
+
+    function decodeBase64() {
+        const input = document.getElementById('base64Input');
+        const status = document.getElementById('base64Status');
+        try {
+            input.value = decodeURIComponent(escape(atob(input.value.trim())));
+            status.className = 'util-status status-success';
+            status.innerText = '✅ Decoded from Base64!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Invalid Base64 string.';
+        }
+    }
+
+    // URL Encoder
+    function encodeUrlComponent() {
+        const input = document.getElementById('urlInput');
+        const status = document.getElementById('urlStatus');
+        try {
+            input.value = encodeURIComponent(input.value);
+            status.className = 'util-status status-success';
+            status.innerText = '✅ URL encoded!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Error: ' + e.message;
+        }
+    }
+
+    function decodeUrlComponent() {
+        const input = document.getElementById('urlInput');
+        const status = document.getElementById('urlStatus');
+        try {
+            input.value = decodeURIComponent(input.value);
+            status.className = 'util-status status-success';
+            status.innerText = '✅ URL decoded!';
+        } catch(e) {
+            status.className = 'util-status status-error';
+            status.innerText = '❌ Malformed URL string.';
+        }
+    }
+
+    function copyFromTextarea(id) {
+        const val = document.getElementById(id).value;
+        navigator.clipboard.writeText(val).then(() => {
+            if (window.showToast) window.showToast('Copied to clipboard!');
+            else alert('Copied!');
+        });
+    }
+
+    function clearTextarea(id, statusId) {
+        document.getElementById(id).value = '';
+        if (statusId) document.getElementById(statusId).innerText = '';
+    }
+
+    // Auto-select tab from hash
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash === 'json' || hash === 'base64' || hash === 'url') {
+            switchTab(hash);
+        }
+    });
+    </script>
+    <script src="/main.js" defer></script>
+    <script src="/toast.js" defer></script>
+</body>
+</html>

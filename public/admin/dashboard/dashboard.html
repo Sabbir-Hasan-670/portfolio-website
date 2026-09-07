@@ -149,6 +149,31 @@
                             <input type="text" id="proj-live" name="live_url" autocomplete="off">
                             <label>Live Preview URL (Optional)</label>
                         </div>
+                        
+                        <div class="input-group">
+                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Publication Status</label>
+                            <select id="blog-status" name="status" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #ffffff;">
+                                <option value="published">🚀 Published (Live on Site)</option>
+                                <option value="review">🔍 Under Review (Needs Check)</option>
+                                <option value="draft">📝 Draft (Work in Progress)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="blog-excerpt" name="excerpt" autocomplete="off" placeholder="Short summary for cards & search">
+                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Article Excerpt / Summary</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="blog-meta-title" name="meta_title" autocomplete="off" placeholder="SEO Title">
+                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Title</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="blog-meta-desc" name="meta_description" autocomplete="off" placeholder="SEO Meta Description (under 160 chars)">
+                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Description</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="blog-tags" name="tags" autocomplete="off" placeholder="Cisco, VLAN, CCNA">
+                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Tags</label>
+                        </div>
                         <div class="input-group file-group">
                             <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Project Thumbnail (Required)</label>
                             <input type="file" id="proj-image" name="project_image" accept="image/*" required class="file-input">
@@ -457,6 +482,31 @@
                     <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Category</label>
                 </div>
                 
+                
+                <div class="input-group">
+                    <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Publication Status</label>
+                    <select id="edit-blog-status" name="status" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #ffffff;">
+                        <option value="published">🚀 Published (Live on Site)</option>
+                        <option value="review">🔍 Under Review (Needs Check)</option>
+                        <option value="draft">📝 Draft (Work in Progress)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="edit-blog-excerpt" name="excerpt" autocomplete="off">
+                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Article Excerpt</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="edit-blog-meta-title" name="meta_title" autocomplete="off">
+                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Title</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="edit-blog-meta-desc" name="meta_description" autocomplete="off">
+                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Description</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="edit-blog-tags" name="tags" autocomplete="off">
+                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Tags</label>
+                </div>
                 <div class="input-group file-group">
                     <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Change Cover Image (Optional)</label>
                     <input type="file" id="edit-blog-image" name="blog_image" accept="image/*" class="file-input">

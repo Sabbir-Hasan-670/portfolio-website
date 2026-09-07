@@ -719,7 +719,15 @@ document.addEventListener('DOMContentLoaded', () => {
         toShow.forEach(blog => {
             list.innerHTML += `
                 <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">
-                    <span><strong>${blog.title}</strong> <span style="color:#6366f1;">(${blog.category || 'General'})</span></span>
+                    <span>
+    <strong>${blog.title}</strong> 
+    <span style="color:#6366f1; margin-left: 6px;">(${blog.category || 'General'})</span>
+    <span style="display:inline-block; margin-left:8px; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:700; ${
+        blog.status === 'draft' ? 'background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid #94a3b8;' :
+        blog.status === 'review' ? 'background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid #f59e0b;' :
+        'background:rgba(16,185,129,0.15); color:#10b981; border:1px solid #10b981;'
+    }">${(blog.status || 'published').toUpperCase()}</span>
+</span>
                     <div style="display: flex; gap: 8px;">
                         <button class="action-btn" style="padding: 4px 12px; font-size: 0.8rem; background: #38bdf8;" onclick="openEditBlogModal(${blog.id})">Edit</button>
                         <button class="delete-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="deleteItem('/api/admin/blog', ${blog.id}, window.fetchAdminBlogs)">Delete</button>
@@ -745,6 +753,11 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('category', document.getElementById('blog-category').value);
         formData.append('content', document.getElementById('blog-content').value); 
         formData.append('custom_slug', document.getElementById('blog-slug').value);
+        formData.append('status', document.getElementById('blog-status')?.value || 'published');
+        formData.append('excerpt', document.getElementById('blog-excerpt')?.value || '');
+        formData.append('meta_title', document.getElementById('blog-meta-title')?.value || '');
+        formData.append('meta_description', document.getElementById('blog-meta-desc')?.value || '');
+        formData.append('tags', document.getElementById('blog-tags')?.value || '');
         const fileInput = document.getElementById('blog-image'); 
         if (fileInput.files.length > 0) formData.append('blog_image', fileInput.files[0]);
         try {
@@ -763,6 +776,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-blog-slug').value = blog.slug || ''; 
         document.getElementById('edit-blog-category').value = blog.category || '';
         document.getElementById('edit-blog-content').value = blog.content || ''; 
+        if (document.getElementById('edit-blog-status')) document.getElementById('edit-blog-status').value = blog.status || 'published';
+        if (document.getElementById('edit-blog-excerpt')) document.getElementById('edit-blog-excerpt').value = blog.excerpt || '';
+        if (document.getElementById('edit-blog-meta-title')) document.getElementById('edit-blog-meta-title').value = blog.meta_title || '';
+        if (document.getElementById('edit-blog-meta-desc')) document.getElementById('edit-blog-meta-desc').value = blog.meta_description || '';
+        if (document.getElementById('edit-blog-tags')) document.getElementById('edit-blog-tags').value = blog.tags || ''; 
         editBlogModal.classList.remove('hidden');
     }
     document.getElementById('edit-blog-cancel')?.addEventListener('click', () => editBlogModal.classList.add('hidden'));

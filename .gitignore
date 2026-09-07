@@ -3,6 +3,8 @@ node_modules/
 
 # Environment variables and secrets
 .env
+deploy_to_vps.js
+*.log
 
 # Optional: Ignore uploaded files if these are generated dynamically by users
 # public/uploads/

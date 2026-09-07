@@ -3,6 +3,7 @@ const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
+const { renderBlogListingHtml, renderArticleHtml, stripHtml } = require('./blogRenderer');
 const path = require('path');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
@@ -105,24 +106,38 @@ Sitemap: ${host}/sitemap.xml
 `);
 });
 
-// sitemap.xml — dynamic
+// sitemap.xml — dynamic & comprehensive
 app.get('/sitemap.xml', async (req, res) => {
     const host = 'https://sabbirhasan.com';
     const now = new Date().toISOString().split('T')[0];
     let urls = [
-        { loc: `${host}/`,        priority: '1.0', changefreq: 'weekly'  },
-        { loc: `${host}/blog`,    priority: '0.9', changefreq: 'daily'   },
-        { loc: `${host}/about`,   priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/contact`, priority: '0.6', changefreq: 'monthly' },
+        { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly'  },
+        { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'daily'   },
+        { loc: `${host}/tools`,                    priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly' },
+        { loc: `${host}/contact`,                  priority: '0.6', changefreq: 'monthly' },
+        { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly' },
+        { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly' },
+        { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly' }
     ];
     try {
-        const [posts] = await db.query('SELECT slug, id, created_at FROM blog_posts WHERE status="published" ORDER BY created_at DESC LIMIT 100');
+        const [posts] = await db.query('SELECT slug, id, updated_at, created_at FROM blog_posts WHERE status="published" ORDER BY created_at DESC');
         posts.forEach(post => {
             const slug = post.slug || post.id;
-            const lastmod = post.created_at ? new Date(post.created_at).toISOString().split('T')[0] : now;
-            urls.push({ loc: `${host}/article?slug=${slug}`, priority: '0.6', changefreq: 'monthly', lastmod });
+            const dateToUse = post.updated_at || post.created_at;
+            const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : now;
+            urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
         });
-    } catch (e) { /* DB not available, skip posts */ }
+
+        const [cats] = await db.query('SELECT DISTINCT category FROM blog_posts WHERE status="published" AND category IS NOT NULL AND category != ""');
+        cats.forEach(c => {
+            urls.push({ loc: `${host}/blog/category/${encodeURIComponent(c.category.toLowerCase())}`, priority: '0.6', changefreq: 'weekly', lastmod: now });
+        });
+    } catch (e) { /* DB not available, fallback */ }
 
     const urlEntries = urls.map(u => `
   <url>
@@ -138,6 +153,156 @@ app.get('/sitemap.xml', async (req, res) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urlEntries}
 </urlset>`);
+});
+
+
+// ==========================================
+// 🚀 SERVER-SIDE CRAWLABLE BLOG ROUTES (SSR)
+// ==========================================
+
+// Helper to fetch and render blog listing
+async function handleBlogListing(req, res, pageParam, categoryParam) {
+    const siteUrl = 'https://sabbirhasan.com';
+    const limit = 9;
+    const page = Math.max(1, parseInt(pageParam || req.query.page || '1', 10));
+    const offset = (page - 1) * limit;
+
+    try {
+        let countQuery = 'SELECT COUNT(*) as total FROM blog_posts WHERE status = "published"';
+        let postsQuery = 'SELECT id, title, slug, category, excerpt, content, image_path, reading_time, created_at, updated_at FROM blog_posts WHERE status = "published"';
+        let queryParams = [];
+
+        if (categoryParam) {
+            countQuery += ' AND LOWER(category) = LOWER(?)';
+            postsQuery += ' AND LOWER(category) = LOWER(?)';
+            queryParams.push(categoryParam);
+        }
+
+        postsQuery += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+
+        const [countRes] = await db.query(countQuery, queryParams);
+        const totalPosts = countRes[0]?.total || 0;
+        const totalPages = Math.max(1, Math.ceil(totalPosts / limit));
+
+        const [posts] = await db.query(postsQuery, [...queryParams, limit, offset]);
+        const [categories] = await db.query('SELECT category, COUNT(*) as count FROM blog_posts WHERE status = "published" AND category IS NOT NULL AND category != "" GROUP BY category ORDER BY count DESC');
+
+        const html = renderBlogListingHtml({
+            posts,
+            totalPosts,
+            currentPage: page,
+            totalPages,
+            currentCategory: categoryParam || null,
+            categories,
+            siteUrl
+        });
+
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.set('Cache-Control', 'public, max-age=1800, must-revalidate');
+        res.send(html);
+    } catch (err) {
+        console.error("Blog Listing SSR Error:", err.message);
+        res.status(500).send("<h1>Error loading blog</h1><p>Please try again later.</p>");
+    }
+}
+
+// Listing Routes
+app.get('/blog', (req, res) => handleBlogListing(req, res, req.query.page, null));
+app.get('/blog/page/:page', (req, res) => handleBlogListing(req, res, req.params.page, null));
+app.get('/blog/category/:category', (req, res) => handleBlogListing(req, res, 1, req.params.category));
+app.get('/blog/category/:category/page/:page', (req, res) => handleBlogListing(req, res, req.params.page, req.params.category));
+
+// Backward compatibility: 301 Redirect old /article?slug=... to /blog/:slug
+app.get('/article', async (req, res) => {
+    const { slug, id } = req.query;
+    if (slug) {
+        return res.redirect(301, '/blog/' + encodeURIComponent(slug));
+    }
+    if (id) {
+        try {
+            const [rows] = await db.query('SELECT slug FROM blog_posts WHERE id = ?', [id]);
+            if (rows.length > 0 && rows[0].slug) {
+                return res.redirect(301, '/blog/' + encodeURIComponent(rows[0].slug));
+            }
+        } catch(e) {}
+    }
+    return res.redirect(301, '/blog');
+});
+
+// Single Article SSR Route
+app.get('/blog/:slug', async (req, res) => {
+    const siteUrl = 'https://sabbirhasan.com';
+    const slug = req.params.slug;
+
+    try {
+        const [rows] = await db.query(
+            'SELECT * FROM blog_posts WHERE (slug = ? OR id = ?) LIMIT 1',
+            [slug, isNaN(slug) ? 0 : parseInt(slug, 10)]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).send('<!DOCTYPE html><html><head><title>Article Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Article Not Found</h1><p style="color:#94a3b8;">The article you are looking for does not exist or has been relocated.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
+        }
+
+        const post = rows[0];
+
+        // Fetch related posts from same category
+        let relatedPosts = [];
+        try {
+            const [rel] = await db.query(
+                'SELECT id, title, slug, category, excerpt, content, image_path FROM blog_posts WHERE category = ? AND id != ? AND status = "published" ORDER BY created_at DESC LIMIT 3',
+                [post.category || '', post.id]
+            );
+            relatedPosts = rel;
+        } catch(e) {}
+
+        const html = renderArticleHtml({ post, relatedPosts, siteUrl });
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+        res.send(html);
+    } catch (err) {
+        console.error("Single Blog SSR Error:", err.message);
+        res.status(500).send("<h1>Error loading article</h1>");
+    }
+});
+
+// Fast Parameterized Live Search
+app.get('/api/blog/search', async (req, res) => {
+    const q = req.query.q ? req.query.q.trim() : '';
+    if (!q || q.length < 2) return res.json([]);
+
+    try {
+        const wild = '%' + q + '%';
+        const [rows] = await db.query(
+            'SELECT id, title, slug, category, excerpt, image_path, created_at FROM blog_posts WHERE status = "published" AND (title LIKE ? OR category LIKE ? OR excerpt LIKE ? OR content LIKE ?) ORDER BY created_at DESC LIMIT 15',
+            [wild, wild, wild, wild]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Search API Error:", err.message);
+        res.status(500).json({ error: 'Search failed' });
+    }
+});
+
+// Dedicated Clean Pages
+app.get('/resume', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/resume.html'));
+});
+
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/about.html'));
+});
+
+app.get('/tools', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/tools.html'));
+});
+
+app.get('/tools/subnet-calculator', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/tools/subnet-calculator.html'));
+});
+
+app.get('/tools/dev-utilities', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/tools/dev-utilities.html'));
 });
 
 // Static files with smart caching per file type
@@ -222,6 +387,65 @@ const db = mysql.createPool({
     queueLimit: 0,
     waitForConnections: true
 });
+
+
+// ==========================================
+// 🛡️ SECURITY & SLUG HELPERS
+// ==========================================
+const loginAttempts = new Map();
+function rateLimit(windowMs, maxRequests) {
+    return (req, res, next) => {
+        const ip = req.ip || req.connection.remoteAddress || 'unknown';
+        const now = Date.now();
+        const record = loginAttempts.get(ip) || { count: 0, resetTime: now + windowMs };
+
+        if (now > record.resetTime) {
+            record.count = 1;
+            record.resetTime = now + windowMs;
+        } else {
+            record.count++;
+        }
+
+        loginAttempts.set(ip, record);
+
+        if (record.count > maxRequests) {
+            return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+        }
+        next();
+    };
+}
+
+async function ensureUniqueSlug(baseSlug, currentId = null) {
+    let slug = createSlug(baseSlug || 'post');
+    if (!slug) slug = 'article';
+    let counter = 1;
+    while (true) {
+        const checkSlug = counter === 1 ? slug : `${slug}-${counter}`;
+        let query = 'SELECT id FROM blog_posts WHERE slug = ?';
+        let params = [checkSlug];
+        if (currentId) {
+            query += ' AND id != ?';
+            params.push(currentId);
+        }
+        const [existing] = await db.query(query, params);
+        if (existing.length === 0) {
+            return checkSlug;
+        }
+        counter++;
+    }
+}
+
+function calculateReadingTime(content) {
+    const text = (content || '').replace(/<[^>]*>?/gm, '').trim();
+    const words = text.split(/\s+/).filter(Boolean).length;
+    return `${Math.max(1, Math.ceil(words / 200))} min read`;
+}
+
+function generateExcerpt(content, maxLength = 160) {
+    const text = (content || '').replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+}
 
 function createSlug(title) {
     return title
@@ -799,42 +1023,76 @@ app.post('/api/admin/github-image', requireAuth, upload.single('gh_image'), asyn
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 📝 --- BLOG ROUTES ---
+// 📝 --- BLOG ADMIN ROUTES ---
+app.get('/api/admin/blog', requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM blog_posts ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch admin blogs' });
+    }
+});
+
 app.post('/api/admin/blog', requireAuth, upload.single('blog_image'), async (req, res) => {
-    const { title, category, content, custom_slug } = req.body;
+    const { title, category, content, custom_slug, status, excerpt, meta_title, meta_description, tags } = req.body;
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';
     
-    let finalSlug = '';
-    if (custom_slug && custom_slug.trim() !== '') {
-        finalSlug = createSlug(custom_slug);
-    } else {
-        finalSlug = createSlug(title || 'untitled');
-    }
-
     try {
-        await db.query('INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', [title, finalSlug, category, content, imagePath]);
-        res.json({ message: 'Blog added successfully!' });
-    } catch (err) { res.status(500).json({ error: 'Failed to save blog' }); }
+        const finalSlug = await ensureUniqueSlug(custom_slug || title);
+        const finalExcerpt = excerpt && excerpt.trim() ? excerpt.trim() : generateExcerpt(content);
+        const readingTime = calculateReadingTime(content);
+        const finalStatus = status || 'published';
+        const finalMetaTitle = meta_title && meta_title.trim() ? meta_title.trim() : `${title} | Sabbir Hasan`;
+        const finalMetaDesc = meta_description && meta_description.trim() ? meta_description.trim() : finalExcerpt;
+
+        await db.query(
+            `INSERT INTO blog_posts (title, slug, category, content, image_path, status, excerpt, meta_title, meta_description, tags, reading_time)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [title, finalSlug, category || 'Tech', content, imagePath, finalStatus, finalExcerpt, finalMetaTitle, finalMetaDesc, tags || '', readingTime]
+        );
+        delete apiCache['blog'];
+        res.json({ message: 'Blog added successfully!', slug: finalSlug });
+    } catch (err) {
+        console.error("Admin Blog Add Error:", err.message);
+        res.status(500).json({ error: 'Failed to save blog' });
+    }
 });
 
 app.put('/api/admin/blog/:id', requireAuth, upload.single('blog_image'), async (req, res) => {
-    const { title, category, content, custom_slug } = req.body;
+    const { title, category, content, custom_slug, status, excerpt, meta_title, meta_description, tags } = req.body;
     const blogId = req.params.id;
-    let slug = createSlug(custom_slug && custom_slug.trim() !== '' ? custom_slug : title || 'untitled');
+
     try {
+        const finalSlug = await ensureUniqueSlug(custom_slug || title, blogId);
+        const finalExcerpt = excerpt && excerpt.trim() ? excerpt.trim() : generateExcerpt(content);
+        const readingTime = calculateReadingTime(content);
+        const finalStatus = status || 'published';
+        const finalMetaTitle = meta_title && meta_title.trim() ? meta_title.trim() : `${title} | Sabbir Hasan`;
+        const finalMetaDesc = meta_description && meta_description.trim() ? meta_description.trim() : finalExcerpt;
+
         if (req.file) {
             const newImagePath = '/uploads/' + req.file.filename;
             const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [blogId]);
             if (rows[0]?.image_path) {
                 const oldPath = path.join(__dirname, 'public', rows[0].image_path);
-                fs.unlink(oldPath, (err) => { if (err) console.log("Old file already missing."); });
+                fs.unlink(oldPath, (err) => { if (err) console.log("Old file missing."); });
             }
-            await db.query('UPDATE blog_posts SET title=?, slug=?, category=?, content=?, image_path=? WHERE id=?', [title, slug, category, content, newImagePath, blogId]);
+            await db.query(
+                `UPDATE blog_posts SET title=?, slug=?, category=?, content=?, image_path=?, status=?, excerpt=?, meta_title=?, meta_description=?, tags=?, reading_time=? WHERE id=?`,
+                [title, finalSlug, category, content, newImagePath, finalStatus, finalExcerpt, finalMetaTitle, finalMetaDesc, tags || '', readingTime, blogId]
+            );
         } else {
-            await db.query('UPDATE blog_posts SET title=?, slug=?, category=?, content=? WHERE id=?', [title, slug, category, content, blogId]);
+            await db.query(
+                `UPDATE blog_posts SET title=?, slug=?, category=?, content=?, status=?, excerpt=?, meta_title=?, meta_description=?, tags=?, reading_time=? WHERE id=?`,
+                [title, finalSlug, category, content, finalStatus, finalExcerpt, finalMetaTitle, finalMetaDesc, tags || '', readingTime, blogId]
+            );
         }
-        res.json({ message: 'Article updated successfully! 🚀' });
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+        delete apiCache['blog'];
+        res.json({ message: 'Article updated successfully! 🚀', slug: finalSlug });
+    } catch (err) {
+        console.error("Admin Blog Update Error:", err.message);
+        res.status(500).json({ error: 'Failed to update article' });
+    }
 });
 
 // --- UPLOAD ROUTES (WITH AUTO-DELETE) ---
@@ -971,18 +1229,18 @@ app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
 });
 
 // ==========================================
-// N8N AUTOMATION ROUTE
+// N8N AUTOMATION ROUTE (With Review Workflow)
 // ==========================================
-app.post('/api/n8n/blog', async (req, res) => {
+app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
     try {
-        const { secret, title, category, content, imageUrl } = req.body;
+        const { secret, title, category, content, imageUrl, status, meta_title, meta_description, excerpt, tags } = req.body;
         const expectedSecret = process.env.N8N_SECRET_KEY || 'S.abbir@670#613';
         
         if (secret !== expectedSecret) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
         
-        res.json({ success: true, message: 'Processing in background.' });
+        res.json({ success: true, message: 'Processing in background with quality control.' });
         
         setImmediate(async () => {
             try {
@@ -1008,14 +1266,22 @@ app.post('/api/n8n/blog', async (req, res) => {
                     }
                 }
 
-                const slug = createSlug(title || 'untitled-ai-post');
+                const postTitle = title || 'Untitled AI Post';
+                const finalSlug = await ensureUniqueSlug(postTitle);
+                const finalExcerpt = excerpt || generateExcerpt(content);
+                const readingTime = calculateReadingTime(content);
+                const postStatus = status || 'review'; // Defaults to review for human QA
+                const finalMetaTitle = meta_title || `${postTitle} | Sabbir Hasan`;
+                const finalMetaDesc = meta_description || finalExcerpt;
 
                 try {
                     await db.query(
-                        'INSERT INTO blog_posts (title, slug, category, content, image_path) VALUES (?, ?, ?, ?, ?)', 
-                        [title || 'Untitled AI Post', slug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '']
+                        `INSERT INTO blog_posts (title, slug, category, content, image_path, status, excerpt, meta_title, meta_description, tags, reading_time)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                        [postTitle, finalSlug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '', postStatus, finalExcerpt, finalMetaTitle, finalMetaDesc, tags || '', readingTime]
                     );
-                    console.log(`✅ [BG SUCCESS]: "${title}" uploaded successfully in background!`);
+                    delete apiCache['blog'];
+                    console.log(`✅ [N8N SUCCESS]: "${postTitle}" saved in status "${postStatus}" with slug "${finalSlug}"`);
                 } catch (dbErr) { 
                     console.error("Background DB Insert Error:", dbErr.message); 
                 }
