@@ -345,6 +345,14 @@ app.get('/api/blog/search', async (req, res) => {
     }
 });
 
+// Apple Touch Icon
+app.get('/apple-touch-icon.png', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/apple-touch-icon.png'));
+});
+app.get('/apple-touch-icon-precomposed.png', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/apple-touch-icon-precomposed.png'));
+});
+
 // Dedicated Clean Pages
 app.get('/resume', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/resume.html'));
