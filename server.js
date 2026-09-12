@@ -1571,6 +1571,24 @@ app.get('/api/admin/blog', requireAuth, async (req, res) => {
     }
 });
 
+app.post('/api/admin/blog/approve-all', requireAuth, async (req, res) => {
+    try {
+        const targetStatus = req.body?.status || 'review';
+        const [result] = await db.query('UPDATE blog_posts SET status = "published" WHERE status = ?', [targetStatus]);
+        delete apiCache['blog'];
+        invalidateApiCache('blog');
+        console.log(`✅ [BLOG APPROVE-ALL]: Approved and published ${result.affectedRows || 0} articles with status '${targetStatus}'`);
+        res.json({
+            success: true,
+            message: `Successfully approved and published ${result.affectedRows || 0} articles!`,
+            count: result.affectedRows || 0
+        });
+    } catch (err) {
+        console.error("Auto-Approve All Error:", err);
+        res.status(500).json({ error: 'Failed to auto-approve articles' });
+    }
+});
+
 app.post('/api/admin/blog', requireAuth, upload.single('blog_image'), async (req, res) => {
     const { title, category, content, custom_slug, status, excerpt, meta_title, meta_description, tags } = req.body;
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';

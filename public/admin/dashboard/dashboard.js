@@ -1050,9 +1050,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirmed) return;
 
         try {
-            const response = await fetch('/api/admin/blog/approve-all', { method: 'POST' });
+            const response = await fetch('/api/admin/blog/approve-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'review' })
+            });
             if (response.status === 401 || response.status === 403) return window.location.href = '/admin/login';
-            const data = await response.json();
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                throw new Error(`Server returned status ${response.status}`);
+            }
             if (!response.ok) throw new Error(data.error || 'Failed to approve articles');
             window.showToast(data.message || 'All pending articles auto-approved & published!', 'success');
             await fetchAdminBlogs();
