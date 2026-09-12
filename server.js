@@ -1163,6 +1163,16 @@ app.post('/api/logout', (req, res) => {
 
 
 // 💼 --- EXPERIENCE ROUTES ---
+app.get(['/api/admin/experience', '/api/admin/experiences'], requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM experience ORDER BY id DESC');
+        res.json(rows || []);
+    } catch (err) {
+        console.error("Admin experience fetch error:", err);
+        res.status(500).json({ error: 'Failed to fetch experience' });
+    }
+});
+
 app.post('/api/admin/experience', requireAuth, upload.none(), async (req, res) => {
     const { role, company_or_project, duration, description } = req.body;
     try {
@@ -1171,7 +1181,7 @@ app.post('/api/admin/experience', requireAuth, upload.none(), async (req, res) =
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-app.put('/api/admin/experience/:id', requireAuth, upload.none(), async (req, res) => {
+app.put(['/api/admin/experience/:id', '/api/admin/experiences/:id'], requireAuth, upload.none(), async (req, res) => {
     const { role, company_or_project, duration, description } = req.body;
     try {
         await db.query('UPDATE experience SET role=?, company_or_project=?, duration=?, description=? WHERE id=?', [role, company_or_project, duration, description, req.params.id]);
@@ -1180,6 +1190,72 @@ app.put('/api/admin/experience/:id', requireAuth, upload.none(), async (req, res
 });
 
 // 🚀 --- PROJECTS ROUTES ---
+app.get(['/api/admin/projects', '/api/admin/project'], requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM projects ORDER BY is_pinned DESC, id DESC');
+        res.json(rows || []);
+    } catch (err) {
+        console.error("Admin projects fetch error:", err);
+        res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+});
+
+app.get(['/api/admin/github-projects', '/api/admin/github-project'], requireAuth, async (req, res) => {
+    try {
+        const [images] = await db.query('SELECT * FROM github_images');
+        const imageMap = {};
+        const pinMap = {};
+        const pinnedAtMap = {};
+        const liveUrlMap = {};
+        const sortMap = {};
+        const visibleMap = {};
+        const featuredMap = {};
+        images.forEach(img => {
+            imageMap[img.repo_id] = img.image_path;
+            pinMap[img.repo_id] = img.is_pinned;
+            pinnedAtMap[img.repo_id] = img.pinned_at;
+            liveUrlMap[img.repo_id] = img.live_url;
+            sortMap[img.repo_id] = img.sort_order;
+            visibleMap[img.repo_id] = img.is_visible;
+            featuredMap[img.repo_id] = img.is_featured;
+        });
+
+        const ghProjectsWithImages = cachedGithubProjects.map(proj => ({
+            ...proj,
+            image_path: imageMap[proj.id] || proj.image_path,
+            is_pinned: pinMap[proj.id] ? 1 : 0,
+            pinned_at: pinnedAtMap[proj.id] || null,
+            live_url: liveUrlMap[proj.id] || proj.live_url,
+            sort_order: sortMap[proj.id] !== undefined ? sortMap[proj.id] : 0,
+            is_visible: visibleMap[proj.id] !== undefined ? visibleMap[proj.id] : 1,
+            is_featured: featuredMap[proj.id] ? 1 : 0
+        }));
+        res.json(ghProjectsWithImages);
+    } catch (err) {
+        console.error("Admin github projects fetch error:", err);
+        res.status(500).json({ error: 'Failed to fetch github projects' });
+    }
+});
+
+app.put('/api/admin/github-projects/:id', requireAuth, express.json(), async (req, res) => {
+    try {
+        const repo_id = req.params.id;
+        const { sort_order, is_visible, is_featured } = req.body;
+        await db.query(`
+            INSERT INTO github_images (repo_id, sort_order, is_visible, is_featured)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+            sort_order = VALUES(sort_order),
+            is_visible = VALUES(is_visible),
+            is_featured = VALUES(is_featured)
+        `, [repo_id, Number(sort_order) || 0, is_visible === false || is_visible === 0 || is_visible === 'false' ? 0 : 1, is_featured ? 1 : 0]);
+        res.json({ message: 'GitHub project display settings updated!' });
+    } catch (err) {
+        console.error("Admin update github-project error:", err);
+        res.status(500).json({ error: 'Failed to update GitHub project' });
+    }
+});
+
 app.post('/api/admin/projects', requireAuth, upload.single('project_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Image is required' });
     const { title, description, github_url, live_url } = req.body;
@@ -1190,7 +1266,7 @@ app.post('/api/admin/projects', requireAuth, upload.single('project_image'), asy
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-app.put('/api/admin/projects/:id', requireAuth, upload.single('project_image'), async (req, res) => {
+app.put(['/api/admin/projects/:id', '/api/admin/project/:id'], requireAuth, upload.single('project_image'), async (req, res) => {
     const { title, description, github_url, live_url } = req.body;
     try {
         if (req.file) {
@@ -1206,6 +1282,16 @@ app.put('/api/admin/projects/:id', requireAuth, upload.single('project_image'), 
 });
 
 // 🎓 --- EDUCATION ROUTES ---
+app.get(['/api/admin/education', '/api/admin/educations'], requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM education ORDER BY id DESC');
+        res.json(rows || []);
+    } catch (err) {
+        console.error("Admin education fetch error:", err);
+        res.status(500).json({ error: 'Failed to fetch education' });
+    }
+});
+
 app.post('/api/admin/education', requireAuth, upload.none(), async (req, res) => {
     const { degree, institution, duration, description } = req.body;
     try {
@@ -1217,14 +1303,13 @@ app.post('/api/admin/education', requireAuth, upload.none(), async (req, res) =>
     }
 });
 
-app.put('/api/admin/education/:id', requireAuth, upload.none(), async (req, res) => {
+app.put(['/api/admin/education/:id', '/api/admin/educations/:id'], requireAuth, upload.none(), async (req, res) => {
     const { degree, institution, duration, description } = req.body;
     try {
         await db.query('UPDATE education SET degree=?, institution=?, duration=?, description=? WHERE id=?', [degree, institution, duration, description, req.params.id]);
         res.json({ message: 'Education entry updated successfully! 🎓' });
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
-
 
 app.post('/api/admin/github/live-url', express.json(), requireAuth, async (req, res) => {
     try {
@@ -1245,7 +1330,15 @@ app.post('/api/admin/github/live-url', express.json(), requireAuth, async (req, 
 });
 
 // 📜 --- CERTIFICATES ROUTES ---
-
+app.get(['/api/admin/certificates', '/api/admin/certificate'], requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM certificates ORDER BY id DESC');
+        res.json(rows || []);
+    } catch (err) {
+        console.error("Admin certificates fetch error:", err);
+        res.status(500).json({ error: 'Failed to fetch certificates' });
+    }
+});
 
 app.post('/api/admin/github-image/remove', express.json(), requireAuth, async (req, res) => {
     try {
@@ -1268,10 +1361,7 @@ app.post('/api/admin/github-image/remove', express.json(), requireAuth, async (r
         }
         
         // Either remove row completely, or just nullify image_path (but we have is_pinned to keep!)
-        // So let's just nullify image_path so is_pinned stays.
         await db.query('UPDATE github_images SET image_path = NULL WHERE repo_id = ?', [repo_id]);
-        
-        // If image_path is NULL and is_pinned is FALSE, we can optionally delete the row to keep db clean.
         await db.query('DELETE FROM github_images WHERE image_path IS NULL AND (is_pinned = 0 OR is_pinned IS NULL)');
         
         res.json({ message: 'Image removed successfully' });
@@ -1291,7 +1381,7 @@ app.post('/api/admin/certificates', requireAuth, upload.single('cert_image'), as
     } catch (err) { res.status(500).json({ error: 'Server error adding certificate.' }); }
 });
 
-app.put('/api/admin/certificates/:id', requireAuth, upload.single('cert_image'), async (req, res) => {
+app.put(['/api/admin/certificates/:id', '/api/admin/certificate/:id'], requireAuth, upload.single('cert_image'), async (req, res) => {
     const { title, issuer, link } = req.body;
     try {
         if (req.file) {
@@ -1306,21 +1396,95 @@ app.put('/api/admin/certificates/:id', requireAuth, upload.single('cert_image'),
     } catch (err) { res.status(500).json({ error: 'Server error' }); }
 });
 
-// 🛠js --- SERVICES ADMIN ROUTES ---
-app.post('/api/admin/services', requireAuth, upload.none(), async (req, res) => {
-    const { title, description, icon, tags } = req.body;
+// 🛠️ --- SERVICES & SITE SECTIONS ADMIN ROUTES ---
+app.get(['/api/admin/services', '/api/admin/service'], requireAuth, async (req, res) => {
     try {
-        await db.query('INSERT INTO services (title, description, icon, tags) VALUES (?, ?, ?, ?)', 
-        [title, description, icon || '💻', tags || '']);
-        res.json({ message: 'Service added successfully!' });
-    } catch (err) { res.status(500).json({ error: 'Server error adding service' }); }
+        const [rows] = await db.query('SELECT * FROM services ORDER BY sort_order ASC, id DESC');
+        res.json(rows || []);
+    } catch (err) {
+        res.json([]);
+    }
 });
 
-app.delete('/api/admin/services/:id', requireAuth, async (req, res) => {
+app.post('/api/admin/services', requireAuth, upload.none(), async (req, res) => {
+    const { title, description, icon, tags, category_key, sort_order, is_visible } = req.body;
+    try {
+        await db.query(
+            'INSERT INTO services (title, description, icon, tags, category_key, sort_order, is_visible) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            [title, description, icon || '💻', tags || '', category_key || 'other', Number(sort_order) || 0, is_visible === false ? 0 : 1]
+        );
+        res.json({ message: 'Service added successfully!' });
+    } catch (err) {
+        try {
+            await db.query('INSERT INTO services (title, description, icon, tags) VALUES (?, ?, ?, ?)', [title, description, icon || '💻', tags || '']);
+            res.json({ message: 'Service added successfully!' });
+        } catch (innerErr) {
+            console.error("Admin add service error:", innerErr);
+            res.status(500).json({ error: 'Server error adding service' });
+        }
+    }
+});
+
+app.put(['/api/admin/services/:id', '/api/admin/service/:id'], requireAuth, async (req, res) => {
+    try {
+        const { title, description, icon, tags, category_key, sort_order, is_visible } = req.body;
+        await db.query(
+            'UPDATE services SET title=?, description=?, icon=?, tags=?, category_key=?, sort_order=?, is_visible=? WHERE id=?',
+            [title, description, icon || '💻', tags || '', category_key || 'other', Number(sort_order) || 0, is_visible === false ? 0 : 1, req.params.id]
+        );
+        res.json({ message: 'Service updated successfully!' });
+    } catch (err) {
+        try {
+            await db.query(
+                'UPDATE services SET title=?, description=?, icon=?, tags=? WHERE id=?',
+                [title, description, icon || '💻', tags || '', req.params.id]
+            );
+            res.json({ message: 'Service updated successfully!' });
+        } catch (innerErr) {
+            console.error("Admin update service error:", innerErr);
+            res.status(500).json({ error: 'Failed to update service' });
+        }
+    }
+});
+
+app.delete(['/api/admin/services/:id', '/api/admin/service/:id'], requireAuth, async (req, res) => {
     try { 
         await db.query('DELETE FROM services WHERE id = ?', [req.params.id]); 
         res.json({ message: 'Service deleted successfully!' }); 
     } catch (err) { res.status(500).json({ error: 'Failed to delete service' }); }
+});
+
+app.get('/api/admin/site-sections', requireAuth, async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM site_sections ORDER BY sort_order ASC');
+        res.json(rows || []);
+    } catch (err) {
+        res.json([]);
+    }
+});
+
+app.put('/api/admin/site-sections', requireAuth, express.json(), async (req, res) => {
+    try {
+        const { sections } = req.body;
+        if (!Array.isArray(sections)) return res.status(400).json({ error: 'Invalid sections payload' });
+        for (const sec of sections) {
+            await db.query(
+                `INSERT INTO site_sections (section_key, is_visible, sort_order, eyebrow, title, description) 
+                 VALUES (?, ?, ?, ?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE 
+                 is_visible = VALUES(is_visible), 
+                 sort_order = VALUES(sort_order), 
+                 eyebrow = VALUES(eyebrow), 
+                 title = VALUES(title), 
+                 description = VALUES(description)`,
+                [sec.section_key, sec.is_visible ? 1 : 0, Number(sec.sort_order) || 0, sec.eyebrow || '', sec.title || '', sec.description || '']
+            );
+        }
+        res.json({ message: 'Site sections updated successfully' });
+    } catch (err) {
+        console.error("Failed to update site sections:", err);
+        res.status(500).json({ error: 'Failed to update site sections' });
+    }
 });
 
 // 🎥 --- MEDIA & STREAM CHANNELS ADMIN ROUTES ---
