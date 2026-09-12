@@ -49,7 +49,8 @@ body {
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text1);
-    overflow-x: hidden;
+    overflow-x: clip;
+    min-height: 100vh;
     line-height: 1.6;
 
     /* The BIG visual difference — gradient mesh background */
@@ -61,14 +62,7 @@ body {
 }
 
 /* Scroll Progress */
-#scrollProgress {
-    position: fixed;
-    top: 0; left: 0;
-    width: 0%; height: 3px;
-    background: linear-gradient(90deg, var(--lime), var(--blue), var(--pink));
-    z-index: 10000;
-    transition: width 0.1s linear;
-}
+#scrollProgress,
 .scroll-progress {
     position: fixed;
     top: 0; left: 0;
@@ -97,13 +91,12 @@ body {
     max-width: 1320px;
     margin: 0 auto;
     padding: 0 2rem;
-    padding-top: 5rem;
+    padding-top: 4.5rem;
 }
 
-/* Off-screen sections load lazily for rendering performance */
+/* Off-screen sections render with natural height to prevent scroll anchoring jumps */
 .section {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 500px;
+    content-visibility: visible;
 }
 
 /* ============================================
@@ -129,6 +122,20 @@ body {
     align-items: center !important;
     justify-content: space-between !important;
     background: transparent !important;
+}
+
+@media (min-width: 901px) {
+    .navbar .nav-inner {
+        justify-content: space-between !important;
+        gap: 1.5rem !important;
+    }
+    .nav-links {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+    }
+    .nav-desktop-cta {
+        margin-left: 1.25rem !important;
+    }
 }
 
 .navbar.scrolled {
@@ -286,111 +293,9 @@ body {
 .section-line { display: none; }
 
 /* ============================================
-   HERO — Split layout: left text | right visual
+   HERO — Managed by home-v5.css
    ============================================ */
-.hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 4rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
 
-.hero-inner { grid-column: 1; }
-
-/* Available badge */
-.hero-greeting {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--lime);
-    background: rgba(200,255,0,0.06);
-    border: 1px solid rgba(200,255,0,0.2);
-    padding: 0.45rem 1rem;
-    border-radius: var(--r-sm);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.5rem;
-}
-.hero-greeting::before {
-    content: '';
-    width: 7px; height: 7px;
-    background: var(--lime);
-    border-radius: 50%;
-    animation: pingLime 2s ease-in-out infinite;
-    box-shadow: 0 0 8px var(--lime);
-}
-@keyframes pingLime {
-    0%,100% { opacity:1; transform:scale(1); }
-    50% { opacity:0.5; transform:scale(0.6); }
-}
-
-/* Hero semantic H1 typography */
-.hero-name {
-    margin-bottom: 0.8rem;
-    line-height: 1.1;
-    color: var(--text1);
-}
-.hero-name-primary {
-    display: block;
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.6rem, 5vw, 4.4rem);
-    font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1.05;
-    color: var(--text1);
-    text-shadow: 0 0 50px rgba(159,91,255,0.35);
-}
-.hero-name-subtitle {
-    display: block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: clamp(1.05rem, 2vw, 1.45rem);
-    font-weight: 700;
-    color: var(--lime);
-    letter-spacing: 0.2px;
-    margin-top: 0.5rem;
-    text-shadow: 0 0 20px rgba(200,255,0,0.35);
-}
-
-.hero-title-wrapper {
-    font-family: 'DM Sans', sans-serif;
-    font-size: clamp(1rem, 2vw, 1.3rem);
-    font-weight: 400;
-    color: var(--text2);
-    margin-bottom: 1.3rem;
-    min-height: 2em;
-    display: flex;
-    align-items: center;
-}
-
-.typing-cursor {
-    display: inline-block;
-    width: 2px; height: 1.1em;
-    background: var(--lime);
-    margin-left: 3px;
-    animation: blink 1s steps(1) infinite;
-    border-radius: 1px;
-}
-@keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0;} }
-
-.hero-bio-text {
-    font-size: 0.97rem;
-    color: var(--text2);
-    max-width: 500px;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-}
-
-.hero-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    margin-bottom: 2.5rem;
-}
 
 /* Buttons — completely new style */
 .btn {
@@ -434,9 +339,6 @@ body {
     transform: translateY(-3px) !important;
 }
 .btn::after, .btn-primary::after, .btn-outline::after { display: none !important; }
-.hero-name-sep {
-    display: none;
-}
 
 /* Hero Marquee — Full bleed horizontal scrolling tech showcase */
 .hero-marquee-wrap {
@@ -538,79 +440,7 @@ body {
     fill: currentColor; object-fit: contain;
 }
 
-/* Hero right visual — bento-style stat cards */
-.hero-visual {
-    grid-column: 2;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 1rem;
-    align-self: center;
-}
 
-.hero-stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-xl);
-    padding: 1.5rem;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s ease;
-    will-change: transform;
-}
-.hero-stat-card:hover {
-    border-color: rgba(159,91,255,0.3);
-    background: var(--card2);
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-}
-
-.hero-stat-card.wide { grid-column: 1 / -1; }
-.hero-stat-card.accent-lime { border-top: 3px solid var(--lime); }
-.hero-stat-card.accent-pink { border-top: 3px solid var(--pink); }
-.hero-stat-card.accent-blue { border-top: 3px solid var(--blue); }
-.hero-stat-card.accent-purple { border-top: 3px solid var(--purple); }
-
-.stat-number {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(1.8rem, 2.8vw, 2.3rem);
-    font-weight: 800;
-    letter-spacing: -1px;
-    color: var(--text1);
-    line-height: 1;
-    margin-bottom: 0.35rem;
-    white-space: nowrap;
-}
-.stat-number.lime { color: var(--lime); }
-.stat-number.pink { color: var(--pink); }
-.stat-number.blue { color: var(--blue); }
-.stat-number.purple { color: var(--purple); }
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--text2);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.8rem;
-    display: block;
-}
-
-/* GitHub mini inside hero stat card */
-.github-mini-card {
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-    margin-top: 0.5rem !important;
-    overflow-x: auto;
-    backdrop-filter: none;
-}
-.github-mini-card p { font-size: 0.75rem; color: var(--text2); margin-bottom: 0.4rem; font-family:'JetBrains Mono',monospace; }
 
 /* ============================================
    ABOUT
@@ -994,6 +824,7 @@ body {
     .projects-grid, .blog-grid, .services-grid, .certificates-grid { grid-template-columns: 1fr !important; gap:1rem; }
 
     .nav-links { display: none !important; }
+    .nav-desktop-cta { display: none !important; }
     .hamburger {
         display: flex !important;
         flex-direction: column; gap: 5px;
@@ -1033,11 +864,6 @@ body {
 @media (max-width: 600px) {
     .main-content { padding: 0 1rem; padding-top: 4.5rem; }
     .section { padding: 4rem 1rem; }
-    .hero { min-height: auto; padding-top: 2rem; }
-    .hero-name { letter-spacing: -2px; }
-    .hero-buttons { flex-direction: column; }
-    .hero-visual { grid-template-columns: 1fr; }
-    .hero-stat-card.wide { grid-column: 1; }
     .navbar .nav-inner { padding: 0.7rem 1rem; }
 }
 
@@ -1088,16 +914,6 @@ body {
 /* ============================================
    SEO & CLEAN CODE UTILITIES (Replacing inline styles)
    ============================================ */
-.hero-intro-label {
-    color: var(--text2);
-    font-size: 0.45em;
-    font-weight: 400;
-    display: block;
-    letter-spacing: 2px;
-    margin-bottom: 0.2em;
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-}
 
 .icon-express {
     filter: invert(0.5);
@@ -1113,13 +929,7 @@ body {
     font-weight: 600 !important;
 }
 
-.hero-stat-card-wide-pad {
-    padding: 1.2rem 1.5rem;
-}
 
-.about-emoji-avatar {
-    font-size: 5rem;
-}
 
 .github-graph-img {
     display: none;
@@ -1144,25 +954,6 @@ body {
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
-/* Static SEO Card Layouts (visible before JS loads, hydrated seamlessly) */
-.seo-static-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: 1.5rem;
-    transition: var(--ease);
-}
-.seo-static-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.15rem;
-    color: var(--text1);
-    margin-bottom: 0.5rem;
-}
-.seo-static-card p {
-    font-size: 0.9rem;
-    color: var(--text2);
-    line-height: 1.5;
-}
 
 /* ===================================================
    🌟 BLOG LISTING, CONTROLS & PAGINATION

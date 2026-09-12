@@ -2774,6 +2774,8 @@ function filterByLetter(letter) {
 /* ============================================================
    INITIALIZE APP ON DOM READY
    ============================================================ */
+// Advanced technical-English lesson, kept in the existing course-day data model.
+COURSE_DAYS.push({day: 31, title: 'Technical English - Incident Update & Interview', level: 'advanced', topics:['incident communication','technical interview'], description:'Write a clear incident update and explain a technical decision in English.', grammar:{title:'Technical communication',content:'<p>Use a simple structure: impact, current status, action taken, next update.</p><p>Example: <strong>The API returned errors for 12 minutes. We identified a database connection limit and restored service. We are adding monitoring and will share an update after validation.</strong></p>'}, practice_query:''});
 document.addEventListener('DOMContentLoaded', () => {
   app.init();
   AITutor.init();

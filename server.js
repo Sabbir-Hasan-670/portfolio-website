@@ -41,42 +41,15 @@ app.use((req, res, next) => {
     res.set('X-XSS-Protection', '1; mode=block');
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    next();
-});
-
-app.use(express.json());
-
-// Remove .html from URLs
-app.set('trust proxy', 1);
-
-// ==========================================
-// ⚡ GZIP COMPRESSION (Speed Boost)
-// ==========================================
-app.use(compression({
-    level: 6,
-    threshold: 1024, // Only compress responses > 1kb
-    filter: (req, res) => {
-        if (req.headers['x-no-compression']) return false;
-        return compression.filter(req, res);
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+        res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     }
-}));
-
-// ==========================================
-// 🔒 SECURITY & PERFORMANCE HEADERS
-// ==========================================
-app.use((req, res, next) => {
-    // Security headers
-    res.set('X-Content-Type-Options', 'nosniff');
-    res.set('X-Frame-Options', 'SAMEORIGIN');
-    res.set('X-XSS-Protection', '1; mode=block');
-    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     next();
 });
 
 app.use(express.json());
 
-// Remove .html from URLs
+// Remove .html from URLs (301 Permanent Redirect)
 app.use((req, res, next) => {
     if (req.path.endsWith('.html') && req.path.length > 5) {
         const newPath = req.path.slice(0, -5);
@@ -153,6 +126,8 @@ app.get('/sitemap.xml', async (req, res) => {
         { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly' },
         { loc: `${host}/contact`,                  priority: '0.6', changefreq: 'monthly' },
+        { loc: `${host}/sitemap`,                  priority: '0.8', changefreq: 'weekly'  },
+        { loc: `${host}/streams`,                  priority: '0.9', changefreq: 'weekly'  },
         { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly' },
         { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly' },
@@ -181,12 +156,20 @@ app.get('/sitemap.xml', async (req, res) => {
     <priority>${u.priority}</priority>
   </url>`).join('');
 
-    res.set('Content-Type', 'application/xml');
+    res.set('Content-Type', 'application/xml; charset=utf-8');
     res.set('Cache-Control', 'public, max-age=3600');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urlEntries}
 </urlset>`);
+});
+
+// sitemap.xsl — human styling for XML sitemap
+app.get('/sitemap.xsl', (req, res) => {
+    res.set('Content-Type', 'text/xsl; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'public/sitemap.xsl'));
 });
 
 
@@ -197,7 +180,7 @@ ${urlEntries}
 // Helper to fetch and render blog listing
 async function handleBlogListing(req, res, pageParam, categoryParam) {
     const siteUrl = 'https://sabbirhasan.com';
-    const limit = 9;
+    const limit = 12;
     const page = Math.max(1, parseInt(pageParam || req.query.page || '1', 10));
     const offset = (page - 1) * limit;
 
@@ -232,11 +215,27 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
         });
 
         res.set('Content-Type', 'text/html; charset=utf-8');
-        res.set('Cache-Control', 'public, max-age=1800, must-revalidate');
+        res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
         res.send(html);
     } catch (err) {
         console.error("Blog Listing SSR Error:", err.message);
-        res.status(500).send("<h1>Error loading blog</h1><p>Please try again later.</p>");
+        try {
+            const fallbackHtml = renderBlogListingHtml({
+                posts: [],
+                totalPosts: 0,
+                currentPage: 1,
+                totalPages: 1,
+                currentCategory: categoryParam || null,
+                categories: [],
+                siteUrl
+            });
+            res.set('Content-Type', 'text/html; charset=utf-8');
+            res.send(fallbackHtml);
+        } catch (renderErr) {
+            res.status(500).send("<h1>Error loading blog</h1><p>Please try again later.</p>");
+        }
     }
 }
 
@@ -284,13 +283,39 @@ app.get('/blog/:slug', async (req, res) => {
         let relatedPosts = [];
         try {
             const [rel] = await db.query(
-                'SELECT id, title, slug, category, excerpt, content, image_path FROM blog_posts WHERE category = ? AND id != ? AND status = "published" ORDER BY created_at DESC LIMIT 3',
+                'SELECT id, title, slug, category, excerpt, content, image_path, reading_time FROM blog_posts WHERE category = ? AND id != ? AND status = "published" ORDER BY created_at DESC LIMIT 3',
                 [post.category || '', post.id]
             );
             relatedPosts = rel;
         } catch(e) {}
 
-        const html = renderArticleHtml({ post, relatedPosts, siteUrl });
+        // Fetch previous and next articles for bottom navigation
+        let previousPost = null;
+        let nextPost = null;
+        try {
+            const [prevRows] = await db.query(
+                'SELECT id, title, slug FROM blog_posts WHERE id < ? AND status = "published" ORDER BY id DESC LIMIT 1',
+                [post.id]
+            );
+            if (prevRows.length > 0) previousPost = prevRows[0];
+
+            const [nextRows] = await db.query(
+                'SELECT id, title, slug FROM blog_posts WHERE id > ? AND status = "published" ORDER BY id ASC LIMIT 1',
+                [post.id]
+            );
+            if (nextRows.length > 0) nextPost = nextRows[0];
+        } catch(e) {}
+
+        // Fetch author avatar from profile table
+        let authorImage = '/uploads/sabbir-secondary-blue.webp';
+        try {
+            const [profileRows] = await db.query('SELECT profile_pic_path FROM admin_profile WHERE id = 1');
+            if (profileRows[0]?.profile_pic_path) {
+                authorImage = profileRows[0].profile_pic_path;
+            }
+        } catch(e) {}
+
+        const html = renderArticleHtml({ post, relatedPosts, previousPost, nextPost, siteUrl, authorImage });
         res.set('Content-Type', 'text/html; charset=utf-8');
         res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
         res.send(html);
@@ -327,6 +352,18 @@ app.get('/about', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/about.html'));
 });
 
+app.get('/projects', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/projects.html'));
+});
+
+app.get('/project/:slug', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/project.html'));
+});
+
+app.get('/contact', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/contact.html'));
+});
+
 app.get('/tools', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/tools.html'));
 });
@@ -339,23 +376,23 @@ app.get('/tools/dev-utilities', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/tools/dev-utilities.html'));
 });
 
+app.get('/streams', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/streams.html'));
+});
+
+app.get('/sitemap', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/sitemap.html'));
+});
+
 // Static files with smart caching per file type
 app.use(express.static(path.join(__dirname, 'public'), {
     extensions: ['html'],
     etag: true,
     lastModified: true,
     setHeaders: (res, filePath) => {
-        // CSS, JS, fonts — cache 7 days (with ETag for invalidation)
-        if (filePath.endsWith('.css') || filePath.endsWith('.js')) {
-            res.set('Cache-Control', 'public, max-age=604800, must-revalidate');
-        }
-        // SVG, images — cache 30 days
-        else if (/\.(svg|png|jpg|jpeg|gif|webp|ico|woff2|woff|ttf)$/i.test(filePath)) {
-            res.set('Cache-Control', 'public, max-age=2592000, immutable');
-        }
-        // HTML pages — short cache (1 hour) since content is dynamic
-        else if (filePath.endsWith('.html')) {
-            res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+        // CSS, JS, HTML — no-cache to ensure immediate update delivery
+        if (filePath.endsWith('.css') || filePath.endsWith('.js') || filePath.endsWith('.html')) {
+            res.set('Cache-Control', 'no-cache, must-revalidate');
         }
         // Default — no cache for unknown types
         else {
@@ -490,6 +527,12 @@ function createSlug(title) {
         .replace(/-+/g, '-');        
 }
 
+function extractYouTubeId(url) {
+    if (!url) return null;
+    const match = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([\w-]{11})/);
+    return match ? match[1] : null;
+}
+
 // ==========================================
 // 🚀 GITHUB CACHE SYSTEM & AUTOMATIC CRON JOB
 // ==========================================
@@ -556,11 +599,62 @@ updateGithubCache();
 // ==========================================
 // PUBLIC API ROUTES
 // ==========================================
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/', (req, res) => {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Simple in-memory cache to prevent DB connection pool exhaustion on heavy public traffic
 const apiCache = {};
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes cache
+
+function invalidateApiCache(key) {
+    if (key) {
+        delete apiCache[key];
+    } else {
+        Object.keys(apiCache).forEach(k => delete apiCache[k]);
+    }
+}
+
+function deleteOldUpload(filePath) {
+    if (!filePath || typeof filePath !== 'string') return;
+    const cleanPath = filePath.trim();
+    if (!cleanPath) return;
+
+    // Never delete static base template assets
+    const defaultAssets = [
+        'sabbir-secondary-blue.webp',
+        'sabbir-hero-orange.jpeg',
+        'sabbir-hero-portrait.jpeg',
+        'hero-portrait-3d.png',
+        'default-avatar.webp',
+        'default-avatar.jpg'
+    ];
+    const filename = path.basename(cleanPath);
+    if (defaultAssets.includes(filename)) {
+        return;
+    }
+
+    const relativeClean = cleanPath.replace(/^\/+/, '');
+    const absolutePath = path.join(__dirname, 'public', relativeClean);
+
+    try {
+        if (fs.existsSync(absolutePath)) {
+            fs.unlinkSync(absolutePath);
+            console.log("🗑️ Successfully deleted old upload:", filename);
+        }
+        const ext = path.extname(absolutePath);
+        if (ext && ext.toLowerCase() !== '.webp') {
+            const webpPath = absolutePath.slice(0, -ext.length) + '.webp';
+            if (fs.existsSync(webpPath)) {
+                fs.unlinkSync(webpPath);
+                console.log("🗑️ Successfully deleted old upload counterpart:", path.basename(webpPath));
+            }
+        }
+    } catch (err) {
+        console.error("⚠️ Failed to delete old upload " + absolutePath + ":", err.message);
+    }
+}
 
 function withCache(key, fn) {
     return async (req, res) => {
@@ -584,8 +678,12 @@ app.get('/api/profile', withCache('profile', async () => {
 }));
 
 app.get('/api/experience', withCache('experience', async () => {
-    const [rows] = await db.query('SELECT * FROM experience ORDER BY id DESC');
-    return rows;
+    try {
+        const [rows] = await db.query('SELECT * FROM experience ORDER BY id DESC');
+        return rows || [];
+    } catch (e) {
+        return [];
+    }
 }));
 
 app.get('/api/projects', withCache('projects', async () => {
@@ -634,6 +732,28 @@ app.get('/api/projects', withCache('projects', async () => {
     
     return allProjects;
 }));
+
+app.get(['/api/projects/:identifier', '/api/projects/slug/:identifier'], async (req, res) => {
+    try {
+        const idParam = String(req.params.identifier || '').trim().toLowerCase();
+        const [dbProjects] = await db.query('SELECT * FROM projects');
+        const [images] = await db.query('SELECT * FROM github_images');
+        const imageMap = {};
+        images.forEach(img => { imageMap[img.repo_id] = img.image_path; });
+        const all = [
+            ...dbProjects,
+            ...cachedGithubProjects.map(p => ({ ...p, image_path: imageMap[p.id] || p.image_path }))
+        ];
+        const match = all.find(p => {
+            const pSlug = String(p.repo_slug || p.title || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            return String(p.id).toLowerCase() === idParam || pSlug === idParam;
+        });
+        if (match) return res.json(match);
+        res.status(404).json({ error: 'Project not found' });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 app.post('/api/admin/projects/pin', upload.none(), requireAuth, async (req, res) => {
     try {
@@ -693,13 +813,21 @@ app.post('/api/admin/inbox/reply', express.json(), requireAuth, async (req, res)
 });
 
 app.get('/api/education', withCache('education', async () => {
-    const [rows] = await db.query('SELECT * FROM education ORDER BY id DESC');
-    return rows;
+    try {
+        const [rows] = await db.query('SELECT * FROM education ORDER BY id DESC');
+        return rows || [];
+    } catch (e) {
+        return [];
+    }
 }));
 
 app.get('/api/certificates', withCache('certificates', async () => {
-    const [rows] = await db.query('SELECT * FROM certificates ORDER BY id DESC');
-    return rows;
+    try {
+        const [rows] = await db.query('SELECT * FROM certificates ORDER BY id DESC');
+        return rows || [];
+    } catch (e) {
+        return [];
+    }
 }));
 
 app.get('/api/services', withCache('services', async () => {
@@ -709,6 +837,185 @@ app.get('/api/services', withCache('services', async () => {
     } catch (err) {
         console.error("Database services layer notice:", err.message);
         return [];
+    }
+}));
+
+// 🎥 --- YOUTUBE & MEDIA FEED ENGINE ---
+function extractYouTubeId(url) {
+    if (!url) return null;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([\w-]{11})/i);
+    return match ? match[1] : null;
+}
+
+async function resolveYouTubeMeta(urlOrHandle) {
+    if (!urlOrHandle) return { channelId: null, title: null, avatar: null, description: null };
+    let clean = urlOrHandle.trim();
+    let channelId = null;
+
+    if (clean.includes('/channel/')) {
+        const m = clean.match(/\/channel\/(UC[\w-]+)/i);
+        if (m) channelId = m[1];
+    }
+
+    let target = clean;
+    if (!target.startsWith('http')) {
+        if (target.startsWith('@')) target = 'https://www.youtube.com/' + target;
+        else target = 'https://www.youtube.com/@' + target;
+    }
+
+    try {
+        const res = await fetch(target, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
+        });
+        if (res.ok) {
+            const html = await res.text();
+            if (!channelId) {
+                const idMatch = html.match(/"channelId":"(UC[\w-]+)"/) || 
+                                html.match(/itemprop="channelId" content="(UC[\w-]+)"/) ||
+                                html.match(/"externalId":"(UC[\w-]+)"/);
+                if (idMatch) channelId = idMatch[1];
+            }
+            const titleMatch = html.match(/<meta property="og:title" content="([^"]+)">/) || html.match(/<title>([^<]+)<\/title>/);
+            const avatarMatch = html.match(/<meta property="og:image" content="([^"]+)">/);
+            const descMatch = html.match(/<meta property="og:description" content="([^"]+)">/);
+
+            return {
+                channelId,
+                title: titleMatch ? titleMatch[1].replace(' - YouTube', '').trim() : null,
+                avatar: avatarMatch ? avatarMatch[1] : null,
+                description: descMatch ? descMatch[1].trim() : null
+            };
+        }
+    } catch (err) {
+        console.error("resolveYouTubeMeta error:", err.message);
+    }
+    return { channelId, title: null, avatar: null, description: null };
+}
+
+async function fetchYouTubeChannelVideos(channelId) {
+    if (!channelId) return [];
+    try {
+        const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+        const res = await fetch(feedUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        });
+        if (!res.ok) return [];
+        const xml = await res.text();
+        const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+        const entries = [];
+        let match;
+        while ((match = entryRegex.exec(xml)) !== null) {
+            const chunk = match[1];
+            const videoId = chunk.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1];
+            const title = chunk.match(/<title>([^<]+)<\/title>/)?.[1];
+            const published = chunk.match(/<published>([^<]+)<\/published>/)?.[1];
+            const views = chunk.match(/<media:statistics views="([^"]+)"/)?.[1];
+
+            if (videoId && title) {
+                entries.push({
+                    videoId,
+                    title: title.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim(),
+                    videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
+                    thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+                    viewsCount: views ? Number(views).toLocaleString() + ' views' : '',
+                    publishedAt: published ? new Date(published) : new Date()
+                });
+            }
+        }
+        return entries;
+    } catch (err) {
+        console.error("fetchYouTubeChannelVideos error:", err.message);
+        return [];
+    }
+}
+
+async function syncChannelVideos(channelId) {
+    try {
+        const [channels] = await db.query('SELECT * FROM media_channels WHERE id = ?', [channelId]);
+        if (!channels || channels.length === 0) return { success: false, error: 'Channel not found' };
+        const channel = channels[0];
+
+        if (channel.platform !== 'youtube') {
+            return { success: true, message: 'Platform not YouTube, no RSS feed sync needed', count: 0 };
+        }
+
+        let ytId = channel.yt_channel_id;
+        if (!ytId) {
+            const resolved = await resolveYouTubeMeta(channel.channel_url || channel.channel_handle);
+            if (resolved.channelId) {
+                ytId = resolved.channelId;
+                await db.query('UPDATE media_channels SET yt_channel_id = ?, avatar_url = COALESCE(NULLIF(avatar_url, ""), ?) WHERE id = ?', [ytId, resolved.avatar || '', channel.id]);
+            }
+        }
+
+        if (!ytId) {
+            return { success: false, error: 'Could not resolve YouTube Channel ID. Please provide a valid YouTube URL or @handle.' };
+        }
+
+        const videos = await fetchYouTubeChannelVideos(ytId);
+        let addedCount = 0;
+
+        for (const vid of videos) {
+            const [existing] = await db.query('SELECT id FROM media_videos WHERE video_url = ?', [vid.videoUrl]);
+            if (existing.length === 0) {
+                await db.query(`
+                    INSERT INTO media_videos 
+                    (channel_id, platform, title, video_url, thumbnail_url, duration, views_count, is_featured, is_auto_feed, published_at)
+                    VALUES (?, 'youtube', ?, ?, ?, '', ?, 1, 1, ?)
+                `, [channel.id, vid.title, vid.videoUrl, vid.thumbnailUrl, vid.viewsCount, vid.publishedAt]);
+                addedCount++;
+            }
+        }
+
+        await db.query('UPDATE media_channels SET last_synced_at = NOW() WHERE id = ?', [channel.id]);
+        delete apiCache['media_channels'];
+        return { success: true, count: addedCount, totalFound: videos.length };
+    } catch (err) {
+        console.error("syncChannelVideos error:", err.message);
+        return { success: false, error: err.message };
+    }
+}
+
+async function syncAllActiveChannels() {
+    try {
+        const [channels] = await db.query('SELECT id FROM media_channels WHERE platform = "youtube" AND auto_sync = 1');
+        let totalAdded = 0;
+        for (const ch of channels) {
+            const res = await syncChannelVideos(ch.id);
+            if (res && res.count) totalAdded += res.count;
+        }
+        return { success: true, added: totalAdded };
+    } catch (err) {
+        console.error("syncAllActiveChannels error:", err.message);
+        return { success: false, error: err.message };
+    }
+}
+
+// 🎥 PUBLIC MEDIA & STREAMS CHANNELS (Auto-feeds latest videos from channels)
+app.get('/api/media-channels', withCache('media_channels', async () => {
+    try {
+        const [channels] = await db.query('SELECT * FROM media_channels WHERE is_visible = 1 ORDER BY sort_order ASC, id ASC');
+        const [videos] = await db.query('SELECT * FROM media_videos WHERE is_featured = 1 ORDER BY sort_order ASC, id DESC');
+        
+        // Background check: auto sync if YouTube channels haven't synced in > 30 minutes
+        const now = Date.now();
+        const needsSync = channels.some(c => c.platform === 'youtube' && (!c.last_synced_at || (now - new Date(c.last_synced_at).getTime()) > 30 * 60 * 1000));
+        if (needsSync) {
+            setImmediate(() => { syncAllActiveChannels().catch(() => {}); });
+        }
+
+        return {
+            channels: channels || [],
+            videos: videos || []
+        };
+    } catch (err) {
+        console.error("Failed to fetch media channels:", err.message);
+        return { channels: [], videos: [] };
     }
 }));
 
@@ -787,8 +1094,12 @@ app.post('/api/contact', upload.none(), async (req, res) => {
 // BLOG API ROUTES (PUBLIC)
 // ==========================================
 app.get('/api/blog', withCache('blog', async () => {
-    const [rows] = await db.query('SELECT * FROM blog_posts WHERE status = "published" ORDER BY created_at DESC');
-    return rows;
+    try {
+        const [rows] = await db.query('SELECT * FROM blog_posts WHERE status = "published" ORDER BY created_at DESC');
+        return rows || [];
+    } catch (e) {
+        return [];
+    }
 }));
 
 app.get('/api/blog/:identifier', async (req, res) => {
@@ -1012,6 +1323,183 @@ app.delete('/api/admin/services/:id', requireAuth, async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Failed to delete service' }); }
 });
 
+// 🎥 --- MEDIA & STREAM CHANNELS ADMIN ROUTES ---
+app.get('/api/admin/media-channels', requireAuth, async (req, res) => {
+    try {
+        const [channels] = await db.query('SELECT * FROM media_channels ORDER BY sort_order ASC, id ASC');
+        const [videos] = await db.query('SELECT * FROM media_videos ORDER BY sort_order ASC, id DESC');
+        res.json({ channels: channels || [], videos: videos || [] });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch media channels' });
+    }
+});
+
+app.post('/api/admin/media-channels', requireAuth, upload.single('avatar_file'), async (req, res) => {
+    try {
+        let { id, platform, channel_name, channel_handle, channel_url, subscribers_count, description, badge_text, is_live, sort_order, is_visible } = req.body;
+        let avatar_url = req.body.avatar_url || '';
+        if (req.file) {
+            avatar_url = '/uploads/' + req.file.filename;
+        }
+
+        if (!platform || !channel_url) {
+            return res.status(400).json({ error: 'Platform and channel URL/Handle are required.' });
+        }
+
+        platform = platform.toLowerCase();
+        let ytChannelId = '';
+
+        // Auto-detect YouTube metadata if platform is YouTube
+        if (platform === 'youtube') {
+            const ytMeta = await resolveYouTubeMeta(channel_url || channel_handle);
+            if (ytMeta.channelId) ytChannelId = ytMeta.channelId;
+            if (!avatar_url && ytMeta.avatar) avatar_url = ytMeta.avatar;
+            if (!channel_name && ytMeta.title) channel_name = ytMeta.title;
+            if (!description && ytMeta.description) description = ytMeta.description.slice(0, 300);
+        }
+
+        if (!channel_name) {
+            channel_name = channel_handle ? channel_handle.replace(/^@/, '') : 'Channel';
+        }
+
+        let savedChannelId = id;
+
+        if (id) {
+            await db.query(`
+                UPDATE media_channels SET 
+                    platform = ?, channel_name = ?, channel_handle = ?, channel_url = ?, 
+                    avatar_url = COALESCE(NULLIF(?, ''), avatar_url), subscribers_count = ?, 
+                    description = ?, badge_text = ?, is_live = ?, sort_order = ?, is_visible = ?,
+                    yt_channel_id = COALESCE(NULLIF(?, ''), yt_channel_id)
+                WHERE id = ?
+            `, [platform, channel_name, channel_handle || '', channel_url, avatar_url, subscribers_count || '', description || '', badge_text || 'CREATOR', is_live === '1' || is_live === true || is_live === 1 ? 1 : 0, Number(sort_order) || 0, is_visible === '0' || is_visible === false ? 0 : 1, ytChannelId, id]);
+        } else {
+            const [insertRes] = await db.query(`
+                INSERT INTO media_channels 
+                (platform, channel_name, channel_handle, channel_url, avatar_url, subscribers_count, description, badge_text, is_live, sort_order, is_visible, yt_channel_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [platform, channel_name, channel_handle || '', channel_url, avatar_url, subscribers_count || '', description || '', badge_text || 'CREATOR', is_live === '1' || is_live === true || is_live === 1 ? 1 : 0, Number(sort_order) || 0, 1, ytChannelId]);
+            savedChannelId = insertRes.insertId;
+        }
+
+        delete apiCache['media_channels'];
+
+        // Automatically trigger video feed sync for this channel in the background
+        let syncResult = null;
+        if (platform === 'youtube' && savedChannelId) {
+            try {
+                syncResult = await syncChannelVideos(savedChannelId);
+            } catch(e) { console.error("Auto sync on save error:", e.message); }
+        }
+
+        const msg = syncResult && syncResult.count > 0 
+            ? `Channel saved! Auto-fed ${syncResult.count} latest videos from YouTube.` 
+            : 'Channel saved successfully!';
+
+        res.json({ success: true, message: msg, channelId: savedChannelId, syncResult });
+    } catch (err) {
+        console.error("Save channel error:", err);
+        res.status(500).json({ error: 'Failed to save channel' });
+    }
+});
+
+// Sync videos for a specific channel
+app.post('/api/admin/media-channels/:id/sync', requireAuth, async (req, res) => {
+    try {
+        const result = await syncChannelVideos(req.params.id);
+        if (result.success) {
+            delete apiCache['media_channels'];
+            res.json({ success: true, message: `Sync completed! Added ${result.count} new videos.`, result });
+        } else {
+            res.status(400).json({ error: result.error || 'Sync failed' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Sync failed: ' + err.message });
+    }
+});
+
+// Sync videos for all active channels
+app.post('/api/admin/media-channels/sync-all', requireAuth, async (req, res) => {
+    try {
+        const result = await syncAllActiveChannels();
+        delete apiCache['media_channels'];
+        res.json({ success: true, message: `All channels synced! Added ${result.added} new videos.` });
+    } catch (err) {
+        res.status(500).json({ error: 'Sync-all failed: ' + err.message });
+    }
+});
+
+app.delete('/api/admin/media-channels/:id', requireAuth, async (req, res) => {
+    try {
+        await db.query('DELETE FROM media_videos WHERE channel_id = ?', [req.params.id]);
+        await db.query('DELETE FROM media_channels WHERE id = ?', [req.params.id]);
+        delete apiCache['media_channels'];
+        res.json({ success: true, message: 'Channel deleted successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete channel' });
+    }
+});
+
+app.post('/api/admin/media-channels/:id/toggle-live', requireAuth, async (req, res) => {
+    try {
+        await db.query('UPDATE media_channels SET is_live = IF(is_live=1, 0, 1) WHERE id = ?', [req.params.id]);
+        delete apiCache['media_channels'];
+        res.json({ success: true, message: 'Live status updated!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update live status' });
+    }
+});
+
+app.post('/api/admin/media-videos', requireAuth, upload.single('thumbnail_file'), async (req, res) => {
+    try {
+        const { id, channel_id, platform, title, video_url, duration, views_count, sort_order, is_featured } = req.body;
+        let thumbnail_url = req.body.thumbnail_url || '';
+        if (req.file) {
+            thumbnail_url = '/uploads/' + req.file.filename;
+        } else if (!thumbnail_url && video_url) {
+            const ytId = extractYouTubeId(video_url);
+            if (ytId) {
+                thumbnail_url = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            }
+        }
+
+        if (!title || !video_url) {
+            return res.status(400).json({ error: 'Video title and URL are required.' });
+        }
+
+        if (id) {
+            await db.query(`
+                UPDATE media_videos SET 
+                    channel_id = ?, platform = ?, title = ?, video_url = ?, 
+                    thumbnail_url = COALESCE(NULLIF(?, ''), thumbnail_url), 
+                    duration = ?, views_count = ?, sort_order = ?, is_featured = ?
+                WHERE id = ?
+            `, [channel_id || null, (platform || 'youtube').toLowerCase(), title, video_url, thumbnail_url, duration || '', views_count || '', Number(sort_order) || 0, is_featured === '0' || is_featured === false ? 0 : 1, id]);
+        } else {
+            await db.query(`
+                INSERT INTO media_videos 
+                (channel_id, platform, title, video_url, thumbnail_url, duration, views_count, sort_order, is_featured)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [channel_id || null, (platform || 'youtube').toLowerCase(), title, video_url, thumbnail_url, duration || '', views_count || '', Number(sort_order) || 0, 1]);
+        }
+        delete apiCache['media_channels'];
+        res.json({ success: true, message: 'Video saved successfully!' });
+    } catch (err) {
+        console.error("Save video error:", err);
+        res.status(500).json({ error: 'Failed to save video' });
+    }
+});
+
+app.delete('/api/admin/media-videos/:id', requireAuth, async (req, res) => {
+    try {
+        await db.query('DELETE FROM media_videos WHERE id = ?', [req.params.id]);
+        delete apiCache['media_channels'];
+        res.json({ success: true, message: 'Video deleted successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete video' });
+    }
+});
+
 // 👤 --- SOCIALS & STATS ROUTE ---
 app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
     const { 
@@ -1020,7 +1508,10 @@ app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
         stat_ccna, stat_ceh, stat_years, stat_projects,
         about_title, about_desc,
         contact_location, contact_map_url, contact_email,
-        hero_roles, hero_description
+        hero_roles, hero_description,
+        station_location, station_timezone, station_status,
+        hero_primary_cta_label, hero_primary_cta_url, hero_secondary_cta_label, hero_secondary_cta_url,
+        hero_availability_text, contact_phone, footer_text, default_seo_title, default_seo_description, default_og_image
     } = req.body;
     try {
         await db.query(
@@ -1028,17 +1519,30 @@ app.post('/api/admin/socials', requireAuth, upload.none(), async (req, res) => {
             github_link=?, linkedin_link=?, facebook_link=?, fiverr_link=?, pinterest_link=?, adobe_stock_link=?,
             stat_ccna_title=?, stat_ceh_title=?,
             stat_ccna=?, stat_ceh=?, stat_years=?, stat_projects=?,
-            about_title=?, about_desc=?, contact_location=?, contact_map_url=?, contact_email=?, hero_roles=?, hero_description=? 
+            about_title=?, about_desc=?, contact_location=?, contact_map_url=?, contact_email=?, hero_roles=?, hero_description=?,
+            station_location=COALESCE(?, station_location), station_timezone=COALESCE(?, station_timezone), station_status=COALESCE(?, station_status),
+            hero_primary_cta_label=COALESCE(?, hero_primary_cta_label), hero_primary_cta_url=COALESCE(?, hero_primary_cta_url),
+            hero_secondary_cta_label=COALESCE(?, hero_secondary_cta_label), hero_secondary_cta_url=COALESCE(?, hero_secondary_cta_url),
+            hero_availability_text=COALESCE(?, hero_availability_text), contact_phone=COALESCE(?, contact_phone),
+            footer_text=COALESCE(?, footer_text), default_seo_title=COALESCE(?, default_seo_title),
+            default_seo_description=COALESCE(?, default_seo_description), default_og_image=COALESCE(?, default_og_image)
             WHERE id=1`,
             [
                 github_link, linkedin_link, facebook_link, fiverr_link, pinterest_link, adobe_stock_link,
                 stat_ccna_title, stat_ceh_title,
                 stat_ccna, stat_ceh, stat_years, stat_projects,
-                about_title, about_desc, contact_location, contact_map_url, contact_email, hero_roles, hero_description
+                about_title, about_desc, contact_location, contact_map_url, contact_email, hero_roles, hero_description,
+                station_location, station_timezone, station_status,
+                hero_primary_cta_label, hero_primary_cta_url, hero_secondary_cta_label, hero_secondary_cta_url,
+                hero_availability_text, contact_phone, footer_text, default_seo_title, default_seo_description, default_og_image
             ]
         );
+        invalidateApiCache('profile');
         res.json({ message: 'Profile data updated!' });
-    } catch (err) { res.status(500).json({ error: 'Server error' }); }
+    } catch (err) { 
+        console.error('Error updating profile data:', err);
+        res.status(500).json({ error: 'Server error' }); 
+    }
 });
 
 // 🚀 --- GITHUB IMAGES ROUTE ---
@@ -1129,27 +1633,36 @@ app.put('/api/admin/blog/:id', requireAuth, upload.single('blog_image'), async (
     }
 });
 
-// --- UPLOAD ROUTES (WITH AUTO-DELETE) ---
+// --- UPLOAD ROUTES (WITH AUTO-DELETE & CACHE INVALIDATION) ---
 app.post('/api/admin/upload-pic', requireAuth, upload.single('profile_image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     const newImagePath = '/uploads/' + req.file.filename;
     try {
         const [rows] = await db.query('SELECT profile_pic_path FROM admin_profile WHERE id = 1');
         const oldImagePath = rows[0]?.profile_pic_path;
-        if (oldImagePath) {
-            const absoluteOldPath = path.join(__dirname, 'public', oldImagePath);
-            fs.unlink(absoluteOldPath, (err) => { if (err) console.log("Note: Old profile picture already missing."); });
+        if (oldImagePath && oldImagePath !== newImagePath) {
+            deleteOldUpload(oldImagePath);
         }
         await db.query('UPDATE admin_profile SET profile_pic_path = ? WHERE id = 1', [newImagePath]);
-        res.json({ message: 'Profile picture updated!' });
-    } catch (err) { res.status(500).json({ error: 'Server error updating picture.' }); }
+        invalidateApiCache('profile');
+        res.json({ success: true, message: 'Profile picture updated!', profile_pic_path: newImagePath });
+    } catch (err) {
+        console.error("Upload Pic Error:", err.message);
+        res.status(500).json({ error: 'Server error updating picture.' });
+    }
 });
 
 
 // ==================== REMOVE AVATAR & CV ====================
 app.post('/api/admin/remove-avatar', requireAuth, async (req, res) => {
     try {
+        const [rows] = await db.query('SELECT profile_pic_path FROM admin_profile WHERE id = 1');
+        const oldImagePath = rows[0]?.profile_pic_path;
+        if (oldImagePath) {
+            deleteOldUpload(oldImagePath);
+        }
         await db.query('UPDATE admin_profile SET profile_pic_path = NULL WHERE id = 1');
+        invalidateApiCache('profile');
         res.json({ success: true, message: 'Avatar removed' });
     } catch (error) {
         console.error("Remove Avatar Error:", error);
@@ -1159,7 +1672,13 @@ app.post('/api/admin/remove-avatar', requireAuth, async (req, res) => {
 
 app.post('/api/admin/remove-cv', requireAuth, async (req, res) => {
     try {
+        const [rows] = await db.query('SELECT cv_file_path FROM admin_profile WHERE id = 1');
+        const oldCvPath = rows[0]?.cv_file_path;
+        if (oldCvPath) {
+            deleteOldUpload(oldCvPath);
+        }
         await db.query('UPDATE admin_profile SET cv_file_path = NULL WHERE id = 1');
+        invalidateApiCache('profile');
         res.json({ success: true, message: 'CV removed' });
     } catch (error) {
         console.error("Remove CV Error:", error);
@@ -1173,13 +1692,16 @@ app.post('/api/admin/upload-cv', requireAuth, upload.single('cv_document'), asyn
     try {
         const [rows] = await db.query('SELECT cv_file_path FROM admin_profile WHERE id = 1');
         const oldCvPath = rows[0]?.cv_file_path;
-        if (oldCvPath) {
-            const absoluteOldPath = path.join(__dirname, 'public', oldCvPath);
-            fs.unlink(absoluteOldPath, (err) => { if (err) console.log("Note: Old CV document already missing."); });
+        if (oldCvPath && oldCvPath !== newCvPath) {
+            deleteOldUpload(oldCvPath);
         }
         await db.query('UPDATE admin_profile SET cv_file_path = ? WHERE id = 1', [newCvPath]);
-        res.json({ message: 'CV updated!' });
-    } catch (err) { res.status(500).json({ error: 'Server error updating CV.' }); }
+        invalidateApiCache('profile');
+        res.json({ success: true, message: 'CV updated!', cv_file_path: newCvPath });
+    } catch (err) {
+        console.error("Upload CV Error:", err.message);
+        res.status(500).json({ error: 'Server error updating CV.' });
+    }
 });
 
 // --- READ ROUTES ---
@@ -1268,9 +1790,9 @@ app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
 app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
     try {
         const { secret, title, category, content, imageUrl, status, meta_title, meta_description, excerpt, tags } = req.body;
-        const expectedSecret = process.env.N8N_SECRET_KEY || 'S.abbir@670#613';
+        const expectedSecret = process.env.N8N_SECRET_KEY;
         
-        if (secret !== expectedSecret) {
+        if (!expectedSecret || secret !== expectedSecret) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
         
@@ -1444,6 +1966,54 @@ app.listen(PORT, async () => {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
         console.log("✅ exam_scores table ready.");
+
+        // Media Channels and Featured Streams/Videos
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS media_channels (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                platform VARCHAR(30) NOT NULL,
+                channel_name VARCHAR(255) NOT NULL,
+                channel_handle VARCHAR(100) DEFAULT '',
+                channel_url VARCHAR(500) NOT NULL,
+                avatar_url VARCHAR(500) DEFAULT '',
+                subscribers_count VARCHAR(100) DEFAULT '',
+                description TEXT,
+                badge_text VARCHAR(100) DEFAULT 'CREATOR',
+                is_live TINYINT(1) DEFAULT 0,
+                sort_order INT DEFAULT 0,
+                is_visible TINYINT(1) DEFAULT 1,
+                yt_channel_id VARCHAR(100) DEFAULT '',
+                last_synced_at TIMESTAMP NULL DEFAULT NULL,
+                auto_sync TINYINT(1) DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
+
+        try { await db.query('ALTER TABLE media_channels ADD COLUMN yt_channel_id VARCHAR(100) DEFAULT ""'); } catch(e) {}
+        try { await db.query('ALTER TABLE media_channels ADD COLUMN last_synced_at TIMESTAMP NULL DEFAULT NULL'); } catch(e) {}
+        try { await db.query('ALTER TABLE media_channels ADD COLUMN auto_sync TINYINT(1) DEFAULT 1'); } catch(e) {}
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS media_videos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                channel_id INT DEFAULT NULL,
+                platform VARCHAR(30) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                video_url VARCHAR(500) NOT NULL,
+                thumbnail_url VARCHAR(500) DEFAULT '',
+                duration VARCHAR(50) DEFAULT '',
+                views_count VARCHAR(50) DEFAULT '',
+                is_featured TINYINT(1) DEFAULT 1,
+                is_auto_feed TINYINT(1) DEFAULT 0,
+                published_at TIMESTAMP NULL DEFAULT NULL,
+                sort_order INT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        `);
+
+        try { await db.query('ALTER TABLE media_videos ADD COLUMN is_auto_feed TINYINT(1) DEFAULT 0'); } catch(e) {}
+        try { await db.query('ALTER TABLE media_videos ADD COLUMN published_at TIMESTAMP NULL DEFAULT NULL'); } catch(e) {}
+        console.log("✅ media_channels & media_videos tables ready with auto-feed support.");
     } catch (e) { console.error("Database table initialization error:", e.message); }
 });
 

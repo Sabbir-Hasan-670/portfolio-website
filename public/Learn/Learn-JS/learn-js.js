@@ -1535,4 +1535,6 @@ const jsQuiz = {
   }
 };
 
+// Advanced track: uses the existing curriculum, sidebar and lesson renderer.
+CURRICULUM.push({id: 41, module: 4, title: 'Production JavaScript - Async, APIs ও Debugging', level: 4, levelName: 'প্রফেশনাল', content: `<h3>Async workflow</h3><p><strong>async/await</strong> দিয়ে network request handle করো এবং প্রতিটি request-এর জন্য loading, success ও error state রাখো।</p><div class="codeblock">try { const response = await fetch('/api/profile'); if (!response.ok) throw new Error('Request failed'); const data = await response.json(); } catch (error) { console.error(error); }</div><h3>Debugging checklist</h3><ul><li>Network tab-এ request status দেখো</li><li>Console error-এর প্রথম meaningful line পড়ো</li><li>Input validate করো</li><li>DOM update-এর আগে null check করো</li></ul><div class="note-box">প্রজেক্ট: একটি API-driven task list বানাও যেখানে empty state, error state এবং retry button থাকবে।</div>`});
 document.addEventListener('DOMContentLoaded', () => jsApp.init());

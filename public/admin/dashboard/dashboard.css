@@ -221,56 +221,100 @@ body.light-theme .modal-content {
     margin-bottom: 0; 
 }
 
+.admin-field,
 .input-group { 
-    position: relative; 
-    margin-bottom: 1.5rem; 
+    position: static; 
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-bottom: 1.25rem; 
 }
 
-.input-group input, 
-.input-group textarea {
-    width: 100%; 
-    padding: 10px 0; 
-    font-size: 1rem; 
-    color: inherit; 
-    border: none;
-    border-bottom: 2px solid currentColor; 
-    outline: none; 
-    background: transparent; 
-    transition: 0.3s; 
-    opacity: 0.7;
-}
-
-.input-group textarea { 
-    border: 1px solid currentColor; 
-    border-radius: 8px; 
-    padding: 10px; 
-}
-
+.admin-field label,
 .input-group label {
-    position: absolute; 
-    top: 10px; 
-    left: 0; 
-    font-size: 1rem; 
-    color: inherit; 
-    opacity: 0.6; 
-    pointer-events: none; 
-    transition: 0.3s ease all;
+    order: -1 !important;
+    position: static !important;
+    display: block !important;
+    margin: 0 0 2px 0 !important;
+    padding: 0 !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #8fd3e8 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    line-height: 1.35;
 }
 
+.admin-field input, 
+.admin-field textarea,
+.admin-field select,
+.input-group input, 
+.input-group textarea,
+.input-group select {
+    box-sizing: border-box !important;
+    width: 100% !important; 
+    min-height: 42px;
+    padding: 10px 12px !important; 
+    font-size: 0.95rem; 
+    color: #f1f5f9 !important; 
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    outline: none; 
+    background: rgba(15, 23, 42, 0.6) !important; 
+    transition: border-color 0.2s, box-shadow 0.2s; 
+    opacity: 1 !important;
+}
+
+.admin-field textarea,
+.input-group textarea { 
+    min-height: 100px;
+    resize: vertical;
+}
+
+.admin-field input:focus, 
+.admin-field textarea:focus,
+.admin-field select:focus,
 .input-group input:focus, 
-.input-group input:valid, 
-.input-group textarea:focus, 
-.input-group textarea:valid { 
-    opacity: 1; 
-    border-color: #38bdf8; 
+.input-group textarea:focus,
+.input-group select:focus { 
+    border-color: #38bdf8 !important; 
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+    background: rgba(15, 23, 42, 0.85) !important;
 }
 
-.input-group input:focus ~ label, 
-.input-group input:valid ~ label { 
-    top: -20px; 
-    font-size: 0.8rem; 
-    color: #38bdf8; 
-    opacity: 1; 
+.admin-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0.5rem 0 1rem 0;
+}
+
+.admin-checkbox-group label,
+label:has(input[type="checkbox"]) {
+    order: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    color: #cbd5e1 !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    margin: 0.5rem 0 1rem 0 !important;
+    padding: 0 !important;
+    line-height: 1.4;
+}
+
+.admin-checkbox-group input[type="checkbox"],
+.dashboard-body input[type="checkbox"] {
+    position: static !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    margin: 0 !important;
+    accent-color: #38bdf8;
+    cursor: pointer;
 }
 
 .file-input { 
@@ -376,7 +420,7 @@ body.light-theme .modal-content {
 }
 
 .modal.hidden { 
-    display: none; 
+    display: none !important; 
 }
 
 .modal-content { 
@@ -392,25 +436,32 @@ body.light-theme .modal-content {
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
-/* 🛠️ ডাইনামিক ইনপুট গ্রুপ ফিক্স (মোডাল পপআপ ওভাররাইড) */
-.modal .input-group input {
-    border-bottom: 2px solid rgba(255,255,255,0.3);
+/* Modal input styling */
+.modal .input-group input,
+.modal .admin-field input {
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    background: rgba(15, 23, 42, 0.6) !important;
 }
 
-.modal .input-group textarea {
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 8px;
-    padding: 12px;
-    background: rgba(0,0,0,0.15);
-    color: #fff;
-    width: 100%;
+.modal .input-group textarea,
+.modal .admin-field textarea {
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: #fff !important;
+    width: 100% !important;
     outline: none;
-    transition: 0.3s;
+    transition: 0.2s;
 }
 
-.modal .input-group textarea:focus {
-    border-color: #38bdf8;
-    background: rgba(0,0,0,0.25);
+.modal .input-group textarea:focus,
+.modal .admin-field textarea:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+    background: rgba(15, 23, 42, 0.85) !important;
 }
 
 .img-container { 
@@ -530,4 +581,53 @@ body.light-theme .admin-clock {
     .dashboard-grid {
         grid-template-columns: 1fr; 
     }
+}
+
+/* Security / 2FA Scoped Layout */
+#tab-security .dash-card {
+    max-width: 650px;
+}
+#2fa-status-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    padding: 16px 20px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+}
+#2fa-badge {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+#modal-2fa .modal-content {
+    max-width: 420px;
+    text-align: center;
+}
+#modal-2fa #verify-totp-input {
+    text-align: center;
+    font-size: 1.35rem;
+    letter-spacing: 5px;
+    font-weight: 700;
+    padding: 12px;
+}
+
+body.light-theme .admin-field > input,
+body.light-theme .admin-field > textarea,
+body.light-theme .admin-field > select,
+body.light-theme .input-group > input,
+body.light-theme .input-group > textarea,
+body.light-theme .input-group > select {
+    color: #1e293b !important;
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.light-theme .admin-field > label,
+body.light-theme .input-group > label {
+    color: #0369a1 !important;
 }

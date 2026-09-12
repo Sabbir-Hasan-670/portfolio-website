@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>Admin Dashboard | Sabbir Hasan</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css?v=p4b3">
 </head>
 <body class="dashboard-body" id="main-body">
 
@@ -31,7 +32,10 @@
             
             <ul class="tab-list">
                 <li class="tab-btn active" data-target="tab-overview">📊 Dashboard Home</li>
+                <li class="tab-btn" data-target="tab-homepage-sections">🧭 Homepage Sections</li>
+                <li class="tab-btn" data-target="tab-channels">🎥 Channels & Streams</li>
                 <li class="tab-btn" data-target="tab-experience">💼 Experience</li>
+                <li class="tab-btn" data-target="tab-services">🧩 Services & Expertise</li>
                 <li class="tab-btn" data-target="tab-projects">🚀 Projects</li>
                 <li class="tab-btn" data-target="tab-education">🎓 Education</li>
                 <li class="tab-btn" data-target="tab-certificates">📜 Certificates</li>
@@ -121,6 +125,8 @@
                         <div class="input-group">
                             <textarea id="desc" name="description" required rows="3" placeholder="Describe responsibilities..."></textarea>
                         </div>
+                        <div class="input-group"><input type="number" id="exp-sort-order" name="sort_order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="exp-visible" name="is_visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Save Experience ⚡</button>
                     </form>
                 </div>
@@ -149,31 +155,19 @@
                             <input type="text" id="proj-live" name="live_url" autocomplete="off">
                             <label>Live Preview URL (Optional)</label>
                         </div>
-                        
-                        <div class="input-group">
-                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Publication Status</label>
-                            <select id="blog-status" name="status" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #ffffff;">
-                                <option value="published">🚀 Published (Live on Site)</option>
-                                <option value="review">🔍 Under Review (Needs Check)</option>
-                                <option value="draft">📝 Draft (Work in Progress)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="blog-excerpt" name="excerpt" autocomplete="off" placeholder="Short summary for cards & search">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Article Excerpt / Summary</label>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="blog-meta-title" name="meta_title" autocomplete="off" placeholder="SEO Title">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Title</label>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="blog-meta-desc" name="meta_description" autocomplete="off" placeholder="SEO Meta Description (under 160 chars)">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Description</label>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="blog-tags" name="tags" autocomplete="off" placeholder="Cisco, VLAN, CCNA">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Tags</label>
-                        </div>
+                        <div class="input-group"><input type="text" id="proj-technologies" autocomplete="off"><label>Technology Stack (comma separated)</label></div>
+                        <div class="input-group"><textarea id="proj-features" rows="3" placeholder="Key features, one per line"></textarea></div>
+                        <div class="input-group"><textarea id="proj-challenge" rows="3" placeholder="Challenge"></textarea></div>
+                        <div class="input-group"><textarea id="proj-solution" rows="3" placeholder="Solution"></textarea></div>
+                        <div class="input-group"><textarea id="proj-architecture" rows="3" placeholder="Architecture"></textarea></div>
+                        <div class="input-group"><textarea id="proj-security" rows="3" placeholder="Security details"></textarea></div>
+                        <div class="input-group"><textarea id="proj-database" rows="3" placeholder="Database and backend details"></textarea></div>
+                        <div class="input-group"><textarea id="proj-screenshots" rows="3" placeholder="Screenshot URLs, one per line"></textarea></div>
+                        <div class="input-group"><input type="number" id="proj-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="proj-featured"> Featured project</label>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="proj-visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="text" id="proj-status" value="published" maxlength="20" autocomplete="off"><label>Publishing Status</label></div>
+
                         <div class="input-group file-group">
                             <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Project Thumbnail (Required)</label>
                             <input type="file" id="proj-image" name="project_image" accept="image/*" required class="file-input">
@@ -184,6 +178,196 @@
                 <div class="dash-card list-card">
                     <h3>Manage Projects</h3>
                     <ul id="projects-list-admin" class="admin-list"></ul>
+                </div>
+            </section>
+
+            <section id="tab-services" class="tab-pane">
+                <div class="dash-card">
+                    <h3>Add Service / Expertise</h3>
+                    <form id="service-form">
+                        <div class="input-group"><input type="text" id="service-title" required autocomplete="off"><label>Service Title</label></div>
+                        <div class="input-group"><textarea id="service-description" rows="3" required placeholder="Short service description"></textarea></div>
+                        <div class="input-group"><input type="text" id="service-icon" value="💻" autocomplete="off"><label>Icon</label></div>
+                        <div class="input-group"><input type="text" id="service-tags" autocomplete="off" placeholder="Routing, VLAN, Firewall"><label>Tags (comma separated)</label></div>
+                        <div class="input-group">
+                            <label style="position:static; opacity:1; display:block; margin-bottom:5px;">Category</label>
+                            <select id="service-category" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:6px;">
+                                <option value="network">Network</option><option value="cybersecurity">Cybersecurity</option><option value="fullstack">Full-Stack</option><option value="seo">SEO</option><option value="server">Server</option><option value="other" selected>Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><input type="number" id="service-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="service-visible" checked> Visible on public site</label>
+                        <button type="submit" class="action-btn">Save Service</button>
+                    </form>
+                </div>
+                <div class="dash-card list-card"><h3>Manage Services</h3><p id="services-migration-note" style="display:none; color:#f1c40f;"></p><ul id="services-list-admin" class="admin-list"></ul></div>
+            </section>
+
+            <section id="tab-homepage-sections" class="tab-pane">
+                <div class="dash-card">
+                    <h2>Homepage Sections</h2>
+                    <p id="sections-migration-note" style="display:none; color:#f1c40f;">Backend migration is required before these settings can be saved.</p>
+                    <form id="homepage-sections-form">
+                        <div id="homepage-sections-list"></div>
+                        <button type="submit" class="action-btn" style="margin-top:20px;">Save Homepage Sections</button>
+                    </form>
+                </div>
+            </section>
+ 
+            <!-- CHANNELS & STREAMS (YouTube, Kick, Twitch) -->
+            <section id="tab-channels" class="tab-pane">
+                <!-- Add / Edit Channel Card -->
+                <div class="dash-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <h2 style="margin: 0 0 6px;">🎥 Broadcasting Channels (YouTube, Kick, Twitch)</h2>
+                            <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">Manage your media channels. Unlimited YouTube, Kick, or Twitch channels supported with automated video feeds.</p>
+                        </div>
+                        <button type="button" class="action-btn" id="btn-sync-all-channels" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; padding: 10px 18px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;" onclick="window.syncAllChannels()">🔄 Sync All Channel Feeds Now</button>
+                    </div>
+
+                    <div style="background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 22px; display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.3rem;">⚡</span>
+                        <p style="margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+                            <strong>Automated Video Feed:</strong> When adding a YouTube channel, simply paste the channel URL or @Handle (e.g. <code>https://youtube.com/@handle</code> or <code>@handle</code>). The system automatically fetches your channel avatar, title, and automatically pulls in your latest videos to both the home broadcast section and the dedicated Streams page!
+                        </p>
+                    </div>
+                    
+                    <form id="admin-channel-form" enctype="multipart/form-data">
+                        <input type="hidden" id="channel-id" name="id" value="">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                            <div class="input-group">
+                                <select id="channel-platform" name="platform" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 1rem;">
+                                    <option value="youtube">🔴 YouTube</option>
+                                    <option value="twitch">🟣 Twitch</option>
+                                    <option value="kick">🟢 Kick</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="channel-name" name="channel_name" required placeholder="e.g. Sabbir Hasan Tech" autocomplete="off">
+                                <label>Channel Display Name</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="channel-handle" name="channel_handle" placeholder="e.g. @sabbirhasan" autocomplete="off">
+                                <label>Channel Handle / Username</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="url" id="channel-url" name="channel_url" required placeholder="https://youtube.com/@... or https://twitch.tv/..." autocomplete="off">
+                                <label>Channel Direct Link (Subscribe/Follow)</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="channel-subscribers" name="subscribers_count" placeholder="e.g. 15.4K Subs / 3.2K Followers" autocomplete="off">
+                                <label>Subscribers / Followers Tag</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="channel-badge" name="badge_text" value="OFFICIAL" placeholder="e.g. MAIN HUB, CREATOR, PRO" autocomplete="off">
+                                <label>Badge Text</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="channel-sort" name="sort_order" value="0" min="0" step="1">
+                                <label>Display Order (Lower First)</label>
+                            </div>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 14px;">
+                            <textarea id="channel-desc" name="description" rows="2" placeholder="Brief channel focus: e.g. Full-stack coding, CCNA networking, and cybersecurity tutorials..."></textarea>
+                            <label>Channel Description</label>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; margin: 16px 0;">
+                            <div>
+                                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Avatar Image (Optional)</label>
+                                <input type="file" id="channel-avatar-file" name="avatar_file" accept="image/*" style="width: 100%; color: #94a3b8;">
+                                <input type="hidden" id="channel-avatar-url" name="avatar_url" value="">
+                            </div>
+                            <div style="display: flex; gap: 20px; align-items: center;">
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                    <input type="checkbox" id="channel-is-live" name="is_live" value="1">
+                                    <span style="color: #ef4444; font-weight: 600;">🔴 Currently LIVE Now</span>
+                                </label>
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                    <input type="checkbox" id="channel-is-visible" name="is_visible" value="1" checked>
+                                    <span>Visible on Public Site</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 18px;">
+                            <button type="submit" class="action-btn" id="channel-submit-btn">Add Channel 🚀</button>
+                            <button type="button" class="action-btn" id="channel-cancel-btn" style="display:none; background: rgba(255,255,255,0.1); color: #fff;">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Existing Channels List -->
+                <div class="dash-card list-card" style="margin-top: 24px;">
+                    <h3>Active Channels (<span id="admin-channels-count">0</span>)</h3>
+                    <div id="admin-channels-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;"></div>
+                </div>
+
+                <!-- Add / Edit Featured Video Card -->
+                <div class="dash-card" style="margin-top: 32px;">
+                    <h2 style="margin-bottom: 8px;">🎬 Featured Video / Stream Highlights</h2>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px;">Add video highlights to show on the portfolio. Pasting a YouTube link automatically extracts the high-res thumbnail!</p>
+
+                    <form id="admin-video-form" enctype="multipart/form-data">
+                        <input type="hidden" id="video-id" name="id" value="">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                            <div class="input-group">
+                                <select id="video-platform" name="platform" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 1rem;">
+                                    <option value="youtube">🔴 YouTube Video</option>
+                                    <option value="twitch">🟣 Twitch Stream / Clip</option>
+                                    <option value="kick">🟢 Kick Stream / VOD</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <select id="video-channel-id" name="channel_id" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 1rem;">
+                                    <option value="">-- Linked Channel (Optional) --</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="video-title" name="title" required placeholder="e.g. Building Zero-Trust Network Topologies" autocomplete="off">
+                                <label>Video / Stream Title</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="url" id="video-url" name="video_url" required placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." autocomplete="off">
+                                <label>Video Watch URL</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="video-duration" name="duration" placeholder="e.g. 24:18 or 1:04:12" autocomplete="off">
+                                <label>Video Duration (e.g. 24:18)</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="video-views" name="views_count" placeholder="e.g. 4.8K views / Stream VOD" autocomplete="off">
+                                <label>Views / Tag Text</label>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; margin: 16px 0;">
+                            <div>
+                                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Thumbnail (Optional - auto-extracted for YouTube)</label>
+                                <input type="file" id="video-thumb-file" name="thumbnail_file" accept="image/*" style="width: 100%; color: #94a3b8;">
+                                <input type="hidden" id="video-thumb-url" name="thumbnail_url" value="">
+                            </div>
+                            <div>
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                    <input type="checkbox" id="video-is-featured" name="is_featured" value="1" checked>
+                                    <span>Featured on Homepage</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 18px;">
+                            <button type="submit" class="action-btn" id="video-submit-btn">Add Video Highlight 🎬</button>
+                            <button type="button" class="action-btn" id="video-cancel-btn" style="display:none; background: rgba(255,255,255,0.1); color: #fff;">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Existing Videos List -->
+                <div class="dash-card list-card" style="margin-top: 24px;">
+                    <h3>Featured Videos (<span id="admin-videos-count">0</span>)</h3>
+                    <div id="admin-videos-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px;"></div>
                 </div>
             </section>
 
@@ -206,6 +390,8 @@
                         <div class="input-group">
                             <textarea id="edu-description" name="description" rows="3" placeholder="Achievements, CGPA, major focus..."></textarea>
                         </div>
+                        <div class="input-group"><input type="number" id="edu-sort-order" name="sort_order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="edu-visible" name="is_visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Add Education Entry 🎓</button>
                     </form>
                 </div>
@@ -229,12 +415,14 @@
                         </div>
                         <div class="input-group">
                             <input type="url" id="cert-link" name="link" autocomplete="off" placeholder="https://credly.com/...">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Verification Link (Optional)</label>
+                            <label>Verification Link (Optional)</label>
                         </div>
                         <div class="input-group file-group">
                             <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Certificate Badge/Image</label>
                             <input type="file" id="cert-image" name="cert_image" accept="image/*" required class="file-input">
                         </div>
+                        <div class="input-group"><input type="number" id="cert-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
+                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="cert-visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Add Certificate 📜</button>
                     </form>
                 </div>
@@ -334,6 +522,52 @@
                                 <textarea id="contact-map" name="contact_map_url" rows="3" placeholder="Paste Google Maps Embed URL src here..."></textarea>
                                 <label style="font-size:0.75rem; color:#64748b; margin-top:5px; position:static;">Go to Google Maps -> Share -> Embed a map -> Copy the src url only.</label>
                             </div>
+
+                            <h4 style="margin-top:30px; margin-bottom:20px;">Footer Station &amp; Live Timezone</h4>
+                            <div class="input-group">
+                                <input type="text" id="station-location" name="station_location" autocomplete="off" placeholder="e.g. Faridpur, BD or Dhaka, Bangladesh or London, UK">
+                                <label>Station Location Badge</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="station-timezone" name="station_timezone" list="timezone-suggestions" autocomplete="off" placeholder="e.g. Asia/Dhaka or Europe/London or America/New_York">
+                                <label>Station Timezone (City / Region)</label>
+                                <datalist id="timezone-suggestions">
+                                    <option value="Asia/Dhaka">Asia/Dhaka (UTC+6 - Bangladesh BST)</option>
+                                    <option value="Asia/Kolkata">Asia/Kolkata (UTC+5:30 - India IST)</option>
+                                    <option value="Asia/Dubai">Asia/Dubai (UTC+4 - UAE GST)</option>
+                                    <option value="Asia/Riyadh">Asia/Riyadh (UTC+3 - Saudi Arabia)</option>
+                                    <option value="Asia/Singapore">Asia/Singapore (UTC+8 - Singapore SGT)</option>
+                                    <option value="Asia/Tokyo">Asia/Tokyo (UTC+9 - Japan JST)</option>
+                                    <option value="Europe/London">Europe/London (UTC+0/+1 - UK GMT/BST)</option>
+                                    <option value="Europe/Berlin">Europe/Berlin (UTC+1/+2 - Germany CET/CEST)</option>
+                                    <option value="Europe/Paris">Europe/Paris (UTC+1/+2 - France CET/CEST)</option>
+                                    <option value="America/New_York">America/New_York (UTC-5/-4 - US Eastern EST/EDT)</option>
+                                    <option value="America/Chicago">America/Chicago (UTC-6/-5 - US Central CST/CDT)</option>
+                                    <option value="America/Denver">America/Denver (UTC-7/-6 - US Mountain MST/MDT)</option>
+                                    <option value="America/Los_Angeles">America/Los_Angeles (UTC-8/-7 - US Pacific PST/PDT)</option>
+                                    <option value="America/Toronto">America/Toronto (UTC-5/-4 - Canada Eastern)</option>
+                                    <option value="Australia/Sydney">Australia/Sydney (UTC+10/+11 - Australia AEST/AEDT)</option>
+                                    <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                </datalist>
+                                <small style="color:#64748b; font-size:0.75rem; margin-top:5px; display:block;">Select from the list or type any standard IANA timezone. The footer clock will instantly display that city's live local time!</small>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="station-status" name="station_status" autocomplete="off" placeholder="e.g. SYSTEM OPERATIONAL // ALL SIGNALS NORMAL">
+                                <label>Station Status Badge</label>
+                            </div>
+
+                            <h4 style="margin-top:30px; margin-bottom:20px;">Hero, Footer & SEO Settings</h4>
+                            <p style="color:#f1c40f; font-size:.85rem;">These newer settings require the Phase A database migration on databases where it has not yet been applied.</p>
+                            <div class="input-group"><input type="text" id="hero-primary-cta-label" maxlength="80" autocomplete="off"><label>Hero Primary CTA Label</label></div>
+                            <div class="input-group"><input type="text" id="hero-primary-cta-url" maxlength="500" autocomplete="off" placeholder="/projects or https://..."><label>Hero Primary CTA URL</label></div>
+                            <div class="input-group"><input type="text" id="hero-secondary-cta-label" maxlength="80" autocomplete="off"><label>Hero Secondary CTA Label</label></div>
+                            <div class="input-group"><input type="text" id="hero-secondary-cta-url" maxlength="500" autocomplete="off" placeholder="/resume or https://..."><label>Hero Secondary CTA URL</label></div>
+                            <div class="input-group"><input type="text" id="hero-availability-text" maxlength="255" autocomplete="off"><label>Hero Availability Text</label></div>
+                            <div class="input-group"><input type="text" id="contact-phone" maxlength="50" autocomplete="off"><label>Contact Phone</label></div>
+                            <div class="input-group"><textarea id="footer-text" rows="3" maxlength="5000" placeholder="Footer text"></textarea></div>
+                            <div class="input-group"><input type="text" id="default-seo-title" maxlength="255" autocomplete="off"><label>Default SEO Title</label></div>
+                            <div class="input-group"><textarea id="default-seo-description" rows="3" maxlength="5000" placeholder="Default SEO Description"></textarea></div>
+                            <div class="input-group"><input type="text" id="default-og-image" maxlength="500" autocomplete="off" placeholder="/uploads/... or https://..."><label>Default OG Image URL / Existing Media Path</label></div>
                         </div>
                     </div>
                     <button type="submit" class="action-btn" style="margin-top: 20px; width: 100%;">Save Links & Text 🚀</button>
@@ -343,11 +577,14 @@
                     <div class="uploads-column">
                         <div class="dash-card">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <h3 style="margin: 0;">Update Avatar</h3>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <img id="avatar-preview" src="" alt="Avatar Preview" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid #38bdf8;">
+                                    <h3 style="margin: 0;">Update Avatar</h3>
+                                </div>
                                 <span id="avatar-status" style="font-size: 12px; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.1);">Checking...</span>
                             </div>
                             <form id="pic-form">
-                                <label style="display:block; margin-bottom: 5px; opacity: 0.8;">Select image to crop and upload:</label>
+                                <label style="display:block; margin-bottom: 5px; opacity: 0.8;">Profile picture used across the entire website:</label>
                                 <input type="file" id="profile_image" name="profile_image" accept="image/*" required class="file-input">
                                 <div style="display: flex; gap: 10px;">
                                     <button type="submit" class="action-btn" style="flex: 1;">Upload Avatar 🖼️</button>
@@ -392,27 +629,60 @@
                 <div class="dash-card">
                     <h2>Write New Article</h2>
                     <form id="blog-form">
-                        <div class="input-group">
-                            <input type="text" id="blog-title" name="title" required autocomplete="off">
+                        <div class="admin-field">
                             <label>Article Title</label>
+                            <input type="text" id="blog-title" name="title" required autocomplete="off">
                         </div>
                         
-                        <div class="input-group">
-                            <input type="text" id="blog-slug" name="custom_slug" autocomplete="off" placeholder="যেমন: english-tips">
-                            <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Custom URL Slug (Optional - ফাঁকা রাখলে অটোমেটিক জেনারেট হবে)</label>
+                        <div class="admin-field">
+                            <label>Custom URL Slug (Optional - auto-generated if left empty)</label>
+                            <input type="text" id="blog-slug" name="custom_slug" autocomplete="off" placeholder="e.g. english-tips">
                         </div>
                         
-                        <div class="input-group">
-                            <input type="text" id="blog-category" name="category" required autocomplete="off">
+                        <div class="admin-field">
                             <label>Category (e.g., Cybersecurity)</label>
+                            <input type="text" id="blog-category" name="category" required autocomplete="off">
                         </div>
-                        
-                        <div class="input-group file-group">
-                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Cover Image</label>
+                        <div class="admin-checkbox-group">
+                            <label><input type="checkbox" id="blog-featured"> Featured article</label>
+                        </div>
+                        <div class="admin-field">
+                            <label>Featured Order (lower first)</label>
+                            <input type="number" id="blog-featured-order" min="0" step="1" value="0">
+                        </div>
+
+                        <div class="admin-field">
+                            <label>Publication Status</label>
+                            <select id="blog-status" name="status">
+                                <option value="published" selected>🚀 Published (Live on Site)</option>
+                                <option value="review">🔍 Under Review (Needs Check)</option>
+                                <option value="draft">📝 Draft (Work in Progress)</option>
+                            </select>
+                        </div>
+                        <div class="admin-field">
+                            <label>Article Excerpt / Summary</label>
+                            <input type="text" id="blog-excerpt" name="excerpt" autocomplete="off" maxlength="160" placeholder="Short summary for cards & search (up to 160 characters)">
+                        </div>
+                        <div class="admin-field">
+                            <label>SEO Meta Title</label>
+                            <input type="text" id="blog-meta-title" name="meta_title" autocomplete="off" maxlength="60" placeholder="SEO title (up to 60 characters)">
+                        </div>
+                        <div class="admin-field">
+                            <label>SEO Meta Description</label>
+                            <input type="text" id="blog-meta-desc" name="meta_description" autocomplete="off" maxlength="160" placeholder="SEO meta description (up to 160 characters)">
+                        </div>
+                        <div class="admin-field">
+                            <label>Tags</label>
+                            <input type="text" id="blog-tags" name="tags" autocomplete="off" placeholder="Cisco, VLAN, CCNA">
+                        </div>
+
+                        <div class="admin-field">
+                            <label>Cover Image</label>
                             <input type="file" id="blog-image" name="blog_image" accept="image/*" class="file-input">
                         </div>
                         
-                        <div class="input-group">
+                        <div class="admin-field">
+                            <label>Article Content</label>
                             <textarea id="blog-content" name="content" rows="12" required placeholder="Write your full article here..."></textarea>
                         </div>
                         
@@ -421,7 +691,17 @@
                 </div>
 
                 <div class="dash-card list-card">
-                    <h2>Published Articles</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                        <h2 style="margin: 0;">Articles</h2>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <div id="blog-status-filters" style="display: flex; gap: 6px;">
+                                <button type="button" class="action-btn" id="filter-btn-all" style="padding: 4px 10px; font-size: 0.8rem; background: #3b82f6;" onclick="window.filterAdminBlogs('all')">All (<span id="count-blog-all">0</span>)</button>
+                                <button type="button" class="action-btn" id="filter-btn-review" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b;" onclick="window.filterAdminBlogs('review')">Review (<span id="count-blog-review">0</span>)</button>
+                                <button type="button" class="action-btn" id="filter-btn-published" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981;" onclick="window.filterAdminBlogs('published')">Published (<span id="count-blog-published">0</span>)</button>
+                            </div>
+                            <button type="button" id="btn-approve-all" class="action-btn" style="padding: 6px 14px; font-size: 0.82rem; background: #10b981; display: none; font-weight: 700;" onclick="window.approveAllReviewBlogs()">⚡ Auto-Approve All Pending</button>
+                        </div>
+                    </div>
                     <ul id="blog-list" class="admin-list">
                         <p style="color: #94a3b8;">Loading articles...</p>
                     </ul>
@@ -467,52 +747,59 @@
             <form id="edit-blog-form" style="margin-top: 20px;">
                 <input type="hidden" id="edit-blog-id"> 
                 
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>Article Title</label>
                     <input type="text" id="edit-blog-title" name="title" required autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Article Title</label>
                 </div>
                 
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>Custom URL Slug (Optional)</label>
                     <input type="text" id="edit-blog-slug" name="custom_slug" autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Custom URL Slug (Optional)</label>
                 </div>
                 
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>Category</label>
                     <input type="text" id="edit-blog-category" name="category" required autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Category</label>
                 </div>
                 
-                
-                <div class="input-group">
-                    <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Publication Status</label>
-                    <select id="edit-blog-status" name="status" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #ffffff;">
+                <div class="admin-field">
+                    <label>Publication Status</label>
+                    <select id="edit-blog-status" name="status">
                         <option value="published">🚀 Published (Live on Site)</option>
                         <option value="review">🔍 Under Review (Needs Check)</option>
                         <option value="draft">📝 Draft (Work in Progress)</option>
                     </select>
                 </div>
-                <div class="input-group">
+                <div class="admin-checkbox-group">
+                    <label><input type="checkbox" id="edit-blog-featured"> Featured article</label>
+                </div>
+                <div class="admin-field">
+                    <label>Featured Order (lower first)</label>
+                    <input type="number" id="edit-blog-featured-order" min="0" step="1" value="0">
+                </div>
+                <div class="admin-field">
+                    <label>Article Excerpt</label>
                     <input type="text" id="edit-blog-excerpt" name="excerpt" autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Article Excerpt</label>
                 </div>
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>SEO Meta Title</label>
                     <input type="text" id="edit-blog-meta-title" name="meta_title" autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Title</label>
                 </div>
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>SEO Meta Description</label>
                     <input type="text" id="edit-blog-meta-desc" name="meta_description" autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">SEO Meta Description</label>
                 </div>
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>Tags</label>
                     <input type="text" id="edit-blog-tags" name="tags" autocomplete="off">
-                    <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Tags</label>
                 </div>
-                <div class="input-group file-group">
-                    <label style="position: static; opacity: 1; margin-bottom: 5px; display: block; font-size: 0.8rem; color: #38bdf8;">Change Cover Image (Optional)</label>
+                <div class="admin-field">
+                    <label>Change Cover Image (Optional)</label>
                     <input type="file" id="edit-blog-image" name="blog_image" accept="image/*" class="file-input">
                 </div>
                 
-                <div class="input-group">
+                <div class="admin-field">
+                    <label>Article Content</label>
                     <textarea id="edit-blog-content" name="content" rows="10" required placeholder="Modify your article content here..."></textarea>
                 </div>
                 
@@ -560,8 +847,6 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
     <!-- 2FA Modal -->
     <div id="modal-2fa" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
         <div class="modal-content dash-card" style="max-width: 400px; width: 100%; text-align: center; position: relative;">
@@ -580,9 +865,6 @@
         </div>
     </div>
 
-    <script src="dashboard.js"></script>
-    
-<script src="/toast.js"></script>
     <!-- Link Modal -->
     <div id="link-modal" class="modal hidden">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
@@ -590,7 +872,7 @@
             <input type="hidden" id="link-modal-repo-id">
             <div class="input-group">
                 <input type="url" id="link-modal-url" placeholder="https://example.com" autocomplete="off" style="width: 100%; box-sizing: border-box;">
-                <label style="top: -20px; font-size: 0.8rem; color: #38bdf8; opacity: 1;">Website URL</label>
+                <label>Website URL</label>
             </div>
             <div class="modal-actions" style="margin-top: 25px; justify-content: center; gap: 15px;">
                 <button type="button" class="logout-btn" onclick="document.getElementById('link-modal').classList.add('hidden')">Cancel</button>
@@ -599,6 +881,10 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="dashboard.js?v=autopub1"></script>
+    <script src="/toast.js"></script>
 
 </body>
 </html>

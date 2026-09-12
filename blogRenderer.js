@@ -87,7 +87,7 @@ function processHeadingsAndToc(content) {
 function processCodeBlocks(content) {
     if (!content) return '';
     return content.replace(/<pre[^>]*><code([^>]*)>([\s\S]*?)<\/code><\/pre>/gi, (match, codeAttrs, codeContent) => {
-        let lang = 'CODE';
+        let lang = 'TERMINAL';
         const classMatch = codeAttrs.match(/class=(['"])(?:language-)?([a-zA-Z0-9_-]+)\1/i);
         if (classMatch && classMatch[2]) {
             lang = classMatch[2].toUpperCase();
@@ -95,6 +95,11 @@ function processCodeBlocks(content) {
         return `
         <div class="code-block-wrapper">
             <div class="code-header">
+                <div class="mac-dots">
+                    <span class="mac-dot red"></span>
+                    <span class="mac-dot yellow"></span>
+                    <span class="mac-dot green"></span>
+                </div>
                 <span class="code-lang">${escapeHtml(lang)}</span>
                 <button class="copy-code-btn" onclick="copyCode(this)" aria-label="Copy code to clipboard">
                     <span class="copy-icon">📋</span> <span class="copy-text">Copy</span>
@@ -229,6 +234,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/blog-v7.css?v=4">
 
     <!-- BreadcrumbList Schema -->
     <script type="application/ld+json">
@@ -287,11 +293,11 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             </div>
         </nav>
 
-        <main class="section blog-listing-section">
-            <header class="section-header reveal active">
-                <p class="section-label">${displayCategory ? 'Category: ' + escapeHtml(displayCategory) : 'Knowledge Base &amp; Tutorials'}</p>
-                <h1 class="section-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Technical <span>Articles</span>'}</h1>
-                <p class="section-desc">${displayCategory ? 'In-depth tutorials, practical guides, and technical insights filed under ' + escapeHtml(displayCategory) + '.' : 'Practical guides, network engineering configurations, cybersecurity breakdowns, and full-stack development insights.'}</p>
+        <main class="blog-listing-section">
+            <header class="blog-hero-header reveal active">
+                <div class="blog-eyebrow"><span class="blog-dot"></span> ${displayCategory ? 'CATEGORY ARCHIVE' : 'ENGINEERING NOTES'}</div>
+                <h1 class="blog-hero-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Technical <span>Articles</span> &amp; Guides'}</h1>
+                <p class="blog-hero-desc">${displayCategory ? 'Practical tutorials and lab breakdowns filed under ' + escapeHtml(displayCategory) + '.' : 'CCNA network guides, cybersecurity defense, Linux administration, and full-stack engineering notes.'}</p>
             </header>
 
             <!-- SEARCH & FILTERS -->
@@ -320,22 +326,42 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             </div>
         </main>
 
-        <footer class="footer">
-            <div class="footer-inner">
-                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="/">Home</a>
-                    <a href="/about">About</a>
-                    <a href="/resume">Resume</a>
-                    <a href="/blog">Blog</a>
-                    <a href="/tools">Tools</a>
-                    <a href="/contact">Contact</a>
+        <!-- EXECUTIVE SITE FOOTER -->
+        <footer class="blog-footer">
+            <div class="blog-footer-inner">
+                <div class="blog-footer-brand">
+                    <div class="footer-brand-head">
+                        <a href="/" class="footer-brand-link">
+                            <span class="footer-logo-badge">SH.</span>
+                            <span class="footer-brand-title">Sabbir Hasan</span>
+                        </a>
+                        <span class="footer-status-tag">Systems &amp; Full-Stack</span>
+                    </div>
+                    <p class="blog-footer-copy">
+                        &copy; <span id="year">${new Date().getFullYear()}</span> Sabbir Hasan. All rights reserved.
+                        <span class="copy-sep">·</span>
+                        <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
+                    </p>
+                </div>
+
+                <div class="blog-footer-right">
+                    <nav class="blog-footer-nav" aria-label="Footer navigation">
+                        <a href="/">Home</a>
+                        <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/blog">Blog</a>
+                        <a href="/tools">Tools</a>
+                        <a href="/contact">Contact</a>
+                    </nav>
+                    <a href="#top" class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" title="Scroll to top" aria-label="Back to top">
+                        <span>Top</span> ↑
+                    </a>
                 </div>
             </div>
         </footer>
     </div>
 
-    <script src="/main.js" defer></script>
+    <script src="/main.js?v=4" defer></script>
     <script src="/toast.js" defer></script>
     <script>
     // Live client-side search enhancement
@@ -370,15 +396,21 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
                         if (data && data.length > 0) {
                             resultsBox.innerHTML = '<h3>Search Results for "' + q + '" (' + data.length + ')</h3><div class="blog-grid">' + data.map(post => \`
-                                <article class="blog-card">
-                                    <a href="/blog/\${post.slug}">
+                                <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
+                                    <a href="/blog/\${post.slug}" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
                                         <img src="\${post.image_path || '/og-image.png'}" alt="\${post.title}" class="blog-img" loading="lazy">
                                     </a>
                                     <div class="blog-body">
-                                        <span class="blog-category">\${post.category || 'Tech'}</span>
+                                        <div class="blog-meta-bar">
+                                            <span class="blog-category">\${post.category || 'Tech'}</span>
+                                            <span class="blog-reading-time">⏱️ \${post.reading_time || '4 min read'}</span>
+                                        </div>
                                         <h3 class="blog-title"><a href="/blog/\${post.slug}">\${post.title}</a></h3>
                                         <p class="blog-excerpt">\${post.excerpt || ''}</p>
-                                        <a href="/blog/\${post.slug}" class="read-more">Read Article →</a>
+                                        <div class="blog-footer-row">
+                                            <span class="blog-date">📅 \${post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
+                                            <a href="/blog/\${post.slug}" class="read-more">Read Article <span>→</span></a>
+                                        </div>
                                     </div>
                                 </article>
                             \`).join('') + '</div>';
@@ -406,7 +438,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 /**
  * Render Complete Single Article Page HTML with full SEO, OpenGraph, Schema, TOC, and Code Blocks
  */
-function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
+function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextPost = null, siteUrl, authorImage = '' }) {
     const postSlug = escapeHtml(post.slug || post.id);
     const postTitle = escapeHtml(post.title || 'Untitled Article');
     const metaTitle = escapeHtml(post.meta_title || `${post.title} | Sabbir Hasan`);
@@ -419,6 +451,8 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
     const formattedPublishedDate = formatDate(post.created_at);
     const formattedUpdatedDate = formatDate(post.updated_at || post.created_at);
     const featuredImg = post.image_path ? escapeHtml(post.image_path) : '/og-image.png';
+    const authorAvatar = escapeHtml(authorImage || '/uploads/sabbir-secondary-blue.webp');
+    const tags = String(post.tags || '').split(',').map(tag => tag.trim()).filter(Boolean);
     const absoluteImgUrl = featuredImg.startsWith('http') ? featuredImg : `${siteUrl}${featuredImg}`;
 
     // Clean content: remove duplicate H1, process headings for TOC, process code blocks
@@ -433,14 +467,16 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
         <aside class="article-toc-box" aria-label="Table of contents">
             <details class="toc-details" open>
                 <summary class="toc-summary">
-                    <span class="toc-title">📑 Table of Contents</span>
+                    <span class="toc-title">📑 Table of Contents <span class="toc-badge">${toc.length} Sections</span></span>
                     <span class="toc-toggle-icon">▾</span>
                 </summary>
                 <nav class="toc-nav">
                     <ul class="toc-list">
                         ${toc.map((item, idx) => `
                             <li class="toc-item toc-${item.level}">
-                                <a href="#${item.id}" class="toc-link">${idx + 1}. ${escapeHtml(item.text)}</a>
+                                <a href="#${item.id}" class="toc-link">
+                                    <span class="toc-num">${idx + 1}.</span> ${escapeHtml(item.text)}
+                                </a>
                             </li>
                         `).join('')}
                     </ul>
@@ -457,15 +493,20 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
             <h2 class="related-title">Related <span>Articles</span></h2>
             <div class="blog-grid related-grid">
                 ${relatedPosts.map(rel => `
-                    <article class="blog-card">
-                        <a href="/blog/${escapeHtml(rel.slug || rel.id)}" class="blog-card-img-link" tabindex="-1">
+                    <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
+                        <a href="/blog/${escapeHtml(rel.slug || rel.id)}" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
                             <img src="${rel.image_path ? escapeHtml(rel.image_path) : '/og-image.png'}" alt="${escapeHtml(rel.title)}" class="blog-img" loading="lazy" width="400" height="225">
                         </a>
                         <div class="blog-body">
-                            <span class="blog-category">${escapeHtml(rel.category || 'Tech')}</span>
+                            <div class="blog-meta-bar">
+                                <span class="blog-category">${escapeHtml(rel.category || 'Tech')}</span>
+                                <span class="blog-reading-time">⏱️ ${escapeHtml(rel.reading_time || '4 min read')}</span>
+                            </div>
                             <h3 class="blog-title"><a href="/blog/${escapeHtml(rel.slug || rel.id)}">${escapeHtml(rel.title)}</a></h3>
                             <p class="blog-excerpt">${escapeHtml(rel.excerpt || stripHtml(rel.content).slice(0, 100) + '...')}</p>
-                            <a href="/blog/${escapeHtml(rel.slug || rel.id)}" class="read-more">Read Article →</a>
+                            <div class="blog-footer-row">
+                                <a href="/blog/${escapeHtml(rel.slug || rel.id)}" class="read-more">Read Article <span>→</span></a>
+                            </div>
                         </div>
                     </article>
                 `).join('')}
@@ -515,6 +556,7 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/blog-v7.css?v=4">
 
     <!-- ===== STRUCTURED DATA: Article & Breadcrumbs ===== -->
     <script type="application/ld+json">
@@ -526,14 +568,13 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
       "image": ["${absoluteImgUrl}"],
       "author": {
         "@type": "Person",
+        "@id": "${siteUrl}/#person",
         "name": "Sabbir Hasan",
-        "url": "${siteUrl}/about",
+        "url": "${siteUrl}/",
         "jobTitle": "Network Engineer & Full-Stack Developer"
       },
       "publisher": {
-        "@type": "Person",
-        "name": "Sabbir Hasan",
-        "url": "${siteUrl}/"
+        "@id": "${siteUrl}/#person"
       },
       "datePublished": "${publishedIso}",
       "dateModified": "${updatedIso}",
@@ -577,7 +618,9 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
     </script>
 </head>
 <body class="article-page-body">
-    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- TOP READING PROGRESS TRACK -->
+    <div class="reading-progress-track"><div class="reading-progress-fill" id="readingProgress"></div></div>
+
     <div class="aurora-mesh">
         <div class="aurora-blob aurora-blob-1"></div>
         <div class="aurora-blob aurora-blob-2"></div>
@@ -612,60 +655,92 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
         </nav>
 
         <main class="article-wrapper">
-            <!-- BREADCRUMBS -->
-            <nav class="breadcrumb-bar" aria-label="Breadcrumbs">
-                <ol class="breadcrumb-list">
-                    <li><a href="/">Home</a></li>
-                    <li><span class="sep">/</span></li>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><span class="sep">/</span></li>
-                    <li><a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}">${category}</a></li>
-                    <li><span class="sep">/</span></li>
-                    <li aria-current="page" class="active">${postTitle}</li>
-                </ol>
-            </nav>
+            <!-- TOP ACTION BAR: BACK BUTTON + BREADCRUMBS -->
+            <div class="article-top-action-bar">
+                <a href="/blog" class="article-back-pill">
+                    <span class="back-arrow">←</span> All Articles
+                </a>
+                <nav class="breadcrumb-bar" aria-label="Breadcrumbs">
+                    <ol class="breadcrumb-list">
+                        <li><a href="/">Home</a></li>
+                        <li><span class="sep">/</span></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><span class="sep">/</span></li>
+                        <li><a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}">${category}</a></li>
+                    </ol>
+                </nav>
+            </div>
 
             <article class="single-article-container" itemscope itemtype="https://schema.org/Article">
-                <!-- ARTICLE HEADER -->
+                <!-- ARTICLE HERO HEADER -->
                 <header class="article-header">
                     <div class="article-category-badge-wrap">
-                        <a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}" class="blog-category">${category}</a>
+                        <a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}" class="blog-category">
+                            <span class="cat-dot"></span>${category}
+                        </a>
                         <span class="reading-time-pill">⏱️ ${readingTime}</span>
+                        <span class="article-level-pill">⚡ Engineering Notes</span>
                     </div>
 
                     <h1 class="article-main-title" itemprop="headline">${postTitle}</h1>
 
-                    <div class="article-author-meta">
-                        <img src="/uploads/1780147875909-556133141.jpg" alt="Sabbir Hasan" class="author-avatar-small" width="44" height="44" onerror="this.src='/favicon.svg'">
+                    ${post.excerpt ? `<p class="article-lead-deck" itemprop="description">${escapeHtml(post.excerpt)}</p>` : ''}
+
+                    <div class="article-author-deck">
+                        <div class="author-avatar-wrap">
+                            <img src="${authorAvatar}" alt="Sabbir Hasan" class="author-avatar-small" data-profile-image width="48" height="48" onerror="this.onerror=null;this.src='/uploads/sabbir-secondary-blue.webp'">
+                            <span class="author-badge-verified" title="Verified Author">✓</span>
+                        </div>
                         <div class="author-meta-info">
-                            <span class="author-name">Written by <a href="/about" rel="author">Sabbir Hasan</a></span>
-                            <span class="article-pub-dates">
-                                Published <time datetime="${publishedIso}" itemprop="datePublished">${formattedPublishedDate}</time>
-                                ${post.updated_at ? ` · Updated <time datetime="${updatedIso}" itemprop="dateModified">${formattedUpdatedDate}</time>` : ''}
-                            </span>
+                            <div class="author-name-row">
+                                <a href="/about" class="author-name-link" rel="author">Sabbir Hasan</a>
+                                <span class="author-role-chip">Network Engineer &amp; Developer</span>
+                            </div>
+                            <div class="article-pub-dates">
+                                <span>📅 Published <time datetime="${publishedIso}" itemprop="datePublished">${formattedPublishedDate}</time></span>
+                                ${post.updated_at ? `<span> · 🔄 Updated <time datetime="${updatedIso}" itemprop="dateModified">${formattedUpdatedDate}</time></span>` : ''}
+                            </div>
+                        </div>
+                        <div class="header-share-quick">
+                            <button type="button" class="quick-share-btn" onclick="copyArticleLink('${canonicalUrl}', this)" title="Copy Link">🔗</button>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener noreferrer" class="quick-share-btn" title="Share on LinkedIn">in</a>
+                            <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener noreferrer" class="quick-share-btn" title="Share on X">𝕏</a>
                         </div>
                     </div>
                 </header>
 
-                <!-- FEATURED IMAGE -->
+                <!-- FEATURED HERO MEDIA -->
                 ${post.image_path ? `
                 <figure class="article-featured-media">
-                    <img src="${featuredImg}" alt="${postTitle}" class="article-hero-img" loading="eager" decoding="async" width="900" height="500" itemprop="image">
+                    <div class="article-featured-bezel">
+                        <img src="${featuredImg}" alt="${postTitle}" class="article-hero-img" loading="eager" decoding="async" width="1200" height="630" itemprop="image">
+                        <div class="media-overlay-gradient"></div>
+                    </div>
+                    <figcaption class="media-caption">Technical reference &amp; visual blueprint by Sabbir Hasan</figcaption>
                 </figure>
                 ` : ''}
 
                 <!-- TABLE OF CONTENTS (Auto-generated) -->
                 ${tocHtml}
 
-                <!-- ARTICLE BODY CONTENT -->
+                <!-- ARTICLE EDITORIAL BODY CONTENT -->
                 <div class="article-content-body" itemprop="articleBody">
                     ${finalContent}
                 </div>
 
-                <!-- SHARE & TAGS ROW -->
-                <div class="article-share-row">
-                    <div class="share-label">Share this article:</div>
+                <!-- INTERACTIVE ENGAGEMENT & SHARE BAR -->
+                <div class="article-engagement-bar">
+                    <div class="reaction-box">
+                        <button type="button" class="reaction-btn" id="clapBtn" onclick="handleClap('${postSlug}')" aria-label="Applaud this article">
+                            <span class="reaction-icon">👏</span>
+                            <span class="reaction-label">Helpful</span>
+                            <span class="reaction-count" id="clapCount">18</span>
+                        </button>
+                        <span class="reaction-hint">Found this breakdown useful? Leave an applaud!</span>
+                    </div>
+
                     <div class="share-buttons-group">
+                        <span class="share-hint">Share:</span>
                         <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener noreferrer" class="share-btn share-linkedin" aria-label="Share on LinkedIn">
                             LinkedIn
                         </a>
@@ -684,23 +759,77 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
                     </div>
                 </div>
 
-                <!-- AUTHOR BIO BOX -->
+                ${tags.length ? `<div class="article-tags" aria-label="Article tags">${tags.map(tag => `<a href="/blog/category/${encodeURIComponent(tag.toLowerCase())}">#${escapeHtml(tag)}</a>`).join('')}</div>` : ''}
+
+                <!-- AUTHOR BIO CARD (Double-Bezel Hardware Architecture) -->
                 <section class="author-bio-card" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                    <img src="/uploads/1780147875909-556133141.jpg" alt="Sabbir Hasan" class="author-bio-avatar" width="90" height="90" onerror="this.src='/favicon.svg'">
-                    <div class="author-bio-content">
-                        <h3 class="author-bio-name" itemprop="name">Sabbir Hasan</h3>
-                        <p class="author-bio-tagline">CCNA-Trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast</p>
-                        <p class="author-bio-text" itemprop="description">
-                            Computer Science graduate and IT professional bridging the gap between secure network engineering and full-stack software development. Specialized in Cisco network configurations, packet analysis, cybersecurity practices, and scalable Node.js architectures.
-                        </p>
-                        <div class="author-bio-links">
-                            <a href="/about" class="author-link-btn">More About Sabbir →</a>
-                            <a href="https://github.com/Sabbir-Hasan-670" target="_blank" rel="noopener noreferrer" class="author-social-link">GitHub</a>
-                            <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="noopener noreferrer" class="author-social-link">LinkedIn</a>
+                    <div class="res-bezel-outer">
+                        <div class="res-bezel-inner">
+                            <div class="author-bio-split">
+                                <div class="author-bio-avatar-column">
+                                    <div class="author-avatar-frame">
+                                        <img src="${authorAvatar}" alt="Sabbir Hasan" class="author-bio-avatar" data-profile-image width="104" height="104" onerror="this.onerror=null;this.src='/uploads/sabbir-secondary-blue.webp'">
+                                        <span class="avatar-status-dot"></span>
+                                    </div>
+                                </div>
+                                <div class="author-bio-content">
+                                    <div class="author-bio-eyebrow">ENGINEERING PROFILE</div>
+                                    <h3 class="author-bio-name" itemprop="name">
+                                        Sabbir Hasan <span class="bio-verified-check">✓</span>
+                                    </h3>
+                                    <p class="author-bio-tagline">CCNA-Trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast</p>
+                                    <p class="author-bio-text" itemprop="description">
+                                        Computer Science graduate and IT professional bridging the gap between secure network engineering and full-stack software development. Specialized in Cisco enterprise configurations, packet analysis, cybersecurity practices, and resilient Node.js architectures.
+                                    </p>
+                                    <div class="author-bio-skills">
+                                        <span class="skill-tag">Cisco CCNA 200-301</span>
+                                        <span class="skill-tag">Network Architecture</span>
+                                        <span class="skill-tag">Node.js &amp; Express</span>
+                                        <span class="skill-tag">Linux Server Admin</span>
+                                        <span class="skill-tag">Cybersecurity Defense</span>
+                                    </div>
+                                    <div class="author-bio-links">
+                                        <a href="/about" class="author-link-btn">Full Biography &amp; Story →</a>
+                                        <a href="/resume" class="author-resume-btn">Inspect Executive CV</a>
+                                        <a href="https://github.com/Sabbir-Hasan-670" target="_blank" rel="noopener noreferrer" class="author-social-link">GitHub</a>
+                                        <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="noopener noreferrer" class="author-social-link">LinkedIn</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
             </article>
+
+            <!-- ARTICLE NEIGHBORS (Prev/Next Split Deck) -->
+            <nav class="article-neighbors" aria-label="Article navigation">
+                ${previousPost ? `
+                <a href="/blog/${escapeHtml(previousPost.slug || previousPost.id)}" class="neighbor-card neighbor-prev">
+                    <span class="neighbor-direction">← Newer Article</span>
+                    <strong class="neighbor-title">${escapeHtml(previousPost.title)}</strong>
+                    <span class="neighbor-arrow-cta">Read Article →</span>
+                </a>` : '<div class="neighbor-placeholder"></div>'}
+                ${nextPost ? `
+                <a href="/blog/${escapeHtml(nextPost.slug || nextPost.id)}" class="neighbor-card neighbor-next">
+                    <span class="neighbor-direction">Older Article →</span>
+                    <strong class="neighbor-title">${escapeHtml(nextPost.title)}</strong>
+                    <span class="neighbor-arrow-cta">Read Article →</span>
+                </a>` : '<div class="neighbor-placeholder"></div>'}
+            </nav>
+
+            <!-- ENGINEERING CONTACT / NEWSLETTER CTA BANNER -->
+            <section class="article-cta-banner">
+                <div class="cta-banner-inner">
+                    <div class="cta-banner-glow"></div>
+                    <div class="cta-eyebrow"><span class="cta-dot"></span> LET'S COLLABORATE</div>
+                    <h2 class="cta-title">Have a Network Architecture or Web Engineering Challenge?</h2>
+                    <p class="cta-desc">Whether you need enterprise network topology design, security hardening, or high-performance full-stack web platforms, let's explore technical solutions together.</p>
+                    <div class="cta-actions">
+                        <a href="/contact" class="cta-btn-primary">Start a Conversation →</a>
+                        <a href="/resume" class="cta-btn-secondary">Review Executive Resume</a>
+                    </div>
+                </div>
+            </section>
 
             <!-- RELATED ARTICLES -->
             ${relatedHtml}
@@ -711,56 +840,129 @@ function renderArticleHtml({ post, relatedPosts = [], siteUrl }) {
             </div>
         </main>
 
-        <footer class="footer">
-            <div class="footer-inner">
-                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="/">Home</a>
-                    <a href="/about">About</a>
-                    <a href="/resume">Resume</a>
-                    <a href="/blog">Blog</a>
-                    <a href="/tools">Tools</a>
-                    <a href="/contact">Contact</a>
+        <!-- EXECUTIVE SITE FOOTER -->
+        <footer class="blog-footer">
+            <div class="blog-footer-inner">
+                <div class="blog-footer-brand">
+                    <div class="footer-brand-head">
+                        <a href="/" class="footer-brand-link">
+                            <span class="footer-logo-badge">SH.</span>
+                            <span class="footer-brand-title">Sabbir Hasan</span>
+                        </a>
+                        <span class="footer-status-tag">Systems &amp; Full-Stack</span>
+                    </div>
+                    <p class="blog-footer-copy">
+                        &copy; <span id="year">${new Date().getFullYear()}</span> Sabbir Hasan. All rights reserved.
+                        <span class="copy-sep">·</span>
+                        <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
+                    </p>
+                </div>
+
+                <div class="blog-footer-right">
+                    <nav class="blog-footer-nav" aria-label="Footer navigation">
+                        <a href="/">Home</a>
+                        <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/blog">Blog</a>
+                        <a href="/tools">Tools</a>
+                        <a href="/contact">Contact</a>
+                    </nav>
+                    <a href="#top" class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" title="Scroll to top" aria-label="Back to top">
+                        <span>Top</span> ↑
+                    </a>
                 </div>
             </div>
         </footer>
     </div>
 
-    <script src="/main.js" defer></script>
+    <script src="/main.js?v=4" defer></script>
     <script src="/toast.js" defer></script>
     <script>
+    // Reading Progress Fill
+    window.addEventListener('scroll', function() {
+        var docEl = document.documentElement;
+        var scrollTotal = docEl.scrollHeight - docEl.clientHeight;
+        var progress = scrollTotal > 0 ? (window.scrollY / scrollTotal) * 100 : 0;
+        var bar = document.getElementById('readingProgress');
+        if (bar) bar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+    }, { passive: true });
+
+    // Live Clap Reaction Functionality
+    function handleClap(slug) {
+        var key = 'article_claps_' + slug;
+        var claps = parseInt(localStorage.getItem(key) || '18', 10);
+        claps += 1;
+        localStorage.setItem(key, claps);
+        var countEl = document.getElementById('clapCount');
+        if (countEl) countEl.innerText = claps;
+        var btn = document.getElementById('clapBtn');
+        if (btn) {
+            btn.classList.add('clapped');
+            setTimeout(function() { btn.classList.remove('clapped'); }, 450);
+        }
+        if (window.showToast) window.showToast('👏 Thank you for applauding this guide!', 'success');
+    }
+    (function() {
+        var key = 'article_claps_${postSlug}';
+        var saved = localStorage.getItem(key);
+        if (saved && document.getElementById('clapCount')) {
+            document.getElementById('clapCount').innerText = saved;
+        }
+    })();
+
     // Copy Code Block Button Functionality
     function copyCode(btn) {
-        const wrapper = btn.closest('.code-block-wrapper');
-        const codeElement = wrapper.querySelector('pre code');
+        var wrapper = btn.closest('.code-block-wrapper');
+        var codeElement = wrapper.querySelector('pre code');
         if (!codeElement) return;
 
-        const codeText = codeElement.innerText;
-        navigator.clipboard.writeText(codeText).then(() => {
-            const originalHtml = btn.innerHTML;
+        var codeText = codeElement.innerText;
+        navigator.clipboard.writeText(codeText).then(function() {
+            var originalHtml = btn.innerHTML;
             btn.innerHTML = '<span>✅</span> Copied!';
             btn.classList.add('copied');
-            setTimeout(() => {
+            if (window.showToast) window.showToast('Code copied to clipboard!', 'info');
+            setTimeout(function() {
                 btn.innerHTML = originalHtml;
                 btn.classList.remove('copied');
             }, 2000);
-        }).catch(() => {
+        }).catch(function() {
             alert('Failed to copy code to clipboard.');
         });
     }
 
     // Copy Article Link Functionality
     function copyArticleLink(url, btn) {
-        navigator.clipboard.writeText(url).then(() => {
-            const originalText = btn.innerHTML;
+        navigator.clipboard.writeText(url).then(function() {
+            var originalText = btn.innerHTML;
             btn.innerHTML = '✅ Link Copied!';
-            setTimeout(() => {
+            if (window.showToast) window.showToast('🔗 Article link copied to clipboard!', 'info');
+            setTimeout(function() {
                 btn.innerHTML = originalText;
             }, 2000);
-        }).catch(() => {
+        }).catch(function() {
             alert('Copied URL: ' + url);
         });
     }
+    </script>
+    <script src="/global-profile.js"></script>
+    <script>
+    (function() {
+        fetch('/api/profile')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data) return;
+                var avatars = document.querySelectorAll('.author-bio-avatar, .author-avatar-small, [data-profile-image]');
+                avatars.forEach(function(img) {
+                    if (window.GlobalProfile) {
+                        window.GlobalProfile.applyImage(img, data);
+                    } else if (data.profile_pic_path) {
+                        img.src = data.profile_pic_path;
+                    }
+                });
+            })
+            .catch(function() {});
+    })();
     </script>
 </body>
 </html>`;

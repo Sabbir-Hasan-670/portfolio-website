@@ -1,11 +1,38 @@
 # Dependency directories
 node_modules/
+.next/
+
+# Local visual QA artifacts
+.edge-*/
+.chrome-*/
+.lighthouse-*/
+homepage-v5-*.png
+next-home-*.png
+portfolio-preview-*.png
+qa-*.png
+taste-home-*.png
+phase6-*.png
+lighthouse-*.json
 
 # Environment variables and secrets
 .env
+!.env.example
 deploy_to_vps.js
+scripts/deploy*.js
+scripts/audit*.js
+*.exp
+scripts/*.exp
 test_*.js
 *.log
+tmp/
+frontend-next/
 
 # Optional: Ignore uploaded files if these are generated dynamically by users
 # public/uploads/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

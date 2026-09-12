@@ -857,6 +857,13 @@ POST /api/v1/network-device  → নতুন ডিভাইস যোগ ক�
 }
 </div>
   `, lab: 'show version' },
+
+  { id: 46, module: 9, title: 'Enterprise Troubleshooting - OSPF, VLAN ও ACL', content: `
+<h3>বাস্তব Troubleshooting Workflow</h3><p>প্রথমে scope নির্ধারণ করো: একটি host, একটি VLAN, নাকি পুরো site সমস্যায় আছে। তারপর Layer 1 থেকে Layer 3 পর্যন্ত যাচাই করো।</p>
+<h3>OSPF যাচাই</h3><div class="codeblock">show ip ospf neighbor\nshow ip route ospf\nshow ip protocols</div><p>Neighbor না উঠলে area, hello/dead timer, network type এবং interface IP/mask মিলিয়ে দেখো।</p>
+<h3>VLAN ও ACL যাচাই</h3><div class="codeblock">show vlan brief\nshow interfaces trunk\nshow access-lists\nshow ip interface g0/1</div><p>ACL সবসময় source থেকে destination পর্যন্ত direction অনুযায়ী পরীক্ষা করো এবং শেষে প্রয়োজনীয় permit আছে কি না যাচাই করো।</p>
+<div class="note-box">ল্যাব কাজ: দুই VLAN-এর মধ্যে inter-VLAN routing চালু করো, তারপর একটি ACL দিয়ে শুধু DNS ও HTTPS অনুমতি দাও।</div>
+  `, lab: 'show ip ospf neighbor' },
 ];
 
 // ---- COMMAND GUIDE DATA ----

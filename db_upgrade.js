@@ -29,6 +29,14 @@ async function runMigration() {
     });
 
     try {
+        // Older installations used an ENUM that did not allow the CMS "review" state.
+        // Keep article workflow consistent across fresh and existing databases.
+        const [statusColumn] = await db.query(`SHOW COLUMNS FROM blog_posts LIKE 'status'`);
+        if (statusColumn.length && !String(statusColumn[0].Type).includes('review')) {
+            console.log('Updating blog status column to support draft, review, and published states...');
+            await db.query(`ALTER TABLE blog_posts MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'draft'`);
+        }
+
         const columnsToAdd = [
             { name: 'excerpt', def: 'TEXT' },
             { name: 'meta_title', def: 'VARCHAR(255) DEFAULT ""' },

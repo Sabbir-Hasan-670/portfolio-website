@@ -563,6 +563,8 @@ const app = {
   }
 };
 
+// Advanced track: appended to the existing learning plan and rendered by the existing app.
+COURSE_DAYS.push({day: 31, title: 'Production MySQL - Index, Transaction ও Query Plan', level: 'advanced', topics: ['EXPLAIN, indexes, transactions'], description: 'Fast and safe database operations for production applications.', grammar: {title:'Production MySQL',content:'<p><strong>Index</strong> দ্রুত lookup-এর জন্য, কিন্তু প্রতিটি index write cost বাড়ায়। WHERE, JOIN ও ORDER BY column দেখে index choose করো।</p><p><strong>Transaction</strong> multiple write operation একসাথে নিরাপদে commit বা rollback করে।</p>'}, practice_query:'EXPLAIN SELECT * FROM orders WHERE customer_id = 42;'});
 window.addEventListener('DOMContentLoaded', () => {
   app.init();
   window.app = app;

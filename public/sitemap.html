@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== PRIMARY SEO ===== -->
+    <title>Sitemap &amp; Complete Directory | Sabbir Hasan</title>
+    <meta name="description" content="Complete table of contents and architectural directory of Sabbir Hasan's portfolio, Cisco CCNA learning hubs, technical articles, and interactive utilities.">
+    <meta name="keywords" content="Sabbir Hasan Sitemap, HTML Sitemap, Table of Contents, CCNA 200-301, Network Engineering, Web Development, Tools">
+    <meta name="author" content="Sabbir Hasan">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sabbirhasan.com/sitemap">
+
+    <!-- ===== OPEN GRAPH ===== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sabbirhasan.com/sitemap">
+    <meta property="og:title" content="Sitemap &amp; Complete Directory | Sabbir Hasan">
+    <meta property="og:description" content="Structured table of contents and complete architectural index of Sabbir Hasan's portfolio.">
+    <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
+    <meta property="og:site_name" content="Sabbir Hasan">
+
+    <!-- ===== TWITTER CARD ===== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sitemap &amp; Complete Directory | Sabbir Hasan">
+    <meta name="twitter:description" content="Structured table of contents and complete architectural index of Sabbir Hasan's portfolio.">
+    <meta name="twitter:image" content="https://sabbirhasan.com/og-image.png">
+
+    <!-- ===== STRUCTURED DATA (JSON-LD) ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          "@id": "https://sabbirhasan.com/sitemap#webpage",
+          "url": "https://sabbirhasan.com/sitemap",
+          "name": "Sitemap & Complete Directory | Sabbir Hasan",
+          "description": "Architectural directory and complete table of contents for Sabbir Hasan's engineering portfolio."
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://sabbirhasan.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Sitemap",
+              "item": "https://sabbirhasan.com/sitemap"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- ===== THEME & FAVICON ===== -->
+    <meta name="theme-color" content="#060913">
+    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+
+    <!-- ===== FONTS & CSS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=6.0">
+
+    <style>
+    :root {
+        --bg-base: #060913;
+        --card-bg: rgba(13, 20, 36, 0.7);
+        --card-border: rgba(125, 185, 198, 0.16);
+        --card-hover-border: rgba(216, 167, 69, 0.45);
+        --accent-gold: #d8a745;
+        --accent-cyan: #7db9c6;
+        --accent-green: #27c93f;
+        --text-dim: #8b9bb4;
+    }
+
+    body {
+        background: var(--bg-base);
+        color: #e2e8f0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .sitemap-hero {
+        padding: 8rem 1.5rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .sitemap-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--accent-gold);
+        background: rgba(216, 167, 69, 0.1);
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 167, 69, 0.25);
+        margin-bottom: 1.25rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .sitemap-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+        color: #ffffff;
+    }
+
+    .sitemap-title span {
+        background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .sitemap-subtitle {
+        color: var(--text-dim);
+        font-size: 1.05rem;
+        max-width: 680px;
+        line-height: 1.6;
+    }
+
+    /* BREADCRUMB */
+    .sitemap-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+    }
+
+    .sitemap-breadcrumb a {
+        color: var(--accent-cyan);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .sitemap-breadcrumb a:hover {
+        color: #ffffff;
+    }
+
+    /* GRID LAYOUT */
+    .sitemap-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem 6rem;
+    }
+
+    .sitemap-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1.75rem;
+    }
+
+    .sitemap-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.85rem;
+        backdrop-filter: blur(20px);
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sitemap-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--card-hover-border);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .card-chapter {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--accent-gold);
+        letter-spacing: 0.08em;
+    }
+
+    .card-count {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        background: rgba(125, 185, 198, 0.12);
+        color: var(--accent-cyan);
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+    }
+
+    .card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .link-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .link-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .link-anchor {
+        color: #e2e8f0;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    .link-anchor:hover {
+        color: var(--accent-gold);
+        transform: translateX(4px);
+    }
+
+    .link-desc {
+        color: var(--text-dim);
+        font-size: 0.82rem;
+        line-height: 1.45;
+        padding-left: 0.2rem;
+    }
+
+    .badge-pill {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.68rem;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        background: rgba(216, 167, 69, 0.15);
+        color: var(--accent-gold);
+        border: 1px solid rgba(216, 167, 69, 0.3);
+    }
+
+    .badge-cyan {
+        background: rgba(125, 185, 198, 0.15);
+        color: var(--accent-cyan);
+        border-color: rgba(125, 185, 198, 0.3);
+    }
+
+    .badge-green {
+        background: rgba(39, 201, 63, 0.15);
+        color: var(--accent-green);
+        border-color: rgba(39, 201, 63, 0.3);
+    }
+
+    /* QUICK STATS BAR */
+    .sitemap-stats-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        background: rgba(13, 20, 36, 0.4);
+        border: 1px solid rgba(125, 185, 198, 0.15);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2.5rem;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stat-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.82rem;
+    }
+
+    .stat-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    @media (max-width: 768px) {
+        .sitemap-grid {
+            grid-template-columns: 1fr;
+        }
+        .sitemap-hero {
+            padding-top: 6rem;
+        }
+    }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="aurora-mesh"></div>
+
+    <div class="main-content">
+
+        <!-- NAVBAR -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="/" class="nav-logo">SH_</a>
+                <div class="nav-links" id="navLinks">
+                    <a href="/" class="nav-visible-btn">Home</a>
+                    <a href="/about" class="nav-visible-btn">About</a>
+                    <a href="/resume" class="nav-visible-btn">Resume</a>
+                    <a href="/blog" class="nav-visible-btn">Blog</a>
+                    <a href="/tools" class="nav-visible-btn">Tools</a>
+                    <a href="/streams" class="nav-visible-btn">Streams</a>
+                    <div class="dropdown">
+                        <button class="dropbtn" onclick="return false;">Learning ▾</button>
+                        <div class="dropdown-content">
+                            <a href="/Learn/Learn-CCNA/learn-ccna">🌐 CCNA 200-301</a>
+                            <a href="/Learn/Learn-JS/learn-js">🟡 JavaScript A-Z</a>
+                            <a href="/Learn/Learn-MySQL/learn-mysql">MySQL Learn</a>
+                            <a href="/Learn/Learn-English/learn-english">English Learn</a>
+                        </div>
+                    </div>
+                    <a href="/projects" class="nav-visible-btn">Projects</a>
+                    <a href="/contact" class="nav-visible-btn">Contact</a>
+                </div>
+                <a href="/contact" class="nav-cta nav-desktop-cta">Let's Talk ↗</a>
+            </div>
+        </nav>
+
+        <!-- HERO SECTION -->
+        <header class="sitemap-hero">
+            <nav class="sitemap-breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span>/</span>
+                <span style="color:#ffffff;">Sitemap</span>
+            </nav>
+
+            <span class="sitemap-kicker">// ARCHITECTURAL DIRECTORY &amp; TABLE OF CONTENTS</span>
+            <h1 class="sitemap-title">
+                Complete Index &amp; <span>Site Directory</span>
+            </h1>
+            <p class="sitemap-subtitle">
+                A structured table of contents providing search engines, AI crawlers, and visitors direct navigation across every discipline, learning hub, and technical journal entry.
+            </p>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="sitemap-container">
+
+            <!-- STATS STRIP -->
+            <div class="sitemap-stats-strip">
+                <div class="stat-pill">
+                    <span class="stat-dot"></span>
+                    <span>INDEX HEALTH: OPTIMAL (200+ NODES)</span>
+                </div>
+                <div class="stat-pill">
+                    <span style="color:var(--accent-cyan);">// XML SITEMAP:</span>
+                    <a href="/sitemap.xml" style="color:#ffffff; text-decoration:underline;">/sitemap.xml</a>
+                </div>
+                <div class="stat-pill">
+                    <span style="color:var(--accent-gold);">// AI DIRECTIVE:</span>
+                    <a href="/llms.txt" style="color:#ffffff; text-decoration:underline;">/llms.txt</a>
+                </div>
+            </div>
+
+            <!-- BENTO DIRECTORY GRID -->
+            <div class="sitemap-grid">
+
+                <!-- CHAPTER 01: CORE ARCHITECTURE -->
+                <section class="sitemap-card">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 01</span>
+                        <span class="card-count">5 ENTRIES</span>
+                    </div>
+                    <h2 class="card-title">🏛️ Core Architecture</h2>
+                    <ul class="link-list">
+                        <li class="link-item">
+                            <a href="/" class="link-anchor">Home Terminal <span class="badge-pill">ROOT</span></a>
+                            <span class="link-desc">Interactive command deck, systems engineering overview, and active status telemetry.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/about" class="link-anchor">About &amp; Dossier ↗</a>
+                            <span class="link-desc">Background, educational qualifications, enterprise journey, and technical philosophy.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/resume" class="link-anchor">Executive Resume &amp; CV ↗</a>
+                            <span class="link-desc">Verified work history, certifications, network infrastructure proficiencies, and downloadable CV.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/projects" class="link-anchor">Engineering Projects Archive ↗</a>
+                            <span class="link-desc">Full-stack software builds, network topology configurations, and open-source contributions.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/contact" class="link-anchor">Direct Transmission / Contact ↗</a>
+                            <span class="link-desc">Encrypted direct dispatch form, location coordinates, and social connectivity nodes.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- CHAPTER 02: LEARNING HUBS -->
+                <section class="sitemap-card">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 02</span>
+                        <span class="card-count">4 TRACKS</span>
+                    </div>
+                    <h2 class="card-title">🎓 Certification &amp; Learning</h2>
+                    <ul class="link-list">
+                        <li class="link-item">
+                            <a href="/Learn/Learn-CCNA/learn-ccna" class="link-anchor">Cisco CCNA 200-301 Bangla Hub <span class="badge-pill badge-cyan">HOT</span></a>
+                            <span class="link-desc">Comprehensive curriculum covering OSPF, VLANs, Subnetting, IPv6, Network Security, and Automation.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/Learn/Learn-JS/learn-js" class="link-anchor">JavaScript A-Z Master Track ↗</a>
+                            <span class="link-desc">Core fundamentals, DOM manipulation, asynchronous architecture, ES6+, and hands-on drills.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/Learn/Learn-MySQL/learn-mysql" class="link-anchor">MySQL Database Engineering ↗</a>
+                            <span class="link-desc">Relational schema design, normalization, indexing strategies, stored procedures, and optimization.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/Learn/Learn-English/learn-english" class="link-anchor">English for Tech Professionals ↗</a>
+                            <span class="link-desc">Vocabulary drills, grammar mastery, and interactive pronunciation training for global careers.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- CHAPTER 03: INTERACTIVE TOOLS -->
+                <section class="sitemap-card">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 03</span>
+                        <span class="card-count">3 UTILITIES</span>
+                    </div>
+                    <h2 class="card-title">🛠️ Engineering Tools</h2>
+                    <ul class="link-list">
+                        <li class="link-item">
+                            <a href="/tools" class="link-anchor">Interactive Tools Hub <span class="badge-pill badge-green">LIVE</span></a>
+                            <span class="link-desc">Central workbench for high-speed client-side networking utilities and developer converters.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/tools/subnet-calculator" class="link-anchor">IPv4 Subnet &amp; CIDR Calculator ↗</a>
+                            <span class="link-desc">Real-time bitwise network address, broadcast, wildcard mask, and usable host range calculation.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/tools/dev-utilities" class="link-anchor">Developer Utilities Suite ↗</a>
+                            <span class="link-desc">JSON prettifier, Base64 encoder/decoder, URL parser, hash generators, and text tools.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- CHAPTER 04: MEDIA & BROADCASTS -->
+                <section class="sitemap-card">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 04</span>
+                        <span class="card-count">MEDIA</span>
+                    </div>
+                    <h2 class="card-title">📡 Broadcast Studio</h2>
+                    <ul class="link-list">
+                        <li class="link-item">
+                            <a href="/streams" class="link-anchor">Live Streams &amp; Video Network ↗</a>
+                            <span class="link-desc">Broadcast sessions, lab walkthroughs, tech presentations, and synchronized video feeds.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- CHAPTER 05: TECHNICAL JOURNAL & BLOG -->
+                <section class="sitemap-card" style="grid-column: 1 / -1;">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 05</span>
+                        <span class="card-count" id="sitemap-blog-count">ARTICLES</span>
+                    </div>
+                    <h2 class="card-title">📰 Technical Journal &amp; Articles</h2>
+                    <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:1.25rem;">
+                        In-depth publications on network infrastructure, cybersecurity defense, and software development.
+                    </p>
+                    <div style="margin-bottom:1.5rem;">
+                        <a href="/blog" class="link-anchor" style="font-size:1.05rem; color:var(--accent-gold);">
+                            Browse All Blog Posts &amp; Categories ➔
+                        </a>
+                    </div>
+                    <ul class="link-list" id="sitemap-dynamic-blog-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+                        <!-- Hydrated via JavaScript with fallback -->
+                        <li class="link-item">
+                            <a href="/blog" class="link-anchor">Loading published articles...</a>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- CHAPTER 06: MACHINE & ROBOT ENDPOINTS -->
+                <section class="sitemap-card" style="grid-column: 1 / -1; background:rgba(10, 15, 28, 0.9);">
+                    <div class="card-header">
+                        <span class="card-chapter">// CHAPTER 06</span>
+                        <span class="card-count">CRAWLER PROTOCOLS</span>
+                    </div>
+                    <h2 class="card-title">🤖 Machine &amp; AI Search Endpoints</h2>
+                    <ul class="link-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+                        <li class="link-item">
+                            <a href="/sitemap.xml" class="link-anchor">XML Sitemap (Machine Protocol) <span class="badge-pill">XML</span></a>
+                            <span class="link-desc">Real-time structured XML schema feeding Google, Bing, and search indexing spiders.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/llms.txt" class="link-anchor">LLMs.txt (GEO Engine Directive) <span class="badge-pill badge-cyan">AI GEO</span></a>
+                            <span class="link-desc">Structured markdown context optimized for ChatGPT, Claude, and Perplexity reasoning models.</span>
+                        </li>
+                        <li class="link-item">
+                            <a href="/robots.txt" class="link-anchor">Robots.txt Directive File <span class="badge-pill">ROBOTS</span></a>
+                            <span class="link-desc">Crawl policies, rate limits, disallowed endpoints, and authorized bot guidelines.</span>
+                        </li>
+                    </ul>
+                </section>
+
+            </div>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="site-footer" id="site-footer" role="contentinfo" style="border-top: 1px solid rgba(125, 185, 198, 0.15); padding: 3rem 1.5rem; text-align: center; color: var(--text-dim); font-size: 0.88rem;">
+            <p>&copy; 2026 Sabbir Hasan. All rights reserved. · <a href="/" style="color:var(--accent-cyan); text-decoration:none;">Home</a> · <a href="/sitemap" style="color:var(--accent-gold); text-decoration:none;">HTML Sitemap</a> · <a href="/sitemap.xml" style="color:var(--accent-cyan); text-decoration:none;">XML Sitemap</a></p>
+        </footer>
+
+    </div>
+
+    <!-- Client-side Dynamic Blog Hydration for Realtime Link Accuracy -->
+    <script>
+    (function() {
+        fetch('/api/blog')
+            .then(res => res.json())
+            .then(posts => {
+                if (!Array.isArray(posts) || posts.length === 0) return;
+                const container = document.getElementById('sitemap-dynamic-blog-list');
+                const countBadge = document.getElementById('sitemap-blog-count');
+                if (countBadge) countBadge.textContent = posts.length + ' ARTICLES';
+                if (container) {
+                    container.innerHTML = posts.slice(0, 12).map(p => {
+                        const slug = p.slug || p.id;
+                        return `
+                        <li class="link-item" style="background:rgba(255,255,255,0.03); padding:0.75rem 1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <a href="/blog/${slug}" class="link-anchor" style="font-size:0.9rem;">
+                                ${escapeHtml(p.title)}
+                            </a>
+                            <span class="link-desc" style="font-size:0.75rem; color:var(--accent-cyan); font-family:'JetBrains Mono', monospace;">
+                                Category: ${escapeHtml(p.category || 'General')}
+                            </span>
+                        </li>`;
+                    }).join('');
+                }
+            })
+            .catch(() => {});
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+    })();
+    </script>
+</body>
+</html>
