@@ -17,6 +17,7 @@ const compression = require('compression');
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
 // ==========================================
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
     if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
         res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     }
+    res.removeHeader('X-Powered-By');
     next();
 });
 
