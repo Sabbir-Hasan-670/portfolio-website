@@ -1192,8 +1192,17 @@ app.put(['/api/admin/experience/:id', '/api/admin/experiences/:id'], requireAuth
 // 🚀 --- PROJECTS ROUTES ---
 app.get(['/api/admin/projects', '/api/admin/project'], requireAuth, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM projects ORDER BY is_pinned DESC, id DESC');
-        res.json(rows || []);
+        let rows;
+        try {
+            [rows] = await db.query('SELECT * FROM projects ORDER BY is_pinned DESC, id DESC');
+        } catch (colErr) {
+            [rows] = await db.query('SELECT * FROM projects ORDER BY id DESC');
+        }
+        const normalized = (rows || []).map(r => ({
+            ...r,
+            is_pinned: r.is_pinned ? 1 : 0
+        }));
+        res.json(normalized);
     } catch (err) {
         console.error("Admin projects fetch error:", err);
         res.status(500).json({ error: 'Failed to fetch projects' });
@@ -2055,6 +2064,8 @@ app.listen(PORT, async () => {
         console.log("✅ github_images table ready.");
         try { await db.query(`ALTER TABLE github_images ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
         try { await db.query(`ALTER TABLE github_images ADD COLUMN live_url VARCHAR(500) DEFAULT ''`); } catch(e) {}
+        try { await db.query(`ALTER TABLE projects ADD COLUMN is_pinned TINYINT(1) DEFAULT 0`); } catch(e) {}
+        try { await db.query(`ALTER TABLE projects ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
 
         try {
             await db.query(`
