@@ -84,6 +84,23 @@ app.use((req, res, next) => {
 
 // Redirect /admin to /admin/login
 
+
+// Direct Admin Navigation Shortcuts
+app.get('/admin/tracking', (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        res.redirect('/admin/dashboard/dashboard.html#tab-tracking');
+    } else {
+        res.redirect('/admin/login');
+    }
+});
+app.get('/admin/blog-analytics', (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        res.redirect('/admin/dashboard/dashboard.html#tab-blog-analytics');
+    } else {
+        res.redirect('/admin/login');
+    }
+});
+
 app.get('/admin', (req, res) => {
     res.redirect(301, '/admin/login');
 });
@@ -1901,10 +1918,215 @@ app.post('/api/admin/github-image', requireAuth, upload.single('gh_image'), asyn
 // 📝 --- BLOG ADMIN ROUTES ---
 app.get('/api/admin/blog', requireAuth, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM blog_posts ORDER BY created_at DESC');
+        const isTrash = req.query.trash === '1' || req.query.status === 'trash';
+        const query = isTrash
+            ? 'SELECT * FROM blog_posts WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC'
+            : 'SELECT * FROM blog_posts WHERE deleted_at IS NULL ORDER BY created_at DESC';
+        const [rows] = await db.query(query);
+
+        let trashCount = 0;
+        try {
+            const [tCount] = await db.query('SELECT COUNT(*) as cnt FROM blog_posts WHERE deleted_at IS NOT NULL');
+            trashCount = tCount[0]?.cnt || 0;
+        } catch(e) {}
+
+        const viewMap = await getBlogViewCounts(db);
+        rows.forEach(r => {
+            r.views = viewMap[r.id] || 0;
+            r.trash_count = trashCount;
+        });
+
+        res.setHeader('X-Trash-Count', trashCount);
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch admin blogs' });
+        res.status(500).json({ error: 'Failed to fetch admin blogs: ' + err.message });
+    }
+});
+
+// ==========================================
+// 🎯 TRACKING & ANALYTICS SETTINGS APIS
+// ==========================================
+app.get('/api/admin/tracking-settings', requireAuth, (req, res) => {
+    res.json(getTrackingSettings());
+});
+
+app.put('/api/admin/tracking-settings', requireAuth, express.json(), async (req, res) => {
+    try {
+        const result = await updateTrackingSettings(db, req.body);
+        if (!result.success) {
+            return res.status(400).json({ error: result.errors?.join('; ') || 'Invalid tracking settings' });
+        }
+        res.json({
+            success: true,
+            message: 'Tracking & Analytics settings updated successfully!',
+            settings: result.settings
+        });
+    } catch (err) {
+        console.error("Error updating tracking settings:", err);
+        res.status(500).json({ error: 'Failed to update tracking settings: ' + err.message });
+    }
+});
+
+// ==========================================
+// 📊 BUILT-IN FIRST-PARTY BLOG ANALYTICS APIS
+// ==========================================
+app.post('/api/track/blog-view', express.json({ type: ['application/json', 'text/plain'] }), async (req, res) => {
+    // Exclude logged in admins from tracking
+    if (req.session && req.session.isAuthenticated) {
+        return res.json({ ok: true, ignored: 'admin_session' });
+    }
+
+    try {
+        let body = req.body;
+        if (typeof body === 'string') {
+            try { body = JSON.parse(body); } catch(e) {}
+        }
+        const { blogId, duration, scrollDepth, isLeave, referrer, isDnt } = body || {};
+        const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || '';
+        const country = req.headers['cf-ipcountry'] || 'UNKNOWN';
+        const clientDnt = isDnt || req.headers['dnt'] === '1';
+
+        await recordBlogView(db, {
+            blogId,
+            ip,
+            userAgent,
+            referrer: referrer || req.headers['referer'] || '',
+            country,
+            duration,
+            scrollDepth,
+            isLeave: !!isLeave,
+            isDnt: clientDnt
+        });
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Tracking error' });
+    }
+});
+
+app.get('/api/admin/blog-analytics', requireAuth, async (req, res) => {
+    try {
+        const { period = '30d', startDate, endDate, blogId } = req.query;
+        const data = await getBlogAnalytics(db, {
+            period,
+            customStart: startDate,
+            customEnd: endDate,
+            blogId
+        });
+        res.json(data);
+    } catch (err) {
+        console.error("Blog analytics API error:", err);
+        res.status(500).json({ error: 'Failed to fetch blog analytics: ' + err.message });
+    }
+});
+
+app.get('/api/admin/blog-analytics/detail/:id', requireAuth, async (req, res) => {
+    try {
+        const data = await getBlogDetailAnalytics(db, req.params.id, req.query.period || '30d');
+        if (!data) return res.status(404).json({ error: 'Article not found' });
+        res.json(data);
+    } catch (err) {
+        console.error("Blog detail analytics API error:", err);
+        res.status(500).json({ error: 'Failed to fetch article detail analytics' });
+    }
+});
+
+app.get('/api/admin/blog-analytics/export', requireAuth, async (req, res) => {
+    try {
+        const period = req.query.period || '30d';
+        const data = await getBlogAnalytics(db, {
+            period,
+            customStart: req.query.startDate,
+            customEnd: req.query.endDate
+        });
+        const csv = generateAnalyticsCsv(data.blogs, period);
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="blog-analytics-${period}.csv"`);
+        res.send(csv);
+    } catch (err) {
+        console.error("CSV Export error:", err);
+        res.status(500).send('Error generating CSV export');
+    }
+});
+
+app.get('/api/admin/blog-analytics/overview-widget', requireAuth, async (req, res) => {
+    try {
+        const widget = await getOverviewAnalyticsWidget(db);
+        res.json(widget);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch overview analytics' });
+    }
+});
+
+// ==========================================
+// 📝 ENHANCED BLOG ADMIN & BULK ACTIONS
+// ==========================================
+app.post('/api/admin/blogs/bulk', requireAuth, express.json(), async (req, res) => {
+    const { action, ids } = req.body || {};
+    if (!action || !Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'Invalid request: action and non-empty ids array required.' });
+    }
+
+    const validIds = ids.map(id => parseInt(id, 10)).filter(id => !isNaN(id) && id > 0);
+    if (validIds.length === 0) {
+        return res.status(400).json({ error: 'No valid blog IDs provided.' });
+    }
+
+    const conn = await db.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        if (action === 'trash') {
+            await conn.query(`UPDATE blog_posts SET deleted_at = NOW() WHERE id IN (?) AND deleted_at IS NULL`, [validIds]);
+        } else if (action === 'restore') {
+            await conn.query(`UPDATE blog_posts SET deleted_at = NULL WHERE id IN (?) AND deleted_at IS NOT NULL`, [validIds]);
+        } else if (action === 'delete') {
+            // Permanent delete: unlink images and delete records
+            const [imgRows] = await conn.query(`SELECT image_path FROM blog_posts WHERE id IN (?)`, [validIds]);
+            imgRows.forEach(r => {
+                if (r.image_path) {
+                    fs.unlink(path.join(__dirname, 'public', r.image_path), () => {});
+                }
+            });
+            await conn.query(`DELETE FROM blog_views WHERE blog_id IN (?)`, [validIds]);
+            await conn.query(`DELETE FROM blog_posts WHERE id IN (?)`, [validIds]);
+        } else if (action === 'publish') {
+            await conn.query(`UPDATE blog_posts SET status = 'published' WHERE id IN (?) AND deleted_at IS NULL`, [validIds]);
+        } else if (action === 'draft') {
+            await conn.query(`UPDATE blog_posts SET status = 'draft' WHERE id IN (?) AND deleted_at IS NULL`, [validIds]);
+        } else {
+            await conn.rollback();
+            conn.release();
+            return res.status(400).json({ error: `Unsupported bulk action: ${action}` });
+        }
+
+        await conn.commit();
+        conn.release();
+
+        delete apiCache['blog'];
+        invalidateApiCache('blog');
+
+        res.json({
+            success: true,
+            message: `Successfully executed bulk ${action} on ${validIds.length} article(s).`,
+            affectedCount: validIds.length
+        });
+    } catch (err) {
+        await conn.rollback();
+        conn.release();
+        console.error('Bulk blogs action error:', err);
+        res.status(500).json({ error: 'Bulk action failed: ' + err.message });
+    }
+});
+
+app.post('/api/admin/blog/:id/restore', requireAuth, async (req, res) => {
+    try {
+        await db.query('UPDATE blog_posts SET deleted_at = NULL WHERE id = ?', [req.params.id]);
+        delete apiCache['blog'];
+        invalidateApiCache('blog');
+        res.json({ success: true, message: 'Article restored successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to restore article' });
     }
 });
 
@@ -2133,10 +2355,24 @@ app.delete('/api/admin/certificates/:id', requireAuth, async (req, res) => {
 
 app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [req.params.id]);
-        if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
-        await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]); res.json({ message: 'Deleted' });
-    } catch (err) { res.status(500).json({ error: 'Failed' }); }
+        const isPermanent = req.query.permanent === 'true' || req.query.permanent === '1';
+        if (isPermanent) {
+            const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [req.params.id]);
+            if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
+            try { await db.query('DELETE FROM blog_views WHERE blog_id = ?', [req.params.id]); } catch(e) {}
+            await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]);
+            delete apiCache['blog'];
+            invalidateApiCache('blog');
+            res.json({ message: 'Permanently deleted' });
+        } else {
+            await db.query('UPDATE blog_posts SET deleted_at = NOW() WHERE id = ?', [req.params.id]);
+            delete apiCache['blog'];
+            invalidateApiCache('blog');
+            res.json({ message: 'Moved to trash' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete article' });
+    }
 });
 
 // ==========================================

@@ -1035,29 +1035,33 @@ document.addEventListener('DOMContentLoaded', () => {
             window.cachedBlogs = Array.isArray(data) ? data : [];
             window.currentBlogLimit = 15;
             if (!window.currentBlogFilter) window.currentBlogFilter = 'all';
-            updateBlogFilterBadges();
+            if (window.updateBlogFilterBadges) window.updateBlogFilterBadges();
             renderAdminBlogs();
         } catch (e) { console.log(e); }
     }
 
-    function updateBlogFilterBadges() {
+    window.updateBlogFilterBadges = function updateBlogFilterBadges() {
         if (!window.cachedBlogs) return;
         const countAll = window.cachedBlogs.length;
         const countReview = window.cachedBlogs.filter(b => b.status === 'review').length;
         const countPublished = window.cachedBlogs.filter(b => b.status === 'published').length;
+        const countDraft = window.cachedBlogs.filter(b => b.status === 'draft').length;
 
         const elAll = document.getElementById('count-blog-all');
         const elReview = document.getElementById('count-blog-review');
         const elPublished = document.getElementById('count-blog-published');
+        const elDraft = document.getElementById('count-blog-draft');
         const btnApproveAll = document.getElementById('btn-approve-all');
 
         if (elAll) elAll.textContent = countAll;
         if (elReview) elReview.textContent = countReview;
         if (elPublished) elPublished.textContent = countPublished;
+        if (elDraft) elDraft.textContent = countDraft;
         if (btnApproveAll) {
             btnApproveAll.style.display = countReview > 0 ? 'inline-block' : 'none';
         }
-    }
+    };
+    var updateBlogFilterBadges = window.updateBlogFilterBadges;
 
     window.filterAdminBlogs = (filter) => {
         window.currentBlogFilter = filter;
@@ -1109,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderAdminBlogs = () => {
         const list = document.getElementById('blog-list');
         if (!list || !window.cachedBlogs) return;
-        updateBlogFilterBadges();
+        if (window.updateBlogFilterBadges) window.updateBlogFilterBadges();
         list.innerHTML = '';
 
         const filter = window.currentBlogFilter || 'all';
@@ -1722,8 +1726,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/admin/tracking-settings');
             if (res.status === 401 || res.status === 403) return window.location.href = '/admin/login';
-            if (!res.ok) throw new Error('Failed to load tracking settings');
-            const data = await res.json();
+            const textResp = await res.text();
+            let data = {};
+            try { data = JSON.parse(textResp); } catch(e) {}
+            if (!res.ok) throw new Error(data.error || 'Failed to load tracking settings');
             
             // Populate form fields
             const ga4On = data.ga4_enabled === '1' || data.ga4_enabled === 1 || data.ga4_enabled === true;
@@ -1901,7 +1907,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
             if (res.status === 401 || res.status === 403) return window.location.href = '/admin/login';
-            const data = await res.json();
+            const textResp = await res.text();
+            let data = {};
+            try { data = JSON.parse(textResp); } catch(e) {}
             if (!res.ok) throw new Error(data.error || 'Failed to save tracking settings');
 
             window.showToast(data.message || 'Tracking settings saved successfully!', 'success');
@@ -2438,7 +2446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 elTrash.textContent = count;
             }
 
-            updateBlogFilterBadges();
+            if (window.updateBlogFilterBadges) window.updateBlogFilterBadges();
             window.renderAdminBlogs();
             window.updateBlogBulkBar();
         } catch (e) {
@@ -2480,7 +2488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderAdminBlogs = () => {
         const list = document.getElementById('blog-list');
         if (!list || !window.cachedBlogs) return;
-        updateBlogFilterBadges();
+        if (window.updateBlogFilterBadges) window.updateBlogFilterBadges();
         list.innerHTML = '';
 
         const filter = window.currentBlogFilter || 'all';
