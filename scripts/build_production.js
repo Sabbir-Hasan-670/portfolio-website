@@ -24,31 +24,7 @@ fs.writeFileSync(path.join(distDir, cssFileName), minCss, 'utf8');
 fs.writeFileSync(path.join(distDir, 'home.min.css'), minCss, 'utf8');
 console.log(`✅ CSS Bundle created: ${cssFileName} (${(minCss.length / 1024).toFixed(1)} KiB)`);
 
-// 2. CRITICAL CSS EXTRACTION (Target < 15 KiB)
-let criticalCss = fontsCss + '\n';
-const rootMatch = styleCss.match(/:root\s*\{[\s\S]*?\}\s*\*, \*::before, \*::after[\s\S]*?body\s*\{[\s\S]*?\}/);
-if (rootMatch) criticalCss += rootMatch[0] + '\n';
-
-const skipMatch = styleCss.match(/(\.skip-link[\s\S]*?\.skip-link:focus\s*\{[\s\S]*?\})/);
-if (skipMatch) criticalCss += skipMatch[0] + '\n';
-
-const navMatch = styleCss.match(/\/\* =+ NAVBAR =+ \*\/[\s\S]*?(?=\/\* =+ HERO =+ \*\/|\.hero|\/\* =+)/);
-if (navMatch) criticalCss += navMatch[0] + '\n';
-
-const homeRootMatch = homeCss.match(/:root\s*\{[\s\S]*?\}\s*/);
-if (homeRootMatch) criticalCss += homeRootMatch[0] + '\n';
-
-const heroIdx = homeCss.indexOf('01 - HERO');
-const expIdx = homeCss.indexOf('02 - HARDWARE EXPERTISE');
-if (heroIdx !== -1 && expIdx !== -1) {
-    criticalCss += homeCss.substring(heroIdx, expIdx) + '\n';
-}
-
-const minCritical = esbuild.transformSync(criticalCss, { loader: 'css', minify: true }).code;
-fs.writeFileSync(path.join(distDir, 'critical.min.css'), minCritical, 'utf8');
-console.log(`✅ Critical CSS extracted: critical.min.css (${(minCritical.length / 1024).toFixed(1)} KiB)`);
-
-// 3. JAVASCRIPT BUNDLING & MINIFICATION
+// 2. JAVASCRIPT BUNDLING & MINIFICATION
 const jsFiles = [
     path.join(__dirname, '..', 'public', 'global-profile.js'),
     path.join(__dirname, '..', 'public', 'toast.js'),
@@ -69,36 +45,32 @@ fs.writeFileSync(path.join(distDir, jsFileName), minJs, 'utf8');
 fs.writeFileSync(path.join(distDir, 'home.min.js'), minJs, 'utf8');
 console.log(`✅ JS Bundle created: ${jsFileName} (${(minJs.length / 1024).toFixed(1)} KiB)`);
 
-// 4. WRITE MANIFEST
+// 3. WRITE MANIFEST
 const manifest = {
     'home.css': `/dist/${cssFileName}`,
     'home.js': `/dist/${jsFileName}`,
-    'critical.css': '/dist/critical.min.css',
     timestamp: new Date().toISOString()
 };
 
 fs.writeFileSync(path.join(distDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
 console.log('✅ Asset manifest generated:', manifest);
 
-// 5. UPDATE INDEX.HTML WITH LATEST BUNDLES
+// 4. UPDATE INDEX.HTML (DIRECT SYNCHRONOUS CSS TO PREVENT FOUC / SLOW STYLING DELAY)
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 let html = fs.readFileSync(indexHtmlPath, 'utf8');
 
-// Replace CSS preload and noscript
-html = html.replace(
-    /<link rel="preload" href="\/dist\/home\.[a-z0-9]+\.min\.css" as="style" onload="this\.onload=null;this\.rel='stylesheet'">/g,
-    `<link rel="preload" href="${manifest['home.css']}" as="style" onload="this.onload=null;this.rel='stylesheet'">`
-);
-html = html.replace(
-    /<noscript><link rel="stylesheet" href="\/dist\/home\.[a-z0-9]+\.min\.css"><\/noscript>/g,
-    `<noscript><link rel="stylesheet" href="${manifest['home.css']}"></noscript>`
-);
+// Replace any critical-css style block + preload link with direct stylesheet
+const cssPattern = /(?:<style id="critical-css">[\s\S]*?<\/style>\s*)?(?:<link rel="preload" href="\/dist\/home\.[a-z0-9]+\.min\.css"[^>]*>\s*<noscript><link rel="stylesheet" href="\/dist\/home\.[a-z0-9]+\.min\.css"><\/noscript>|<link rel="stylesheet" href="\/dist\/home\.[a-z0-9]+\.min\.css">)/;
 
-// Replace critical CSS content
-const critRegex = /<style id="critical-css">[\s\S]*?<\/style>/;
-if (critRegex.test(html)) {
-    html = html.replace(critRegex, `<style id="critical-css">\n${minCritical}\n    </style>`);
+const directCssTag = `<link rel="stylesheet" href="${manifest['home.css']}">`;
+
+if (cssPattern.test(html)) {
+    html = html.replace(cssPattern, directCssTag);
+    console.log('✅ Replaced async CSS preload with direct synchronous stylesheet to eliminate FOUC');
 }
+
+// Remove redundant synchronous global-profile.js from <head> (already bundled in home.js)
+html = html.replace(/<script src="\/global-profile\.js\?v=3"><\/script>\s*/g, '');
 
 // Replace script bundle tag
 html = html.replace(

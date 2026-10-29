@@ -137,30 +137,9 @@ app.get('/llms.txt', (req, res) => {
 
 // robots.txt
 app.get('/robots.txt', (req, res) => {
-    const host = 'https://sabbirhasan.com';
-    res.set('Content-Type', 'text/plain');
-    res.set('Cache-Control', 'public, max-age=86400');
-    res.send(`User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /admin/
-Disallow: /login
-Disallow: /dashboard
-Disallow: /api
-Disallow: /api/
-
-# AI & LLM Search Assistants (GEO)
-User-agent: GPTBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-Sitemap: ${host}/sitemap.xml
-`);
+    res.set('Content-Type', 'text/plain; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(__dirname, 'public/robots.txt'));
 });
 
 // sitemap.xml — dynamic & comprehensive

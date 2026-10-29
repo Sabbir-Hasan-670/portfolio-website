@@ -1,0 +1,126 @@
+# ==============================================================
+# robots.txt for sabbirhasan.com
+# Generative Engine Optimization (GEO) & AI Search Enabled
+# ==============================================================
+
+# W3C / TDM Content Signals for AI & Search
+Content-Signal: search=yes,ai-input=yes,ai-train=yes,use=reference
+
+# Standard Crawlers
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /dashboard
+Disallow: /api
+Disallow: /api/
+
+# --------------------------------------------------------------
+# Major Traditional Search Engines
+# --------------------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# --------------------------------------------------------------
+# Generative Search Engines & AI Assistants (GEO)
+# --------------------------------------------------------------
+# OpenAI (ChatGPT Browsing, SearchGPT, Retrieval)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic (Claude Search, Retrieval & Citations)
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI Search Engine
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-Search
+Allow: /
+
+# Google Gemini, AI Overviews & Grounding
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Google-CloudVertexBot
+Allow: /
+
+# Apple Intelligence & Web Answers
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI & Llama Web Search
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Microsoft Copilot & Bing AI
+User-agent: BingPreview
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+# Cohere, Mistral & Next-Gen AI Engines
+User-agent: cohere-ai
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: MistralAI-Training
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: PhindBot
+Allow: /
+
+User-agent: KagiBot
+Allow: /
+
+User-agent: Bravebot
+Allow: /
+
+# --------------------------------------------------------------
+# Sitemaps & Machine-Readable LLM Context
+# --------------------------------------------------------------
+Sitemap: https://sabbirhasan.com/sitemap.xml
