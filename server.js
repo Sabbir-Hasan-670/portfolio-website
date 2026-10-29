@@ -269,7 +269,7 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
-        res.send(html);
+        res.send(injectTrackingIntoHtml(html, req));
     } catch (err) {
         console.error("Blog Listing SSR Error:", err.message);
         try {
@@ -283,7 +283,7 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
                 siteUrl
             });
             res.set('Content-Type', 'text/html; charset=utf-8');
-            res.send(fallbackHtml);
+            res.send(injectTrackingIntoHtml(fallbackHtml, req));
         } catch (renderErr) {
             res.status(500).send("<h1>Error loading blog</h1><p>Please try again later.</p>");
         }
