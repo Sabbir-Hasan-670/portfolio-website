@@ -701,8 +701,12 @@
                                 <button type="button" class="action-btn" id="filter-btn-review" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid #f59e0b;" onclick="window.filterAdminBlogs('review')">Review (<span id="count-blog-review">0</span>)</button>
                                 <button type="button" class="action-btn" id="filter-btn-published" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981;" onclick="window.filterAdminBlogs('published')">Published (<span id="count-blog-published">0</span>)</button>
                                 <button type="button" class="action-btn" id="filter-btn-draft" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid #94a3b8;" onclick="window.filterAdminBlogs('draft')">Draft (<span id="count-blog-draft">0</span>)</button>
+                                <button type="button" class="action-btn" id="filter-btn-zero" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid #38bdf8;" onclick="window.filterAdminBlogs('zero-views')">👁️ 0 Views (<span id="count-blog-zero">0</span>)</button>
                                 <button type="button" class="action-btn" id="filter-btn-trash" style="padding: 4px 10px; font-size: 0.8rem; background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid #ef4444;" onclick="window.filterAdminBlogs('trash')">🗑️ Trash (<span id="count-blog-trash">0</span>)</button>
                             </div>
+                            <button type="button" id="btn-delete-zero-views" class="delete-btn" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: #ef4444; color: #fff; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="window.deleteZeroViewsBlogs()">
+                                🗑️ Delete All 0-View (<span id="btn-zero-count">0</span>)
+                            </button>
                             <button type="button" id="btn-approve-all" class="action-btn" style="padding: 6px 14px; font-size: 0.82rem; background: #10b981; display: none; font-weight: 700;" onclick="window.approveAllReviewBlogs()">⚡ Auto-Approve All Pending</button>
                         </div>
                     </div>
@@ -1345,7 +1349,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="/admin/dashboard/dashboard.js?v=track3"></script>
+    <script src="/admin/dashboard/dashboard.js?v=track4"></script>
     <script src="/toast.js"></script>
 
 
@@ -1354,6 +1358,7 @@
         <div style="display:flex; align-items:center; gap:10px;">
             <span style="font-size:1.1rem;">⚡</span>
             <span style="font-weight:600; font-size:0.92rem;"><span id="bulk-selected-count">0</span> articles selected</span>
+            <button type="button" class="bulk-action-btn" style="background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8;" onclick="window.selectZeroViewsBlogs()">Select All 0-View</button>
         </div>
         <div id="bulk-normal-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button type="button" class="bulk-action-btn bulk-trash-btn" onclick="window.confirmBulkAction('trash')">🗑️ Move to Trash</button>

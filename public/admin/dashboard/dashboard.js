@@ -1046,17 +1046,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const countReview = window.cachedBlogs.filter(b => b.status === 'review').length;
         const countPublished = window.cachedBlogs.filter(b => b.status === 'published').length;
         const countDraft = window.cachedBlogs.filter(b => b.status === 'draft').length;
+        const countZero = window.cachedBlogs.filter(b => (b.views || 0) === 0).length;
 
         const elAll = document.getElementById('count-blog-all');
         const elReview = document.getElementById('count-blog-review');
         const elPublished = document.getElementById('count-blog-published');
         const elDraft = document.getElementById('count-blog-draft');
+        const elZero = document.getElementById('count-blog-zero');
+        const btnZeroCount = document.getElementById('btn-zero-count');
+        const btnDeleteZero = document.getElementById('btn-delete-zero-views');
         const btnApproveAll = document.getElementById('btn-approve-all');
 
         if (elAll) elAll.textContent = countAll;
         if (elReview) elReview.textContent = countReview;
         if (elPublished) elPublished.textContent = countPublished;
         if (elDraft) elDraft.textContent = countDraft;
+        if (elZero) elZero.textContent = countZero;
+        if (btnZeroCount) btnZeroCount.textContent = countZero;
+        if (btnDeleteZero) {
+            btnDeleteZero.style.display = countZero > 0 ? 'inline-flex' : 'none';
+        }
         if (btnApproveAll) {
             btnApproveAll.style.display = countReview > 0 ? 'inline-block' : 'none';
         }
@@ -2460,11 +2469,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.currentBlogLimit = 15;
         window.selectedBlogIds.clear();
 
-        ['all', 'review', 'published', 'draft', 'trash'].forEach(f => {
+        ['all', 'review', 'published', 'draft', 'zero', 'trash'].forEach(f => {
             const btn = document.getElementById(`filter-btn-${f}`);
             if (btn) {
-                if (f === filter) {
-                    btn.style.background = f === 'trash' ? '#ef4444' : '#3b82f6';
+                if (f === filter || (f === 'zero' && filter === 'zero-views')) {
+                    btn.style.background = f === 'trash' ? '#ef4444' : f === 'zero' ? '#38bdf8' : '#3b82f6';
                     btn.style.color = '#ffffff';
                 } else {
                     btn.style.background = '#1e293b';
@@ -2493,9 +2502,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filter = window.currentBlogFilter || 'all';
         const isTrash = filter === 'trash';
-        const filtered = (filter === 'all' || isTrash)
-            ? window.cachedBlogs 
-            : window.cachedBlogs.filter(b => b.status === filter);
+        const filtered = isTrash
+            ? window.cachedBlogs
+            : filter === 'all'
+                ? window.cachedBlogs
+                : filter === 'zero-views'
+                    ? window.cachedBlogs.filter(b => (b.views || 0) === 0)
+                    : window.cachedBlogs.filter(b => b.status === filter);
 
         if (!filtered.length) {
             list.innerHTML = `<p style="color:#94a3b8; padding:20px; text-align:center;">No articles found ${filter !== 'all' ? `in "${filter}"` : ''}.</p>`;
@@ -2903,3 +2916,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call on load
     fetchMediaChannelsAdmin();
 });
+
+
+    // 1-Click Delete All 0-View Articles
+    window.deleteZeroViewsBlogs = async function() {
+        const isTrashTab = window.currentBlogFilter === 'trash';
+        const zeroList = window.cachedBlogs?.filter(b => (b.views || 0) === 0) || [];
+        const count = zeroList.length;
+
+        if (count === 0) {
+            return window.showToast('No articles with 0 views found.', 'info');
+        }
+
+        const confirmMsg = isTrashTab
+            ? `⚠️ PERMANENT DELETE: Are you sure you want to permanently delete all ${count} articles in trash with 0 views? This CANNOT be undone!`
+            : `🗑️ MOVE TO TRASH: Move all ${count} articles with 0 views to Trash? (You can restore them anytime).`;
+
+        const confirmed = await window.customConfirm(confirmMsg);
+        if (!confirmed) return;
+
+        try {
+            window.showLoader();
+            const res = await fetch('/api/admin/blogs/delete-zero-views', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ permanent: isTrashTab })
+            });
+            if (res.status === 401 || res.status === 403) return window.location.href = '/admin/login';
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to delete articles');
+            window.showToast(data.message || `Deleted ${data.count} 0-view articles!`, 'success');
+            await window.fetchAdminBlogs();
+        } catch (err) {
+            window.showToast(err.message || 'Error deleting articles', 'error');
+        } finally {
+            window.hideLoader();
+        }
+    };
+
+    window.selectZeroViewsBlogs = function() {
+        if (!window.cachedBlogs) return;
+        window.selectedBlogIds.clear();
+        window.cachedBlogs.forEach(b => {
+            if ((b.views || 0) === 0) {
+                window.selectedBlogIds.add(Number(b.id));
+            }
+        });
+        window.renderAdminBlogs();
+        window.updateBlogBulkBar();
+        window.showToast(`Selected ${window.selectedBlogIds.size} articles with 0 views.`, 'info');
+    };

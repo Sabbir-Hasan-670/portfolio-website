@@ -2067,6 +2067,60 @@ app.get('/api/admin/blog-analytics/overview-widget', requireAuth, async (req, re
 // ==========================================
 // 📝 ENHANCED BLOG ADMIN & BULK ACTIONS
 // ==========================================
+
+// ==========================================
+// 🗑️ 1-CLICK DELETE ALL 0-VIEW ARTICLES
+// ==========================================
+app.post('/api/admin/blogs/delete-zero-views', requireAuth, express.json(), async (req, res) => {
+    const isPermanent = req.body?.permanent === true || req.body?.permanent === 'true';
+    const conn = await db.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        // Target articles that have 0 entries in blog_views
+        const query = isPermanent
+            ? 'SELECT id, image_path FROM blog_posts WHERE id NOT IN (SELECT DISTINCT blog_id FROM blog_views)'
+            : 'SELECT id FROM blog_posts WHERE deleted_at IS NULL AND id NOT IN (SELECT DISTINCT blog_id FROM blog_views)';
+
+        const [rows] = await conn.query(query);
+        if (rows.length === 0) {
+            conn.release();
+            return res.json({ success: true, count: 0, message: 'No articles with 0 views found.' });
+        }
+
+        const ids = rows.map(r => r.id);
+
+        if (isPermanent) {
+            rows.forEach(r => {
+                if (r.image_path) {
+                    fs.unlink(path.join(__dirname, 'public', r.image_path), () => {});
+                }
+            });
+            await conn.query('DELETE FROM blog_posts WHERE id IN (?)', [ids]);
+        } else {
+            await conn.query('UPDATE blog_posts SET deleted_at = NOW() WHERE id IN (?)', [ids]);
+        }
+
+        await conn.commit();
+        conn.release();
+
+        delete apiCache['blog'];
+        invalidateApiCache('blog');
+
+        const actionText = isPermanent ? 'permanently deleted' : 'moved to trash';
+        res.json({
+            success: true,
+            count: ids.length,
+            message: `Successfully ${actionText} ${ids.length} article(s) with 0 views!`
+        });
+    } catch (err) {
+        await conn.rollback();
+        conn.release();
+        console.error('Delete zero views error:', err);
+        res.status(500).json({ error: 'Failed to delete 0-view articles: ' + err.message });
+    }
+});
+
 app.post('/api/admin/blogs/bulk', requireAuth, express.json(), async (req, res) => {
     const { action, ids } = req.body || {};
     if (!action || !Array.isArray(ids) || ids.length === 0) {
