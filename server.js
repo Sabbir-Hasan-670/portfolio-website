@@ -57,7 +57,12 @@ app.use((req, res, next) => {
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     res.set('Cross-Origin-Opener-Policy', 'same-origin');
-    res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://ghchart.rshah.org; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+    // Allow admin CDN dependencies (cropper.js, google fonts, clarity)
+    if (req.path.startsWith('/admin')) {
+        res.set('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' data: https: blob:; font-src 'self' data: https:; frame-ancestors 'self';");
+    } else {
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://ghchart.rshah.org; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+    }
     if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
         res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     }
