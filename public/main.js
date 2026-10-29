@@ -311,10 +311,23 @@ function applyHomepageSections(rows) {
                 else link.removeAttribute('tabindex');
             });
         }
+        const defaultSectionSort = {
+            hero: 10,
+            expertise: 20,
+            projects: 30,
+            about: 70,
+            experience: 80,
+            education: 90,
+            certificates: 100,
+            'explore-more': 105,
+            development: 140,
+            contact: 150
+        };
+        const fallbackSort = defaultSectionSort[section.dataset.sectionKey] ?? ((originalIndex + 1) * 10);
         return {
             section,
             originalIndex,
-            sortOrder: Number.isFinite(Number(settings?.sort_order)) ? Number(settings.sort_order) : originalIndex
+            sortOrder: Number.isFinite(Number(settings?.sort_order)) ? Number(settings.sort_order) : fallbackSort
         };
     });
 
