@@ -144,7 +144,7 @@ async function updateTrackingSettings(db, newSettings) {
 
     // Refresh memory cache
     settingsCache = { ...(settingsCache || DEFAULT_SETTINGS), ...sanitized };
-    return getTrackingSettings();
+    return { success: true, settings: getTrackingSettings() };
 }
 
 // Generate the <head> scripts according to settings

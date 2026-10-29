@@ -61,7 +61,7 @@ app.use((req, res, next) => {
     if (req.path.startsWith('/admin')) {
         res.set('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' data: https: blob:; font-src 'self' data: https:; frame-ancestors 'self';");
     } else {
-        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://ghchart.rshah.org; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://connect.facebook.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com https://*.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://ghchart.rshah.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.clarity.ms https://connect.facebook.net; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
     }
     if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
         res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
@@ -1953,17 +1953,16 @@ app.get('/api/admin/tracking-settings', requireAuth, (req, res) => {
 app.put('/api/admin/tracking-settings', requireAuth, express.json(), async (req, res) => {
     try {
         const result = await updateTrackingSettings(db, req.body);
-        if (!result.success) {
-            return res.status(400).json({ error: result.errors?.join('; ') || 'Invalid tracking settings' });
-        }
+        const settings = (result && result.settings) ? result.settings : result;
         res.json({
             success: true,
             message: 'Tracking & Analytics settings updated successfully!',
-            settings: result.settings
+            settings: settings
         });
     } catch (err) {
         console.error("Error updating tracking settings:", err);
-        res.status(500).json({ error: 'Failed to update tracking settings: ' + err.message });
+        const msg = err.validationErrors ? err.validationErrors.join('; ') : err.message;
+        res.status(400).json({ error: msg || 'Failed to update tracking settings: ' + err.message });
     }
 });
 
