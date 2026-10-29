@@ -22,3 +22,4 @@ const replacement = `const phoneItem = document.getElementById('contact-phone-it
 s = s.replace(regex, replacement);
 fs.writeFileSync(mainJsPath, s, 'utf8');
 console.log('Phone logic replaced successfully');
+

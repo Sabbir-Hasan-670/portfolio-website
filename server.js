@@ -4,6 +4,20 @@ const QRCode = require('qrcode');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const { renderBlogListingHtml, renderArticleHtml, stripHtml } = require('./blogRenderer');
+const {
+    initTrackingSettings,
+    getTrackingSettings,
+    updateTrackingSettings,
+    injectTrackingIntoHtml
+} = require('./trackingService');
+const {
+    recordBlogView,
+    getBlogAnalytics,
+    getBlogDetailAnalytics,
+    generateAnalyticsCsv,
+    getBlogViewCounts,
+    getOverviewAnalyticsWidget
+} = require('./analyticsService');
 const path = require('path');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
@@ -62,6 +76,15 @@ app.use((req, res, next) => {
 });
 
 // Redirect /admin to /admin/login
+
+// Direct Admin Navigation Shortcuts
+app.get('/admin/tracking', requireAuth, (req, res) => {
+    res.redirect('/admin/dashboard/dashboard.html#tab-tracking');
+});
+app.get('/admin/blog-analytics', requireAuth, (req, res) => {
+    res.redirect('/admin/dashboard/dashboard.html#tab-blog-analytics');
+});
+
 app.get('/admin', (req, res) => {
     res.redirect(301, '/admin/login');
 });
@@ -136,7 +159,7 @@ app.get('/sitemap.xml', async (req, res) => {
         { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly' }
     ];
     try {
-        const [posts] = await db.query('SELECT slug, id, updated_at, created_at FROM blog_posts WHERE status="published" ORDER BY created_at DESC');
+        const [posts] = await db.query('SELECT slug, id, updated_at, created_at FROM blog_posts WHERE status="published" AND deleted_at IS NULL ORDER BY created_at DESC');
         posts.forEach(post => {
             const slug = post.slug || post.id;
             const dateToUse = post.updated_at || post.created_at;
@@ -144,7 +167,7 @@ app.get('/sitemap.xml', async (req, res) => {
             urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
         });
 
-        const [cats] = await db.query('SELECT DISTINCT category FROM blog_posts WHERE status="published" AND category IS NOT NULL AND category != ""');
+        const [cats] = await db.query('SELECT DISTINCT category FROM blog_posts WHERE status="published" AND deleted_at IS NULL AND category IS NOT NULL AND category != ""');
         cats.forEach(c => {
             urls.push({ loc: `${host}/blog/category/${encodeURIComponent(c.category.toLowerCase())}`, priority: '0.6', changefreq: 'weekly', lastmod: now });
         });
@@ -187,8 +210,8 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
     const offset = (page - 1) * limit;
 
     try {
-        let countQuery = 'SELECT COUNT(*) as total FROM blog_posts WHERE status = "published"';
-        let postsQuery = 'SELECT id, title, slug, category, excerpt, content, image_path, reading_time, created_at, updated_at FROM blog_posts WHERE status = "published"';
+        let countQuery = 'SELECT COUNT(*) as total FROM blog_posts WHERE status = "published" AND deleted_at IS NULL';
+        let postsQuery = 'SELECT id, title, slug, category, excerpt, content, image_path, reading_time, created_at, updated_at FROM blog_posts WHERE status = "published" AND deleted_at IS NULL';
         let queryParams = [];
 
         if (categoryParam) {
@@ -204,7 +227,7 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
         const totalPages = Math.max(1, Math.ceil(totalPosts / limit));
 
         const [posts] = await db.query(postsQuery, [...queryParams, limit, offset]);
-        const [categories] = await db.query('SELECT category, COUNT(*) as count FROM blog_posts WHERE status = "published" AND category IS NOT NULL AND category != "" GROUP BY category ORDER BY count DESC');
+        const [categories] = await db.query('SELECT category, COUNT(*) as count FROM blog_posts WHERE status = "published" AND deleted_at IS NULL AND category IS NOT NULL AND category != "" GROUP BY category ORDER BY count DESC');
 
         const html = renderBlogListingHtml({
             posts,
@@ -280,12 +303,15 @@ app.get('/blog/:slug', async (req, res) => {
         }
 
         const post = rows[0];
+        if (post.deleted_at) {
+            return res.status(404).send('<!DOCTYPE html><html><head><title>Article Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Article Not Available</h1><p style="color:#94a3b8;">This article has been moved to trash or is no longer published.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
+        }
 
         // Fetch related posts from same category
         let relatedPosts = [];
         try {
             const [rel] = await db.query(
-                'SELECT id, title, slug, category, excerpt, content, image_path, reading_time FROM blog_posts WHERE category = ? AND id != ? AND status = "published" ORDER BY created_at DESC LIMIT 3',
+                'SELECT id, title, slug, category, excerpt, content, image_path, reading_time FROM blog_posts WHERE category = ? AND id != ? AND status = "published" AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 3',
                 [post.category || '', post.id]
             );
             relatedPosts = rel;
@@ -296,13 +322,13 @@ app.get('/blog/:slug', async (req, res) => {
         let nextPost = null;
         try {
             const [prevRows] = await db.query(
-                'SELECT id, title, slug FROM blog_posts WHERE id < ? AND status = "published" ORDER BY id DESC LIMIT 1',
+                'SELECT id, title, slug FROM blog_posts WHERE id < ? AND status = "published" AND deleted_at IS NULL ORDER BY id DESC LIMIT 1',
                 [post.id]
             );
             if (prevRows.length > 0) previousPost = prevRows[0];
 
             const [nextRows] = await db.query(
-                'SELECT id, title, slug FROM blog_posts WHERE id > ? AND status = "published" ORDER BY id ASC LIMIT 1',
+                'SELECT id, title, slug FROM blog_posts WHERE id > ? AND status = "published" AND deleted_at IS NULL ORDER BY id ASC LIMIT 1',
                 [post.id]
             );
             if (nextRows.length > 0) nextPost = nextRows[0];
@@ -335,7 +361,7 @@ app.get('/api/blog/search', async (req, res) => {
     try {
         const wild = '%' + q + '%';
         const [rows] = await db.query(
-            'SELECT id, title, slug, category, excerpt, image_path, created_at FROM blog_posts WHERE status = "published" AND (title LIKE ? OR category LIKE ? OR excerpt LIKE ? OR content LIKE ?) ORDER BY created_at DESC LIMIT 15',
+            'SELECT id, title, slug, category, excerpt, image_path, created_at FROM blog_posts WHERE status = "published" AND deleted_at IS NULL AND (title LIKE ? OR category LIKE ? OR excerpt LIKE ? OR content LIKE ?) ORDER BY created_at DESC LIMIT 15',
             [wild, wild, wild, wild]
         );
         res.json(rows);
@@ -353,45 +379,66 @@ app.get('/apple-touch-icon-precomposed.png', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/apple-touch-icon-precomposed.png'));
 });
 
+
+// ==========================================
+// 🔍 DYNAMIC TRACKING INJECTION HELPER
+// ==========================================
+function sendHtmlWithTracking(req, res, filePath) {
+    fs.readFile(filePath, 'utf8', (err, html) => {
+        if (err) {
+            console.error("Error reading HTML file:", filePath, err.message);
+            return res.status(500).send("Error loading page");
+        }
+        try {
+            const finalHtml = injectTrackingIntoHtml(html, req);
+            res.set('Content-Type', 'text/html; charset=utf-8');
+            res.send(finalHtml);
+        } catch (e) {
+            res.set('Content-Type', 'text/html; charset=utf-8');
+            res.send(html);
+        }
+    });
+}
+
 // Dedicated Clean Pages
 app.get('/resume', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/resume.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/resume.html'));
 });
 
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/about.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/about.html'));
 });
 
 app.get('/projects', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/projects.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/projects.html'));
 });
 
 app.get('/project/:slug', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/project.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/project.html'));
 });
 
 app.get('/contact', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/contact.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/contact.html'));
 });
 
 app.get('/tools', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/tools.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/tools.html'));
 });
 
 app.get('/tools/subnet-calculator', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/tools/subnet-calculator.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/tools/subnet-calculator.html'));
 });
 
 app.get('/tools/dev-utilities', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/tools/dev-utilities.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/tools/dev-utilities.html'));
 });
 
 app.get('/streams', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/streams.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/streams.html'));
 });
 
 app.get('/sitemap', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/sitemap.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/sitemap.html'));
 });
 
 // Static files with smart caching per file type
@@ -611,7 +658,7 @@ updateGithubCache();
 // ==========================================
 app.get('/', (req, res) => {
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/index.html'));
 });
 
 // Simple in-memory cache to prevent DB connection pool exhaustion on heavy public traffic
@@ -2094,6 +2141,38 @@ app.listen(PORT, async () => {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         `);
         console.log("✅ github_images table ready.");
+        // Auto-create/verify site_settings and blog_views tables
+        try {
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS site_settings (
+                    setting_key VARCHAR(100) PRIMARY KEY,
+                    setting_value LONGTEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            `);
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS blog_views (
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    blog_id INT NOT NULL,
+                    visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    visitor_hash VARCHAR(64) NOT NULL,
+                    referrer_domain VARCHAR(255) DEFAULT '',
+                    device_type VARCHAR(20) DEFAULT 'desktop',
+                    country VARCHAR(10) DEFAULT 'UNKNOWN',
+                    duration_seconds INT DEFAULT 0,
+                    scroll_depth INT DEFAULT 0,
+                    is_bot TINYINT(1) DEFAULT 0,
+                    INDEX idx_blog_visited (blog_id, visited_at),
+                    INDEX idx_visited_at (visited_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            `);
+            try { await db.query(`ALTER TABLE blog_posts ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL`); } catch(e) {}
+            try { await db.query(`CREATE INDEX idx_deleted_at ON blog_posts (deleted_at)`); } catch(e) {}
+            await initTrackingSettings(db);
+            console.log("✅ site_settings & blog_views tables ready.");
+        } catch (e) {
+            console.log("Tracking tables init notice:", e.message);
+        }
         try { await db.query(`ALTER TABLE github_images ADD COLUMN pinned_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch(e) {}
         try { await db.query(`ALTER TABLE github_images ADD COLUMN live_url VARCHAR(500) DEFAULT ''`); } catch(e) {}
         try { await db.query(`ALTER TABLE projects ADD COLUMN is_pinned TINYINT(1) DEFAULT 0`); } catch(e) {}

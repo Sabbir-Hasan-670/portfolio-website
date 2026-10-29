@@ -244,3 +244,4 @@ s = s.replace(
 
 fs.writeFileSync(mainJsPath, s, 'utf8');
 console.log('Updated public/main.js successfully');
+

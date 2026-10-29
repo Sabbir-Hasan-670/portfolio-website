@@ -36,3 +36,4 @@ if (allPassed) {
 } else {
     process.exit(1);
 }
+
