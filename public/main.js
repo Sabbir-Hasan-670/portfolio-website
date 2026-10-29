@@ -119,7 +119,7 @@
 })();
 
 // ⌨️ Typing Effect
-window.typingTitles = ['Network Engineer', 'Full-Stack Developer', 'Cybersecurity Specialist', 'Linux Server Administrator', 'Technical SEO Specialist'];
+window.typingTitles = ['Network Engineer & Cybersecurity', 'Cisco Infrastructure (CCNA)', 'Full-Stack Developer & Systems Architect'];
 window.setTypingRoles = (rolesStr) => {
     if (rolesStr) {
         const arr = rolesStr.split(',').map(r => r.trim()).filter(r => r);
@@ -532,13 +532,19 @@ async function fetchProfile() {
         }
         if (has('contact_location')) {
             const locEl = document.getElementById('contact-location-display');
-            if (locEl) locEl.innerText = data.contact_location || '';
+            if (locEl) locEl.innerText = hasText(data.contact_location) ? data.contact_location.trim() : 'Dhaka, Bangladesh · Remote';
         }
+        const phoneItem = document.getElementById('contact-phone-item');
+        const phoneEl = document.getElementById('contact-phone-display');
         if (has('contact_phone') && hasText(data.contact_phone)) {
-            const phoneEl = document.getElementById('contact-phone-display');
             if (phoneEl) phoneEl.textContent = data.contact_phone.trim();
-            const phoneItem = document.getElementById('contact-phone-item');
-            if (phoneItem) phoneItem.hidden = false;
+            if (phoneItem) {
+                phoneItem.hidden = false;
+                phoneItem.style.display = '';
+            }
+        } else if (phoneItem) {
+            phoneItem.hidden = true;
+            phoneItem.style.display = 'none';
         }
         if (data.contact_map_url) {
             const mapContainer = document.getElementById('contact-map-container');
@@ -591,7 +597,7 @@ async function fetchProfile() {
         if (data.github_link && data.github_link.trim() !== "") {
             const username = data.github_link.replace(/\/$/, '').split('/').pop();
             const developmentLink = document.getElementById('development-github-link');
-            if (developmentLink) developmentLink.href = data.github_link;
+            if (developmentLink) developmentLink.href = 'https://github.com/Sabbir-Hasan-670?tab=repositories';
             const graphImg = document.getElementById('github-graph-mini');
             const graphLoading = document.getElementById('github-loading');
             if (graphImg && graphLoading) {
@@ -662,7 +668,7 @@ async function fetchProfile() {
         // --- FOOTER STATION LOCATION & TIMEZONE HYDRATION ---
         const stationLocEl = document.getElementById('footer-station-loc');
         if (stationLocEl) {
-            const loc = hasText(data.station_location) ? data.station_location.trim() : (hasText(data.contact_location) ? data.contact_location.trim() : 'Faridpur, BD');
+            const loc = hasText(data.station_location) ? data.station_location.trim() : (hasText(data.contact_location) ? data.contact_location.trim() : 'Dhaka, Bangladesh · Remote');
             stationLocEl.textContent = loc;
         }
 
@@ -676,11 +682,11 @@ async function fetchProfile() {
         }
     } catch (e) {
         console.log(e);
-        const fallback = 'GitHub activity available via Projects';
+        const fallback = '<div class="dev-graph-fallback"><p>GitHub activity telemetry is currently offline.</p><a href="https://github.com/Sabbir-Hasan-670" target="_blank" rel="noopener" class="dev-fallback-link">View profile directly on GitHub ↗</a></div>';
         const graphLoading = document.getElementById('github-loading');
         if (graphLoading && graphLoading.style.display !== 'none') graphLoading.textContent = fallback;
         const devLoading = document.getElementById('development-github-loading');
-        if (devLoading && devLoading.style.display !== 'none') devLoading.textContent = fallback;
+        if (devLoading) { devLoading.innerHTML = fallback; devLoading.style.display = 'block'; }
     }
 }
 
@@ -726,15 +732,14 @@ async function fetchProjects() {
 
     try {
         const res = await fetch('/api/projects?featured=1');
+        if (!res.ok) throw new Error('Projects fetch failed: ' + res.status);
         const projects = await res.json();
         if (!Array.isArray(projects)) return;
 
         grid.replaceChildren();
         if (!projects.length) {
             const message = document.createElement('p');
-            message.className = 'project-archive-state';
-            message.textContent = 'No projects are currently published from the admin system.';
-            grid.append(message);
+            grid.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p><a href="/projects" class="section-fallback-btn">Explore Projects Archive ↗</a></div>';
             return;
         }
 
@@ -857,7 +862,10 @@ async function fetchProjects() {
             grid.append(project);
         });
         observeNewReveals();
-    } catch (e) { console.log(e); }
+    } catch (e) {
+        console.log('Projects load error:', e);
+        if (grid) grid.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p><a href="/projects" class="section-fallback-btn">Explore Projects Archive ↗</a></div>';
+    }
 }
 
 async function fetchExperience() {
@@ -865,14 +873,11 @@ async function fetchExperience() {
     if (!timeline) return;
     try {
         const res = await fetch('/api/experience');
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('Experience fetch failed');
         const data = await res.json();
         timeline.replaceChildren();
         if (!Array.isArray(data) || !data.length) {
-            const empty = document.createElement('p');
-            empty.className = 'section-empty';
-            empty.textContent = 'No experience records have been added yet.';
-            timeline.append(empty);
+            timeline.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p><a href="/resume" class="section-fallback-btn">View Executive Resume ↗</a></div>';
             return;
         }
 
@@ -954,7 +959,10 @@ async function fetchExperience() {
             timeline.append(entry);
         });
         observeNewReveals();
-    } catch (e) { console.log(e); }
+    } catch (e) {
+        console.log('Experience load error:', e);
+        if (timeline) timeline.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p><a href="/resume" class="section-fallback-btn">View Executive Resume ↗</a></div>';
+    }
 }
 
 async function fetchEducation() {
@@ -962,14 +970,11 @@ async function fetchEducation() {
     if (!timeline) return;
     try {
         const res = await fetch('/api/education');
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('Education fetch failed');
         const data = await res.json();
         timeline.replaceChildren();
         if (!Array.isArray(data) || !data.length) {
-            const empty = document.createElement('p');
-            empty.className = 'section-empty';
-            empty.textContent = 'No education records have been added yet.';
-            timeline.append(empty);
+            timeline.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p></div>';
             return;
         }
 
@@ -1080,7 +1085,10 @@ async function fetchEducation() {
             timeline.append(card);
         });
         observeNewReveals();
-    } catch (e) { console.log(e); }
+    } catch (e) {
+        console.log('Education load error:', e);
+        if (timeline) timeline.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p></div>';
+    }
 }
 
 // Services Grid
@@ -1145,9 +1153,7 @@ async function fetchCertificates() {
         const res = await fetch('/api/certificates');
         if (!res.ok) {
             const empty = document.createElement('p');
-            empty.className = 'section-empty';
-            empty.textContent = 'No credentials have been added yet.';
-            grid.replaceChildren(empty);
+            grid.innerHTML = '<div class="section-fallback-box"><p class="section-fallback-msg">Content is temporarily unavailable</p></div>';
             return;
         }
         const data = await res.json();

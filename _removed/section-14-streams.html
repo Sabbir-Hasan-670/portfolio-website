@@ -1,0 +1,72 @@
+<section class="section streams-section" id="streams" data-section-key="streams">
+        <div class="streams-header reveal">
+            <div class="streams-header-left">
+                <div class="streams-eyebrow-row">
+                    <span class="section-label">14 — Broadcast Studio</span>
+                    <div class="broadcast-beacon-badge" aria-label="Streaming status">
+                        <span class="pulse-beacon-dot"></span>
+                        <span id="broadcast-status-label">BROADCAST PIPELINE · ACTIVE</span>
+                    </div>
+                </div>
+                <h2 class="section-title">
+                    <span class="stream-title-lead">Live streams, tutorials</span><br>
+                    <span class="stream-title-accent">&amp; tech broadcasts.</span>
+                </h2>
+                <p class="section-sidecopy">Hands-on network engineering labs, full-stack architectural builds, cybersecurity breakdowns, and interactive live streams across YouTube, Twitch, and Kick.</p>
+            </div>
+            <div class="streams-header-right">
+                <div class="streams-soundwave" aria-hidden="true" title="Live audio feed">
+                    <span class="sound-bar bar-1"></span>
+                    <span class="sound-bar bar-2"></span>
+                    <span class="sound-bar bar-3"></span>
+                    <span class="sound-bar bar-4"></span>
+                    <span class="sound-bar bar-5"></span>
+                    <span class="sound-bar bar-6"></span>
+                    <span class="sound-bar bar-7"></span>
+                </div>
+                <div class="streams-filter-tabs" role="tablist" aria-label="Filter media channels">
+                    <button type="button" class="stream-tab active" data-platform="all" role="tab" aria-selected="true">
+                        <span>All Platforms</span>
+                    </button>
+                    <button type="button" class="stream-tab tab-yt" data-platform="youtube" role="tab" aria-selected="false">
+                        <span class="tab-dot dot-yt"></span>
+                        <span>YouTube</span>
+                    </button>
+                    <button type="button" class="stream-tab tab-twitch" data-platform="twitch" role="tab" aria-selected="false">
+                        <span class="tab-dot dot-twitch"></span>
+                        <span>Twitch</span>
+                    </button>
+                    <button type="button" class="stream-tab tab-kick" data-platform="kick" role="tab" aria-selected="false">
+                        <span class="tab-dot dot-kick"></span>
+                        <span>Kick</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels Showcase Deck -->
+        <div class="streams-channels-container reveal">
+            <div class="streams-channels-deck" id="streams-channels-deck">
+                <div class="streams-loading-state">
+                    <span class="dev-spinner" aria-hidden="true"></span>
+                    <span>Connecting to broadcast channels…</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video / Stream Highlights Matrix -->
+        <div class="streams-video-section reveal">
+            <div class="streams-video-subheader">
+                <div class="video-sub-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>FEATURED BROADCAST HIGHLIGHTS</span>
+                </div>
+                <span class="video-sub-counter" id="streams-video-counter">3 HIGHLIGHTS</span>
+            </div>
+            <div class="streams-video-grid" id="streams-video-grid">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </section>

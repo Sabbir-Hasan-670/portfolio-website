@@ -1,0 +1,113 @@
+<section class="section technology-section" id="technology" data-section-key="technology">
+        <div class="section-header reveal">
+            <div>
+                <span class="section-label">03 — Technology Ecosystem</span>
+                <h2 class="section-title"><span class="tech-title-lead">Connected by</span><br><span class="tech-title-accent">real systems.</span></h2>
+            </div>
+            <div class="tech-header-aside">
+                <p class="technology-summary">Live constellation synthesized from active production systems, network topologies, and modern full-stack architectures.</p>
+                <div class="tech-telemetry-badge" id="tech-telemetry-badge" aria-label="System status">
+                    <span class="pulse-dot"></span>
+                    <span id="tech-telemetry-status">CORE GRAVITATIONAL SYNCHRONIZED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ecosystem Controls: Category Filter Tabs & Orbit Toggle -->
+        <div class="tech-control-bar" id="tech-control-bar">
+            <div class="tech-filters" role="tablist" aria-label="Filter technologies by domain">
+                <button type="button" class="tech-filter-btn active" data-filter="all">
+                    <span class="tech-filter-glyph">◈</span>
+                    <span class="tech-filter-name">All Nodes</span>
+                    <span class="tech-filter-count" id="tech-count-all">24</span>
+                </button>
+                <button type="button" class="tech-filter-btn" data-filter="network">
+                    <span class="tech-filter-glyph">▲</span>
+                    <span class="tech-filter-name">Network &amp; Cisco</span>
+                    <span class="tech-filter-count" id="tech-count-net">5</span>
+                </button>
+                <button type="button" class="tech-filter-btn" data-filter="systems">
+                    <span class="tech-filter-glyph">⚙</span>
+                    <span class="tech-filter-name">Systems &amp; Cloud</span>
+                    <span class="tech-filter-count" id="tech-count-sys">5</span>
+                </button>
+                <button type="button" class="tech-filter-btn" data-filter="backend">
+                    <span class="tech-filter-glyph">⚡</span>
+                    <span class="tech-filter-name">Backend &amp; Data</span>
+                    <span class="tech-filter-count" id="tech-count-back">5</span>
+                </button>
+                <button type="button" class="tech-filter-btn" data-filter="frontend">
+                    <span class="tech-filter-glyph">⬡</span>
+                    <span class="tech-filter-name">Frontend &amp; UI</span>
+                    <span class="tech-filter-count" id="tech-count-front">5</span>
+                </button>
+                <button type="button" class="tech-filter-btn" data-filter="security">
+                    <span class="tech-filter-glyph">🔒</span>
+                    <span class="tech-filter-name">Cybersecurity</span>
+                    <span class="tech-filter-count" id="tech-count-sec">4</span>
+                </button>
+            </div>
+            <div class="tech-action-controls">
+                <button type="button" class="tech-orbit-toggle" id="tech-orbit-toggle" aria-label="Pause or resume orbital rotation">
+                    <span class="toggle-icon-wrap">
+                        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true" style="display:none;"><polygon points="6,4 20,12 6,20"/></svg>
+                    </span>
+                    <span class="toggle-label" id="tech-toggle-label">Pause Orbit</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- The Cosmic Orbital Arena -->
+        <div class="technology-ecosystem" id="technology-ecosystem" aria-live="polite">
+            <!-- Grid & Radar Sweep Effect -->
+            <div class="ecosystem-grid-backdrop" aria-hidden="true"></div>
+            <div class="ecosystem-radar-sweep" aria-hidden="true"></div>
+
+            <!-- Concentric Orbit Tracks with Satellites -->
+            <div class="tech-orbit-ring orbit-ring-inner" id="orbit-ring-inner" aria-hidden="true">
+                <div class="orbit-satellites" id="orbit-satellites-inner"></div>
+            </div>
+            <div class="tech-orbit-ring orbit-ring-middle" id="orbit-ring-middle" aria-hidden="true">
+                <div class="orbit-satellites" id="orbit-satellites-middle"></div>
+            </div>
+            <div class="tech-orbit-ring orbit-ring-outer" id="orbit-ring-outer" aria-hidden="true">
+                <div class="orbit-satellites" id="orbit-satellites-outer"></div>
+            </div>
+
+            <!-- Central Gravitational Core -->
+            <div class="ecosystem-core" id="ecosystem-core">
+                <div class="core-rings">
+                    <div class="core-ring core-ring-1"></div>
+                    <div class="core-ring core-ring-2"></div>
+                    <div class="core-ring core-ring-compass"></div>
+                </div>
+                <div class="core-pulse-glow"></div>
+                <div class="core-content">
+                    <span class="core-glyph">⬡</span>
+                    <span class="core-eyebrow">SYSTEM CORE</span>
+                    <b class="core-title">SABBIR.NET</b>
+                    <span class="core-status">100% ONLINE</span>
+                </div>
+            </div>
+
+            <!-- Bottom Live Telemetry HUD Bar -->
+            <div class="ecosystem-hud" id="ecosystem-hud">
+                <div class="hud-item hud-node-focus">
+                    <span class="hud-label">// INSPECTING NODE</span>
+                    <b class="hud-value" id="hud-focus-tech">SYSTEM ORBIT ACTIVE</b>
+                </div>
+                <div class="hud-item hud-category">
+                    <span class="hud-label">// DOMAIN / LAYER</span>
+                    <span class="hud-value" id="hud-focus-domain">Autonomous Cosmic Constellation</span>
+                </div>
+                <div class="hud-item hud-sync">
+                    <span class="hud-label">// LIVE TELEMETRY</span>
+                    <span class="hud-value" id="hud-focus-metric">24 Synchronized Nodes // 0 Packet Loss</span>
+                </div>
+            </div>
+
+            <!-- Accessible data container -->
+            <div class="technology-sr-data" hidden></div>
+        </div>
+    </section>

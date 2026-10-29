@@ -76,7 +76,7 @@
       "description": "Computer Science graduate, CCNA-trained Network Engineer, Full-Stack Developer and Cybersecurity Enthusiast.",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "Faridpur",
+        "addressLocality": "Dhaka",
         "addressCountry": "BD"
       },
       "sameAs": [
@@ -171,23 +171,25 @@
             </button>
             <div class="nav-menu-dropdown" id="navDropdown">
                 <a href="#home">Home</a>
-                <a href="/about">About</a>
+                <a href="#services">Expertise</a>
+                <a href="#projects">Projects</a>
+                <a href="#about">About</a>
+                <a href="#experience">Experience</a>
+                <a href="#education">Education</a>
+                <a href="#certificates">Credentials</a>
+                <a href="#explore-more">Explore Hubs</a>
+                <a href="#development">Development Pulse</a>
                 <a href="/resume">Resume</a>
                 <a href="/blog">Blog</a>
                 <a href="/tools">Interactive Tools</a>
                 <a href="/streams">📡 Streams &amp; Media</a>
                 <a href="/Learn/Learn-CCNA/learn-ccna">🌐 CCNA 200-301</a>
-                <a href="/Learn/Learn-JS/learn-js">🟡 JavaScript A-Z</a>
-                <a href="/Learn/Learn-MySQL/learn-mysql">Learn MySQL</a>
-                <a href="#projects">Projects</a>
-                <a href="#experience">Experience</a>
-                <a href="#education">Education</a>
-                <a href="/contact" class="nav-cta">Contact ↗</a>
-            </div>
+                <a href="/contact" class="nav-cta">Contact ↗</a></div>
         </div>
     </nav>
 
-    <!-- HERO — dynamic profile content is hydrated from the existing profile API -->
+    
+<!-- HERO — dynamic profile content is hydrated from the existing profile API -->
     <section class="hero section" id="home" data-section-key="hero">
         <!-- Ambient Atmosphere & Radiant Glowing Gradients -->
         <div class="hero-ambient-glow" aria-hidden="true">
@@ -206,7 +208,7 @@
                 </span>
                 <p class="hero-greeting"><span>Available for High-Impact Roles</span></p>
                 <span class="status-divider" aria-hidden="true">/</span>
-                <span class="status-geo"><b>Dhaka, BD · Remote</b></span>
+                <span class="status-geo"><b>Dhaka, Bangladesh · Remote</b></span>
             </div>
 
             <div class="hero-kicker-wrap">
@@ -215,7 +217,7 @@
             </div>
 
             <h1 class="hero-name">
-                <span class="hero-name-intro">Independent Systems Technologist</span>
+                <span class="hero-name-intro">Network Engineer &amp; Cybersecurity</span>
                 <span class="hero-name-primary" id="hero-name">Sabbir Hasan</span>
             </h1>
 
@@ -231,20 +233,24 @@
                         <span class="session-path">:~</span>
                         <span class="session-branch">git:(main)</span>
                     </div>
-                    <span class="deck-badge-secure">TLS 1.3 SECURE</span>
+                    
                 </div>
                 <div class="terminal-deck-content">
                     <span class="deck-prompt-sym">❯</span>
                     <span class="deck-cmd-text">sh.role --active</span>
                     <span class="deck-cmd-arrow">➔</span>
                     <span class="deck-typing-wrap">
-                        <span id="typingText">Network Engineer • Cybersecurity • Full-Stack Developer</span>
+                        <span id="typingText">Network Engineer &amp; Cybersecurity</span>
                         <span class="deck-cursor" aria-hidden="true">█</span>
                     </span>
                 </div>
             </div>
 
-            <p class="hero-bio-text" id="hero-bio">Building secure networks, scalable applications, and modern digital systems.</p>
+            <div class="hero-secondary-badge" style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0.85rem; padding: 4px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #94a3b8;">
+                <span style="color: #38bdf8;">◈</span> Full-Stack Developer &amp; Systems Architect
+            </div>
+
+            <p class="hero-bio-text" id="hero-bio">Building secure network infrastructure, defensive cyber posture, and high-performance full-stack web applications.</p>
 
             <div class="hero-buttons" id="hero-buttons">
                 <a href="#projects" class="btn btn-primary hero-btn-magnetic" id="hero-primary-cta">
@@ -275,6 +281,7 @@
                     <span class="social-label">Facebook</span>
                     <span class="social-arrow">↗</span>
                 </a>
+                <!-- TODO: Set Sabbir Hasan's actual Fiverr profile URL when available (e.g. https://www.fiverr.com/username) -->
                 <a href="https://fiverr.com" id="link-fiverr" target="_blank" rel="noopener noreferrer" class="btn social-node-btn" title="Fiverr">
                     <span class="social-label">Fiverr</span>
                     <span class="social-arrow">↗</span>
@@ -319,7 +326,7 @@
                                 <span class="live-pulse-dot" aria-hidden="true"></span>
                                 <span class="status-callsign">SABBIR HASAN // ARCHITECT</span>
                             </div>
-                            <span class="chassis-badge">OPERATIONAL</span>
+                            
                         </div>
 
                         <div class="portrait-window">
@@ -338,7 +345,7 @@
                             <div class="portrait-scan" aria-hidden="true"></div>
                             <div class="portrait-caption">
                                 <span class="caption-brand">SH_SYSTEMS</span>
-                                <b><span class="live-pulse-dot"></span>VERIFIED ACTIVE</b>
+                                <b><span class="live-pulse-dot"></span>SABBIR HASAN</b>
                             </div>
                         </div>
                     </div>
@@ -364,17 +371,7 @@
 
                 </div>
 
-                <!-- Docked Real-Time GitHub Telemetry Activity Card -->
-                <div class="github-mini-card">
-                    <div class="github-card-head">
-                        <span class="gh-live-beacon" aria-hidden="true"></span>
-                        <span>GITHUB TELEMETRY // REAL-TIME DISPATCH</span>
-                        <b>ACTIVE</b>
-                    </div>
-                    <img id="github-graph-mini" class="github-graph-img" src="" alt="GitHub Contributions Graph" width="720" height="120" loading="eager" decoding="async">
-                    <p id="github-loading" class="github-loading-text">Connecting to GitHub...</p>
-                </div>
-
+                <!-- GitHub telemetry displayed in dedicated Development Pulse section below -->
             </div>
         </div>
 
@@ -394,29 +391,18 @@
                     <div class="skill-pill">🖥️ Linux Server Administration</div>
                     <div class="skill-pill">⚡ Technical SEO</div>
                 </div>
-                <div class="marquee-group" aria-hidden="true" style="display: flex; gap: 0.65rem; padding-right: 0.65rem; flex-shrink: 0;">
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="HTML5"> HTML5</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="CSS3"> CSS3</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="JavaScript"> JavaScript</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="Node.js"> Node.js</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" width="17" height="17" loading="lazy" decoding="async" class="icon-express" alt="Express.js"> Express.js</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="MySQL"> MySQL</div>
-                    <div class="skill-pill"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" width="17" height="17" loading="lazy" decoding="async" alt="React"> React</div>
-                    <div class="skill-pill">🌐 Network Engineering (CCNA)</div>
-                    <div class="skill-pill">🛡️ Ethical Hacking &amp; Cybersecurity</div>
-                    <div class="skill-pill">🖥️ Linux Server Administration</div>
-                    <div class="skill-pill">⚡ Technical SEO</div>
-                </div>
             </div>
         </div>
 
     </section>
 
-    <div class="hero-expertise-bridge" aria-hidden="true">
+    
+<div class="hero-expertise-bridge" aria-hidden="true">
         <span>SCROLL TO INSPECT</span><i></i><b>01</b>
     </div>
 
-    <!-- EXPERTISE — service content remains hydrated from the existing admin API -->
+    
+<!-- EXPERTISE — service content remains hydrated from the existing admin API -->
     <section class="section expertise-section" id="services" data-section-key="expertise">
         <div class="section-header reveal">
             <div>
@@ -590,10 +576,10 @@
                         <!-- HUD Bar -->
                         <g class="topo-hud-bar" transform="translate(40, 385)">
                             <rect width="780" height="26" rx="3" class="hud-bar-bg"/>
-                            <text x="20" y="17" class="hud-item">⚡ PACKET FLOW: <tspan class="hud-val hud-val-stream" id="hud-stream-counter">52.8 kpps</tspan></text>
-                            <text x="240" y="17" class="hud-item">⏱ LATENCY: <tspan class="hud-val" id="hud-latency-counter">1.1 ms</tspan></text>
-                            <text x="410" y="17" class="hud-item">🛡 LOSS: <tspan class="hud-val">0.00%</tspan></text>
-                            <text x="570" y="17" class="hud-item">● TOPOLOGY: <tspan class="hud-val-green" id="hud-topo-status">OPTIMAL</tspan></text>
+                            <text x="20" y="17" class="hud-item">⚡ PROTOCOL: <tspan class="hud-val">OSPF / BGP</tspan></text>
+                            <text x="230" y="17" class="hud-item">🛡 SEGMENTATION: <tspan class="hud-val">802.1Q VLAN</tspan></text>
+                            <text x="450" y="17" class="hud-item">🔒 DEFENSE: <tspan class="hud-val">STATEFUL ACL</tspan></text>
+                            <text x="640" y="17" class="hud-item">● TOPOLOGY: <tspan class="hud-val-green" id="hud-topo-status">OPTIMAL</tspan></text>
                         </g>
                     </svg>
                 </div>
@@ -666,10 +652,10 @@
                         <!-- HUD Bar -->
                         <g class="topo-hud-bar" transform="translate(40, 385)">
                             <rect width="780" height="26" rx="3" class="hud-bar-bg"/>
-                            <text x="20" y="17" class="hud-item">🛡 DEFENSE STATUS: <tspan class="hud-val-green">ARMORED</tspan></text>
-                            <text x="230" y="17" class="hud-item">⛔ THREATS BLOCKED: <tspan class="hud-val">1,842</tspan></text>
-                            <text x="440" y="17" class="hud-item">🔒 CIPHER: <tspan class="hud-val">TLS 1.3 / AES-GCM</tspan></text>
-                            <text x="650" y="17" class="hud-item">● ZERO TRUST: <tspan class="hud-val-green">ENFORCED</tspan></text>
+                            <text x="20" y="17" class="hud-item">🛡 DEFENSE: <tspan class="hud-val-green">DEFENSE-IN-DEPTH</tspan></text>
+                            <text x="240" y="17" class="hud-item">🔍 INSPECTION: <tspan class="hud-val">PACKET &amp; FLOW</tspan></text>
+                            <text x="460" y="17" class="hud-item">🔒 ENCRYPTION: <tspan class="hud-val">TLS 1.3 / IPSEC</tspan></text>
+                            <text x="650" y="17" class="hud-item">● POSTURE: <tspan class="hud-val-green">LEAST PRIVILEGE</tspan></text>
                         </g>
                     </svg>
                 </div>
@@ -738,10 +724,10 @@
                         <!-- HUD Bar -->
                         <g class="topo-hud-bar" transform="translate(40, 385)">
                             <rect width="780" height="26" rx="3" class="hud-bar-bg"/>
-                            <text x="20" y="17" class="hud-item">⏱ LATENCY: <tspan class="hud-val-green">14 ms (TTFB)</tspan></text>
-                            <text x="240" y="17" class="hud-item">⚡ STATUS: <tspan class="hud-val">200 OK</tspan></text>
-                            <text x="440" y="17" class="hud-item">📦 PAYLOAD: <tspan class="hud-val">2.8 KB gzip</tspan></text>
-                            <text x="640" y="17" class="hud-item">● CACHE: <tspan class="hud-val-green">EDGE HIT</tspan></text>
+                            <text x="20" y="17" class="hud-item">⚡ RUNTIME: <tspan class="hud-val-green">NODE.JS / LINUX</tspan></text>
+                            <text x="230" y="17" class="hud-item">🛠 ARCHITECTURE: <tspan class="hud-val">MODULAR MVC</tspan></text>
+                            <text x="450" y="17" class="hud-item">📦 CACHE: <tspan class="hud-val">IN-MEMORY / PROXY</tspan></text>
+                            <text x="670" y="17" class="hud-item">● PROTOCOL: <tspan class="hud-val-green">REST / WS</tspan></text>
                         </g>
                     </svg>
                 </div>
@@ -850,10 +836,10 @@
                         <!-- HUD Bar -->
                         <g class="topo-hud-bar" transform="translate(40, 385)">
                             <rect width="780" height="26" rx="3" class="hud-bar-bg"/>
-                            <text x="20" y="17" class="hud-item">📈 ORGANIC TRAFFIC: <tspan class="hud-val-green">+340% YoY</tspan></text>
-                            <text x="250" y="17" class="hud-item">⚡ CORE WEB VITALS: <tspan class="hud-val">100 / 100</tspan></text>
-                            <text x="470" y="17" class="hud-item">🎯 CTR: <tspan class="hud-val">6.4%</tspan></text>
-                            <text x="640" y="17" class="hud-item">● SCHEMA: <tspan class="hud-val-green">INDEXED</tspan></text>
+                            <text x="20" y="17" class="hud-item">📈 AUDIT: <tspan class="hud-val-green">TECHNICAL SEO</tspan></text>
+                            <text x="240" y="17" class="hud-item">⚡ METRICS: <tspan class="hud-val">CORE WEB VITALS</tspan></text>
+                            <text x="460" y="17" class="hud-item">🎯 MARKUP: <tspan class="hud-val">SCHEMA / JSON-LD</tspan></text>
+                            <text x="650" y="17" class="hud-item">● CRAWL: <tspan class="hud-val-green">INDEX READY</tspan></text>
                         </g>
                     </svg>
                 </div>
@@ -917,10 +903,10 @@
                         <!-- HUD Bar -->
                         <g class="topo-hud-bar" transform="translate(40, 385)">
                             <rect width="780" height="26" rx="3" class="hud-bar-bg"/>
-                            <text x="20" y="17" class="hud-item">💾 ENGINE: <tspan class="hud-val-green">INNODB CLUSTER</tspan></text>
-                            <text x="240" y="17" class="hud-item">⚡ QUERY: <tspan class="hud-val">0.3 ms</tspan></text>
-                            <text x="440" y="17" class="hud-item">🔄 REPLICATION: <tspan class="hud-val-green">SYNCED (0 LAG)</tspan></text>
-                            <text x="650" y="17" class="hud-item">● ACID: <tspan class="hud-val-green">ENFORCED</tspan></text>
+                            <text x="20" y="17" class="hud-item">💾 ENGINE: <tspan class="hud-val-green">MYSQL / INNODB</tspan></text>
+                            <text x="230" y="17" class="hud-item">⚡ OPTIMIZATION: <tspan class="hud-val">INDEXED QUERIES</tspan></text>
+                            <text x="450" y="17" class="hud-item">🔄 INTEGRITY: <tspan class="hud-val-green">FOREIGN KEYS</tspan></text>
+                            <text x="650" y="17" class="hud-item">● COMPLIANCE: <tspan class="hud-val-green">ACID MODEL</tspan></text>
                         </g>
                     </svg>
                 </div>
@@ -935,7 +921,8 @@
         </div>
     </section>
 
-    <!-- FEATURED PROJECTS — dynamically rendered from the existing projects API -->
+    
+<!-- FEATURED PROJECTS — dynamically rendered from the existing projects API -->
     <section class="section projects-section" id="projects" data-section-key="projects">
         <div class="section-header reveal">
             <div>
@@ -951,7 +938,9 @@
             </div>
         </div>
         <div class="project-archive" id="projects-grid" aria-live="polite">
-            <p class="project-archive-state">Loading live systems from repository database...</p>
+            <div class="section-fallback-box" style="margin: 2rem 0;">
+                <p class="section-fallback-msg">Loading featured systems from repository database...</p>
+            </div>
         </div>
         <div class="projects-bottom-cta reveal">
             <div class="projects-cta-inner">
@@ -968,484 +957,12 @@
         </div>
     </section>
 
-    <!-- TECHNOLOGY ECOSYSTEM — Planetary Constellation & Telemetry Radar -->
-    <section class="section technology-section" id="technology" data-section-key="technology">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-label">03 — Technology Ecosystem</span>
-                <h2 class="section-title"><span class="tech-title-lead">Connected by</span><br><span class="tech-title-accent">real systems.</span></h2>
-            </div>
-            <div class="tech-header-aside">
-                <p class="technology-summary">Live constellation synthesized from active production systems, network topologies, and modern full-stack architectures.</p>
-                <div class="tech-telemetry-badge" id="tech-telemetry-badge" aria-label="System status">
-                    <span class="pulse-dot"></span>
-                    <span id="tech-telemetry-status">CORE GRAVITATIONAL SYNCHRONIZED</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ecosystem Controls: Category Filter Tabs & Orbit Toggle -->
-        <div class="tech-control-bar" id="tech-control-bar">
-            <div class="tech-filters" role="tablist" aria-label="Filter technologies by domain">
-                <button type="button" class="tech-filter-btn active" data-filter="all">
-                    <span class="tech-filter-glyph">◈</span>
-                    <span class="tech-filter-name">All Nodes</span>
-                    <span class="tech-filter-count" id="tech-count-all">24</span>
-                </button>
-                <button type="button" class="tech-filter-btn" data-filter="network">
-                    <span class="tech-filter-glyph">▲</span>
-                    <span class="tech-filter-name">Network &amp; Cisco</span>
-                    <span class="tech-filter-count" id="tech-count-net">5</span>
-                </button>
-                <button type="button" class="tech-filter-btn" data-filter="systems">
-                    <span class="tech-filter-glyph">⚙</span>
-                    <span class="tech-filter-name">Systems &amp; Cloud</span>
-                    <span class="tech-filter-count" id="tech-count-sys">5</span>
-                </button>
-                <button type="button" class="tech-filter-btn" data-filter="backend">
-                    <span class="tech-filter-glyph">⚡</span>
-                    <span class="tech-filter-name">Backend &amp; Data</span>
-                    <span class="tech-filter-count" id="tech-count-back">5</span>
-                </button>
-                <button type="button" class="tech-filter-btn" data-filter="frontend">
-                    <span class="tech-filter-glyph">⬡</span>
-                    <span class="tech-filter-name">Frontend &amp; UI</span>
-                    <span class="tech-filter-count" id="tech-count-front">5</span>
-                </button>
-                <button type="button" class="tech-filter-btn" data-filter="security">
-                    <span class="tech-filter-glyph">🔒</span>
-                    <span class="tech-filter-name">Cybersecurity</span>
-                    <span class="tech-filter-count" id="tech-count-sec">4</span>
-                </button>
-            </div>
-            <div class="tech-action-controls">
-                <button type="button" class="tech-orbit-toggle" id="tech-orbit-toggle" aria-label="Pause or resume orbital rotation">
-                    <span class="toggle-icon-wrap">
-                        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-                        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true" style="display:none;"><polygon points="6,4 20,12 6,20"/></svg>
-                    </span>
-                    <span class="toggle-label" id="tech-toggle-label">Pause Orbit</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- The Cosmic Orbital Arena -->
-        <div class="technology-ecosystem" id="technology-ecosystem" aria-live="polite">
-            <!-- Grid & Radar Sweep Effect -->
-            <div class="ecosystem-grid-backdrop" aria-hidden="true"></div>
-            <div class="ecosystem-radar-sweep" aria-hidden="true"></div>
-
-            <!-- Concentric Orbit Tracks with Satellites -->
-            <div class="tech-orbit-ring orbit-ring-inner" id="orbit-ring-inner" aria-hidden="true">
-                <div class="orbit-satellites" id="orbit-satellites-inner"></div>
-            </div>
-            <div class="tech-orbit-ring orbit-ring-middle" id="orbit-ring-middle" aria-hidden="true">
-                <div class="orbit-satellites" id="orbit-satellites-middle"></div>
-            </div>
-            <div class="tech-orbit-ring orbit-ring-outer" id="orbit-ring-outer" aria-hidden="true">
-                <div class="orbit-satellites" id="orbit-satellites-outer"></div>
-            </div>
-
-            <!-- Central Gravitational Core -->
-            <div class="ecosystem-core" id="ecosystem-core">
-                <div class="core-rings">
-                    <div class="core-ring core-ring-1"></div>
-                    <div class="core-ring core-ring-2"></div>
-                    <div class="core-ring core-ring-compass"></div>
-                </div>
-                <div class="core-pulse-glow"></div>
-                <div class="core-content">
-                    <span class="core-glyph">⬡</span>
-                    <span class="core-eyebrow">SYSTEM CORE</span>
-                    <b class="core-title">SABBIR.NET</b>
-                    <span class="core-status">100% ONLINE</span>
-                </div>
-            </div>
-
-            <!-- Bottom Live Telemetry HUD Bar -->
-            <div class="ecosystem-hud" id="ecosystem-hud">
-                <div class="hud-item hud-node-focus">
-                    <span class="hud-label">// INSPECTING NODE</span>
-                    <b class="hud-value" id="hud-focus-tech">SYSTEM ORBIT ACTIVE</b>
-                </div>
-                <div class="hud-item hud-category">
-                    <span class="hud-label">// DOMAIN / LAYER</span>
-                    <span class="hud-value" id="hud-focus-domain">Autonomous Cosmic Constellation</span>
-                </div>
-                <div class="hud-item hud-sync">
-                    <span class="hud-label">// LIVE TELEMETRY</span>
-                    <span class="hud-value" id="hud-focus-metric">24 Synchronized Nodes // 0 Packet Loss</span>
-                </div>
-            </div>
-
-            <!-- Accessible data container -->
-            <div class="technology-sr-data" hidden></div>
-        </div>
-    </section>
-
-    <!-- NETWORK ENGINEERING SHOWCASE — relevant service data is hydrated from the existing admin API -->
-    <!-- NETWORK ENGINEERING SHOWCASE — Enterprise Topology & Packet Flow -->
-    <section class="section showcase-section network-showcase" id="network-showcase" data-section-key="network">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-label">04 — Network Engineering</span>
-                <h2 class="section-title"><span class="network-title-lead">Traffic with</span><br><span class="network-title-accent">clear intent.</span></h2>
-            </div>
-            <div class="network-header-aside">
-                <p class="showcase-summary">A resilient path from the public internet to segmented systems.</p>
-                <div class="network-telemetry-badge" aria-label="Network state">
-                    <span class="pulse-dot"></span>
-                    <span>10G L3 BACKBONE · ZERO-DROP</span>
-                </div>
-            </div>
-        </div>
-        <div class="network-showcase-map" id="network-showcase-map" aria-label="Network engineering topology">
-            <!-- Grid & Radar Scan Backdrop -->
-            <div class="network-grid" aria-hidden="true"></div>
-            <div class="network-scanline" aria-hidden="true"></div>
-
-            <!-- Precision SVG Fiber Optical Conduits -->
-            <svg class="network-conduits-svg" viewBox="0 0 1000 640" preserveAspectRatio="none" aria-hidden="true">
-                <!-- Static Conduit Guides -->
-                <path class="conduit-base" d="M 500, 58 L 500, 142" />
-                <path class="conduit-base" d="M 500, 185 L 500, 258" />
-                <path class="conduit-base" d="M 500, 302 L 500, 372" />
-                <path class="conduit-base" d="M 500, 418 C 500, 465 220, 455 220, 498" />
-                <path class="conduit-base" d="M 500, 418 L 500, 498" />
-                <path class="conduit-base" d="M 500, 418 C 500, 465 780, 455 780, 498" />
-
-                <!-- High-Velocity Animated Laser Pulses -->
-                <path class="conduit-laser laser-wan" d="M 500, 58 L 500, 142" />
-                <path class="conduit-laser laser-fw" d="M 500, 185 L 500, 258" />
-                <path class="conduit-laser laser-rtr" d="M 500, 302 L 500, 372" />
-                <path class="conduit-laser laser-branch-left" d="M 500, 418 C 500, 465 220, 455 220, 498" />
-                <path class="conduit-laser laser-branch-mid" d="M 500, 418 L 500, 498" />
-                <path class="conduit-laser laser-branch-right" d="M 500, 418 C 500, 465 780, 455 780, 498" />
-            </svg>
-
-            <!-- Traveling Optical Packets -->
-            <span class="network-packet pkt-trunk-1" aria-hidden="true"></span>
-            <span class="network-packet pkt-trunk-2" aria-hidden="true"></span>
-            <span class="network-packet pkt-trunk-3" aria-hidden="true"></span>
-            <span class="network-packet pkt-leaf-vlan" aria-hidden="true"></span>
-            <span class="network-packet pkt-leaf-server" aria-hidden="true"></span>
-            <span class="network-packet pkt-leaf-client" aria-hidden="true"></span>
-
-            <!-- Top Network Telemetry HUD Tag -->
-            <div class="network-noc-telemetry">
-                <span class="noc-badge"><span class="pulse-dot"></span> TOPOLOGY ACTIVE</span>
-                <span class="noc-spec">LATENCY: <b>0.8ms</b> · LOSS: <b>0.00%</b></span>
-            </div>
-
-            <!-- Core Network Devices -->
-            <div class="network-device network-internet" role="region" aria-label="Internet Gateway">
-                <div class="device-header">
-                    <span class="device-led led-cyan"></span>
-                    <span class="device-type">WAN EDGE</span>
-                    <span class="device-port">BGP-AS65001</span>
-                </div>
-                <div class="device-body">
-                    <span class="device-icon">◈</span>
-                    <div class="device-info">
-                        <b class="device-name">PUBLIC INTERNET</b>
-                        <span class="device-spec">0.0.0.0/0 · UPSTREAM PEER</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="network-device network-firewall" role="region" aria-label="Next-Gen Firewall">
-                <div class="device-header">
-                    <span class="device-led led-amber"></span>
-                    <span class="device-type">PERIMETER DEFENSE</span>
-                    <span class="device-port">STATEFUL IDS/IPS</span>
-                </div>
-                <div class="device-body">
-                    <span class="device-icon">🔒</span>
-                    <div class="device-info">
-                        <b class="device-name">SECURITY FIREWALL</b>
-                        <span class="device-spec">TLS INSPECTION · ZERO-TRUST DROP</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="network-device network-router" role="region" aria-label="Cisco Core Router">
-                <div class="device-header">
-                    <span class="device-led led-cyan"></span>
-                    <span class="device-type">L3 ROUTING CORE</span>
-                    <span class="device-port">OSPF AREA 0</span>
-                </div>
-                <div class="device-body">
-                    <span class="device-icon">▲</span>
-                    <div class="device-info">
-                        <b class="device-name">CISCO IOS-XE ROUTER</b>
-                        <span class="device-spec">WIRE-SPEED FORWARDING · ACL</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="network-device network-core" role="region" aria-label="Distribution Core Switch">
-                <div class="device-header">
-                    <span class="device-led led-amber"></span>
-                    <span class="device-type">DISTRIBUTION MATRIX</span>
-                    <span class="device-port">10GbE LACP TRUNK</span>
-                </div>
-                <div class="device-body">
-                    <span class="device-icon">⚙</span>
-                    <div class="device-info">
-                        <b class="device-name">CORE SWITCH MATRIX</b>
-                        <span class="device-spec">802.1Q TRUNKING · STP ROOT</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Segmented Leaf Enclaves -->
-            <div class="network-leaf leaf-vlan" role="region" aria-label="VLAN 10 Management">
-                <div class="leaf-header">
-                    <span class="leaf-led led-cyan"></span>
-                    <span class="leaf-tag">VLAN 10</span>
-                </div>
-                <b class="leaf-title">SECURE MGMT</b>
-                <span class="leaf-subnet">10.10.0.0/24</span>
-            </div>
-
-            <div class="network-leaf leaf-server" role="region" aria-label="VLAN 20 Production Servers">
-                <div class="leaf-header">
-                    <span class="leaf-led led-amber"></span>
-                    <span class="leaf-tag">VLAN 20</span>
-                </div>
-                <b class="leaf-title">PROD SERVERS</b>
-                <span class="leaf-subnet">10.20.0.0/24</span>
-            </div>
-
-            <div class="network-leaf leaf-client" role="region" aria-label="VLAN 30 Endpoints">
-                <div class="leaf-header">
-                    <span class="leaf-led led-cyan"></span>
-                    <span class="leaf-tag">VLAN 30</span>
-                </div>
-                <b class="leaf-title">WORKSTATIONS</b>
-                <span class="leaf-subnet">10.30.0.0/24</span>
-            </div>
-
-            <!-- Bottom Live Telemetry & Dynamic Services -->
-            <div class="showcase-data" id="network-showcase-data">
-                <p>Network service data loads from the admin system.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- CYBERSECURITY SHOWCASE — relevant service data is hydrated from the existing admin API -->
-    <section class="section showcase-section cybersecurity-showcase" id="cybersecurity-showcase" data-section-key="cybersecurity">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-label">05 — Cybersecurity</span>
-                <h2 class="section-title"><span class="cyber-title-lead">Security as a</span><br><span class="cyber-title-accent">working layer.</span></h2>
-            </div>
-            <div class="cyber-header-aside">
-                <p class="showcase-summary">Protection designed into every request, identity and API boundary.</p>
-                <div class="cyber-telemetry-badge" aria-label="Cybersecurity status">
-                    <span class="pulse-dot pulse-emerald"></span>
-                    <span>ZERO-TRUST ARCHITECTURE · 100% ENCRYPTED</span>
-                </div>
-            </div>
-        </div>
-        <div class="cyber-showcase-map" id="cyber-showcase-map" aria-label="Cybersecurity defense pipeline and threat detection">
-            <!-- Grid & Cyber Pulse Backdrop -->
-            <div class="cyber-grid" aria-hidden="true"></div>
-            <div class="cyber-scanline" aria-hidden="true"></div>
-
-            <!-- Precision SVG Cryptographic Inspection Conduits -->
-            <svg class="cyber-conduits-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
-                <!-- Base Pipeline Conduits -->
-                <path class="cyber-conduit-base" d="M 120, 150 L 310, 150" />
-                <path class="cyber-conduit-base" d="M 310, 150 L 500, 150" />
-                <path class="cyber-conduit-base" d="M 500, 150 L 690, 150" />
-                <path class="cyber-conduit-base" d="M 690, 150 L 880, 150" />
-                <!-- Conduits feeding down to SOC Threat Analysis Radar -->
-                <path class="cyber-conduit-base conduit-radar-link" d="M 500, 195 L 500, 310" />
-                <path class="cyber-conduit-base conduit-radar-left" d="M 310, 195 C 310, 260 410, 310 440, 340" />
-                <path class="cyber-conduit-base conduit-radar-right" d="M 690, 195 C 690, 260 590, 310 560, 340" />
-
-                <!-- High-Velocity Laser Stream Lines -->
-                <path class="cyber-conduit-laser laser-stage1" d="M 120, 150 L 310, 150" />
-                <path class="cyber-conduit-laser laser-stage2" d="M 310, 150 L 500, 150" />
-                <path class="cyber-conduit-laser laser-stage3" d="M 500, 150 L 690, 150" />
-                <path class="cyber-conduit-laser laser-stage4" d="M 690, 150 L 880, 150" />
-                <path class="cyber-conduit-laser laser-radar" d="M 500, 195 L 500, 310" />
-            </svg>
-
-            <!-- Traveling Cryptographic Packet Beacons -->
-            <span class="cyber-packet pkt-ingress" aria-hidden="true"></span>
-            <span class="cyber-packet pkt-auth" aria-hidden="true"></span>
-            <span class="cyber-packet pkt-crypto" aria-hidden="true"></span>
-            <span class="cyber-packet pkt-firewall" aria-hidden="true"></span>
-            <span class="cyber-packet pkt-secure-api" aria-hidden="true"></span>
-
-            <!-- Top SOC Telemetry HUD Tag -->
-            <div class="cyber-soc-telemetry">
-                <span class="soc-badge"><span class="pulse-dot pulse-emerald"></span> SOC DEFENSE ACTIVE</span>
-                <span class="soc-spec">TLS 1.3 · DEEP PACKET INSPECTION · ZERO-DAY MITIGATION</span>
-            </div>
-
-            <!-- Pipeline Stages (5 Enterprise Defense Cards) -->
-            <div class="cyber-stage stage-ingress" role="region" aria-label="Ingress Traffic Inspection">
-                <div class="stage-header">
-                    <span class="stage-led led-amber"></span>
-                    <span class="stage-type">01 / INGRESS</span>
-                    <span class="stage-tag">WAN STREAM</span>
-                </div>
-                <div class="stage-body">
-                    <span class="stage-icon">🌐</span>
-                    <div class="stage-info">
-                        <b class="stage-name">UNFILTERED INGRESS</b>
-                        <span class="stage-spec">0.0.0.0/0 · Geo-Filter · Anti-DDoS</span>
-                    </div>
-                </div>
-                <div class="stage-status status-untrusted">INSPECTION PENDING</div>
-            </div>
-
-            <div class="cyber-stage stage-auth" role="region" aria-label="Identity &amp; Access Management">
-                <div class="stage-header">
-                    <span class="stage-led led-cyan"></span>
-                    <span class="stage-type">02 / IAM VERIFY</span>
-                    <span class="stage-tag">IDENTITY GATE</span>
-                </div>
-                <div class="stage-body">
-                    <span class="stage-icon">🔑</span>
-                    <div class="stage-info">
-                        <b class="stage-name">AUTHENTICATION</b>
-                        <span class="stage-spec">OAuth2 · JWT Bearer · mTLS Handshake</span>
-                    </div>
-                </div>
-                <div class="stage-status status-verified">IDENTITY VERIFIED</div>
-            </div>
-
-            <div class="cyber-stage stage-crypto" role="region" aria-label="Payload Cryptographic Engine">
-                <div class="stage-header">
-                    <span class="stage-led led-cyan"></span>
-                    <span class="stage-type">03 / CRYPTO</span>
-                    <span class="stage-tag">CIPHER VAULT</span>
-                </div>
-                <div class="stage-body">
-                    <span class="stage-icon">🔒</span>
-                    <div class="stage-info">
-                        <b class="stage-name">PAYLOAD ENCRYPTION</b>
-                        <span class="stage-spec">AES-256-GCM · ECDSA · PFS</span>
-                    </div>
-                </div>
-                <div class="stage-status status-encrypted">CIPHER LOCKED</div>
-            </div>
-
-            <div class="cyber-stage stage-firewall" role="region" aria-label="Next-Gen Firewall and WAF">
-                <div class="stage-header">
-                    <span class="stage-led led-amber"></span>
-                    <span class="stage-type">04 / WAF &amp; IDS</span>
-                    <span class="stage-tag">STATEFUL L7</span>
-                </div>
-                <div class="stage-body">
-                    <span class="stage-icon">🛡️</span>
-                    <div class="stage-info">
-                        <b class="stage-name">NEXT-GEN FIREWALL</b>
-                        <span class="stage-spec">OWASP Top 10 · Deep Inspection · IPS</span>
-                    </div>
-                </div>
-                <div class="stage-status status-filtered">PAYLOAD SANITIZED</div>
-            </div>
-
-            <div class="cyber-stage stage-api" role="region" aria-label="Secure API Destination">
-                <div class="stage-header">
-                    <span class="stage-led led-emerald"></span>
-                    <span class="stage-type">05 / DESTINATION</span>
-                    <span class="stage-tag">PROTECTED</span>
-                </div>
-                <div class="stage-body">
-                    <span class="stage-icon">⚡</span>
-                    <div class="stage-info">
-                        <b class="stage-name">SECURE API GATEWAY</b>
-                        <span class="stage-spec">Microservices Boundary · 200 OK</span>
-                    </div>
-                </div>
-                <div class="stage-status status-granted">ACCESS GRANTED</div>
-            </div>
-
-            <!-- Lower SOC Threat Radar & Continuous Vulnerability Console -->
-            <div class="cyber-analysis-console">
-                <div class="cyber-console-panel cyber-panel-left">
-                    <div class="panel-header">
-                        <span class="panel-led led-emerald"></span>
-                        <span class="panel-title">CONTINUOUS VULN AUDIT</span>
-                    </div>
-                    <div class="panel-metrics">
-                        <div class="metric-row">
-                            <span class="metric-label">CVE DATABASE</span>
-                            <span class="metric-value val-emerald">0 DETECTED</span>
-                        </div>
-                        <div class="metric-row">
-                            <span class="metric-label">STATIC CODE (SAST)</span>
-                            <span class="metric-value val-cyan">PASS 100%</span>
-                        </div>
-                        <div class="metric-row">
-                            <span class="metric-label">SECRETS LEAK SCAN</span>
-                            <span class="metric-value val-emerald">CLEAN</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="cyber-radar-unit">
-                    <div class="cyber-radar-display" aria-hidden="true">
-                        <div class="radar-circle ring-outer"></div>
-                        <div class="radar-circle ring-mid"></div>
-                        <div class="radar-circle ring-inner"></div>
-                        <div class="radar-crosshair radar-crosshair-x"></div>
-                        <div class="radar-crosshair radar-crosshair-y"></div>
-                        <div class="radar-sweep"></div>
-                        <span class="radar-ping ping-alpha"></span>
-                        <span class="radar-ping ping-beta"></span>
-                        <span class="radar-ping ping-gamma"></span>
-                        <div class="radar-core-hub">SOC</div>
-                    </div>
-                    <div class="radar-caption">
-                        <b class="radar-title">REAL-TIME THREAT DETECTION</b>
-                        <span class="radar-sub">BEHAVIORAL ANOMALY MONITOR // 0 ZERO-DAY BYPASS</span>
-                    </div>
-                </div>
-
-                <div class="cyber-console-panel cyber-panel-right">
-                    <div class="panel-header">
-                        <span class="panel-led led-cyan"></span>
-                        <span class="panel-title">ZERO-TRUST ENFORCEMENT</span>
-                    </div>
-                    <div class="panel-metrics">
-                        <div class="metric-row">
-                            <span class="metric-label">INGRESS VELOCITY</span>
-                            <span class="metric-value val-cyan">14.2k REQ/S</span>
-                        </div>
-                        <div class="metric-row">
-                            <span class="metric-label">THREAT MITIGATION</span>
-                            <span class="metric-value val-amber">100% BLOCKED</span>
-                        </div>
-                        <div class="metric-row">
-                            <span class="metric-label">CIPHER OVERHEAD</span>
-                            <span class="metric-value val-cyan">&lt; 0.3ms</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Live Telemetry & Dynamic Services -->
-            <div class="cyber-showcase-data-row">
-                <span class="cyber-data-tag"><span class="pulse-dot pulse-cyan"></span> VERIFIED CAPABILITIES:</span>
-                <div class="showcase-data" id="cyber-showcase-data">
-                    <p>Cybersecurity service data loads from the admin system.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ABOUT — profile API hydrates the editable title and description -->
+    
+<!-- ABOUT — profile API hydrates the editable title and description -->
     <section class="section about-snapshot" id="about" data-section-key="about">
         <div class="section-header reveal">
             <div>
-                <span class="section-label">06 — Profile</span>
+                <span class="section-label">03 — Profile</span>
                 <h2 class="section-title"><span class="about-title-lead">The person behind</span><br><span class="about-title-accent">the systems.</span></h2>
             </div>
             <div class="about-header-aside">
@@ -1576,11 +1093,12 @@
         </div>
     </section>
 
-    <!-- EXPERIENCE — populated by /api/experience -->
+    
+<!-- EXPERIENCE — populated by /api/experience -->
     <section class="section experience-section" id="experience" data-section-key="experience">
         <div class="section-header reveal">
             <div>
-                <span class="section-label">07 — Career Log</span>
+                <span class="section-label">04 — Career Log</span>
                 <h2 class="section-title"><span class="experience-title-lead">Experience, recorded</span><br><span class="experience-title-accent">in the work.</span></h2>
             </div>
             <div class="experience-header-aside">
@@ -1592,15 +1110,18 @@
             </div>
         </div>
         <div class="career-log" id="experience-timeline" aria-live="polite">
-            <p class="section-loading">Career records are loading from the admin system.</p>
+            <div class="section-fallback-box" style="margin: 2rem 0;">
+                <p class="section-fallback-msg">Loading career records from system...</p>
+            </div>
         </div>
     </section>
 
-    <!-- EDUCATION — populated by /api/education -->
+    
+<!-- EDUCATION — populated by /api/education -->
     <section class="section education-section" id="education" data-section-key="education">
         <div class="section-header reveal">
             <div>
-                <span class="section-label">08 — Education</span>
+                <span class="section-label">05 — Education</span>
                 <h2 class="section-title"><span class="education-title-lead">Foundation,</span><br><span class="education-title-accent">then practice.</span></h2>
             </div>
             <div class="education-header-aside">
@@ -1612,15 +1133,18 @@
             </div>
         </div>
         <div class="education-ledger" id="education-timeline" aria-live="polite">
-            <p class="section-loading">Education records are loading from the admin system.</p>
+            <div class="section-fallback-box" style="margin: 2rem 0;">
+                <p class="section-fallback-msg">Loading education records from system...</p>
+            </div>
         </div>
     </section>
 
-    <!-- CERTIFICATES -->
+    
+<!-- CERTIFICATES -->
     <section class="section certificates-section" id="certificates" data-section-key="certificates">
         <div class="section-header reveal">
             <div>
-                <span class="section-label">09 — Credentials</span>
+                <span class="section-label">06 — Credentials</span>
                 <h2 class="section-title"><span class="certificates-title-lead">Certifications &amp;</span><br><span class="certificates-title-accent">Training.</span></h2>
             </div>
             <div class="certificates-header-aside">
@@ -1632,268 +1156,82 @@
             </div>
         </div>
         <div class="certificates-grid" id="certificates-grid" aria-live="polite">
-            <p class="section-loading">Credentials are loading from the admin system.</p>
+            <div class="section-fallback-box" style="margin: 2rem 0;">
+                <p class="section-fallback-msg">Loading credentials from system...</p>
+            </div>
         </div>
     </section>
 
-    <!-- LEARNING — links to existing learning products; no duplicate content store -->
-    <section class="section learning-preview" id="learning" data-section-key="learning">
+    
+
+    <!-- 07 — EXPLORE MORE STRIP (Replacing individual preview sections with a lean high-value strip) -->
+    <section class="section explore-more-section" id="explore-more" data-section-key="explore-more">
         <div class="section-header reveal">
             <div>
-                <span class="section-label">10 — Learning Hub</span>
-                <h2 class="section-title"><span class="learning-title-lead">Train the</span><br><span class="learning-title-accent">practical layer.</span></h2>
+                <span class="section-label">07 — Explore Hubs</span>
+                <h2 class="section-title">Specialized <span>Portals &amp; Tools</span></h2>
             </div>
-            <div class="learning-header-aside">
-                <p class="section-sidecopy">Hands-on interactive curricula, packet simulation topologies, algorithmic drills, and engineering labs.</p>
-                <div class="learning-header-actions">
-                    <div class="learning-telemetry-badge" aria-label="Learning status">
-                        <span class="pulse-dot pulse-emerald"></span>
-                        <span>4 ACTIVE LAB TRACKS · READY</span>
-                    </div>
-                    <a class="learning-hub-cta button-amber" href="/Learn/Learn-CCNA/learn-ccna">
-                        <span>Explore All Modules</span>
-                        <span aria-hidden="true">↗</span>
-                    </a>
-                </div>
-            </div>
+            <p class="section-sidecopy">Dedicated learning tracks, interactive network utilities, technical articles, and broadcast presentations.</p>
         </div>
-        <div class="learning-rail reveal">
-            <!-- Module 01: CCNA -->
-            <a href="/Learn/Learn-CCNA/learn-ccna" class="learning-module">
-                <div class="module-top">
-                    <div class="module-index-wrap">
-                        <span class="module-track">TRACK // 01</span>
-                        <span class="module-status-dot"></span>
+        <div class="explore-strip-grid reveal">
+            <!-- Card 1: Blog -->
+            <div class="explore-card">
+                <div>
+                    <div class="explore-card-top">
+                        <span class="explore-card-icon" aria-hidden="true">📝</span>
+                        <span class="explore-card-kicker">TECHNICAL JOURNAL</span>
                     </div>
-                    <div class="module-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                        </svg>
-                    </div>
+                    <h3 class="explore-card-title">Field Notes &amp; Blog</h3>
+                    <p class="explore-card-desc">Practical engineering write-ups on Cisco CCNA, routing protocols, cybersecurity defenses, and modern web systems.</p>
                 </div>
-                <div class="module-content">
-                    <span class="module-kicker">ENTERPRISE NETWORKING</span>
-                    <h3 class="module-title">CCNA<br>200–301</h3>
-                    <p class="module-desc">Packet routing, switching topologies, VLAN segmentation, and Cisco CLI architecture.</p>
-                    <div class="module-tags">
-                        <span>Subnetting</span>
-                        <span>OSPF</span>
-                        <span>VLANs</span>
-                        <span>ACLs</span>
-                    </div>
-                </div>
-                <div class="module-footer">
-                    <span class="module-action">Launch lab module</span>
-                    <span class="module-arrow" aria-hidden="true">→</span>
-                </div>
-            </a>
-
-            <!-- Module 02: JavaScript -->
-            <a href="/Learn/Learn-JS/learn-js" class="learning-module">
-                <div class="module-top">
-                    <div class="module-index-wrap">
-                        <span class="module-track">TRACK // 02</span>
-                        <span class="module-status-dot"></span>
-                    </div>
-                    <div class="module-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="16 18 22 12 16 6"></polyline>
-                            <polyline points="8 6 2 12 8 18"></polyline>
-                        </svg>
-                    </div>
-                </div>
-                <div class="module-content">
-                    <span class="module-kicker">FULL-STACK CORE</span>
-                    <h3 class="module-title">JavaScript<br>A–Z</h3>
-                    <p class="module-desc">Modern ECMAScript logic, asynchronous architecture, DOM mechanics, and runtime patterns.</p>
-                    <div class="module-tags">
-                        <span>ES6+</span>
-                        <span>Async/Await</span>
-                        <span>DOM APIs</span>
-                        <span>Node.js</span>
-                    </div>
-                </div>
-                <div class="module-footer">
-                    <span class="module-action">Launch lab module</span>
-                    <span class="module-arrow" aria-hidden="true">→</span>
-                </div>
-            </a>
-
-            <!-- Module 03: MySQL -->
-            <a href="/Learn/Learn-MySQL/learn-mysql" class="learning-module">
-                <div class="module-top">
-                    <div class="module-index-wrap">
-                        <span class="module-track">TRACK // 03</span>
-                        <span class="module-status-dot"></span>
-                    </div>
-                    <div class="module-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="module-content">
-                    <span class="module-kicker">DATA ARCHITECTURE</span>
-                    <h3 class="module-title">MySQL<br>Lab</h3>
-                    <p class="module-desc">Relational schema design, query optimization, indexing strategies, and transactional integrity.</p>
-                    <div class="module-tags">
-                        <span>Queries</span>
-                        <span>Indexing</span>
-                        <span>Joins</span>
-                        <span>ACID</span>
-                    </div>
-                </div>
-                <div class="module-footer">
-                    <span class="module-action">Launch lab module</span>
-                    <span class="module-arrow" aria-hidden="true">→</span>
-                </div>
-            </a>
-
-            <!-- Module 04: English -->
-            <a href="/Learn/Learn-English/learn-english" class="learning-module">
-                <div class="module-top">
-                    <div class="module-index-wrap">
-                        <span class="module-track">TRACK // 04</span>
-                        <span class="module-status-dot"></span>
-                    </div>
-                    <div class="module-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="module-content">
-                    <span class="module-kicker">TECHNICAL FLUENCY</span>
-                    <h3 class="module-title">English<br>Practice</h3>
-                    <p class="module-desc">Professional technical dialogue, cross-border engineering collaboration, and pronunciation precision.</p>
-                    <div class="module-tags">
-                        <span>Speaking</span>
-                        <span>Grammar</span>
-                        <span>Vocabulary</span>
-                        <span>Scenarios</span>
-                    </div>
-                </div>
-                <div class="module-footer">
-                    <span class="module-action">Launch lab module</span>
-                    <span class="module-arrow" aria-hidden="true">→</span>
-                </div>
-            </a>
-        </div>
-    </section>
-
-    <!-- LATEST WRITING — populated from the existing blog backend -->
-    <section class="section insights-section" id="insights" data-section-key="blog">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-label">11 — Field Notes</span>
-                <h2 class="section-title"><span class="insights-title-lead">Field Notes &amp;</span><br><span class="insights-title-accent">Latest Insights.</span></h2>
+                <a href="/blog" class="explore-card-link"><span>Read Articles</span> <span aria-hidden="true">↗</span></a>
             </div>
-            <div class="insights-header-aside">
-                <p class="section-sidecopy">Practical reflections on enterprise networking, defensive security, Linux administration, and full-stack software.</p>
-                <div class="insights-header-actions">
-                    <div class="insights-telemetry-badge" aria-label="Editorial record status">
-                        <span class="pulse-dot pulse-amber"></span>
-                        <span>ENGINEERING EDITORIAL · VERIFIED LOGS</span>
-                    </div>
-                    <a class="insights-cta button-amber" href="/blog">
-                        <span>Explore All Articles</span>
-                        <span aria-hidden="true">↗</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="editorial-notes home-blog-grid" id="blogGrid" aria-live="polite">
-            <p class="section-loading">Latest articles are loading from the CMS.</p>
-        </div>
-    </section>
 
-    <!-- TOOLS — existing routes, not a second tools catalogue -->
-    <section class="section tools-preview" id="tools-preview" data-section-key="tools">
-        <div class="tools-preview-copy reveal">
-            <span class="section-label">12 — Utilities</span>
-            <h2 class="section-title">
-                <span class="tools-title-lead">Tools that turn</span><br>
-                <span class="tools-title-accent">theory into answers.</span>
-            </h2>
-            <p class="section-sidecopy">Focused browser-based utilities already engineered into this portfolio for network subnetting, cryptographic hashing, and development workflows.</p>
-            <div class="tools-copy-footer">
-                <div class="tools-telemetry-badge" aria-label="Utilities status">
-                    <span class="pulse-dot pulse-emerald"></span>
-                    <span>CLIENT-SIDE ENGINE · READY</span>
+            <!-- Card 2: Tools -->
+            <div class="explore-card">
+                <div>
+                    <div class="explore-card-top">
+                        <span class="explore-card-icon" aria-hidden="true">⚡</span>
+                        <span class="explore-card-kicker">ENGINEERING UTILITIES</span>
+                    </div>
+                    <h3 class="explore-card-title">Interactive Tools</h3>
+                    <p class="explore-card-desc">Browser-based IPv4 CIDR subnetting calculator, network mask visualizer, and developer productivity utilities.</p>
                 </div>
-                <a class="tools-cta button-amber" href="/tools">
-                    <span>Explore All Tools</span>
-                    <span aria-hidden="true">↗</span>
-                </a>
+                <a href="/tools" class="explore-card-link"><span>Launch Utilities</span> <span aria-hidden="true">↗</span></a>
             </div>
-        </div>
-        <div class="tool-console reveal" aria-label="Available engineering utilities">
-            <div class="tool-console-header">
-                <div class="console-beacons">
-                    <span class="beacon-dot red"></span>
-                    <span class="beacon-dot yellow"></span>
-                    <span class="beacon-dot green"></span>
-                </div>
-                <span class="console-title">ENGINEERING CONSOLE // CORE_V5</span>
-                <span class="console-badge">2 ACTIVE STATIONS</span>
-            </div>
-            <div class="tool-station-list">
-                <!-- Station 1: Subnet Calculator -->
-                <a href="/tools/subnet-calculator" class="tool-station-item">
-                    <div class="tool-station-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                        </svg>
-                    </div>
-                    <div class="tool-station-info">
-                        <div class="tool-station-meta">
-                            <span class="station-index">NET // 01</span>
-                            <span class="station-tag">NETWORK TOPOLOGY</span>
-                        </div>
-                        <h3 class="tool-station-title">IPv4 Subnet &amp; CIDR Calculator</h3>
-                        <p class="tool-station-desc">Instant broadcast boundaries, subnet masks, binary bit mapping, and usable host scopes.</p>
-                    </div>
-                    <div class="tool-station-action">
-                        <span class="station-action-btn">Calculate <span class="station-arrow" aria-hidden="true">↗</span></span>
-                    </div>
-                </a>
 
-                <!-- Station 2: Developer Utilities -->
-                <a href="/tools/dev-utilities" class="tool-station-item">
-                    <div class="tool-station-icon-wrap" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="16 18 22 12 16 6"></polyline>
-                            <polyline points="8 6 2 12 8 18"></polyline>
-                        </svg>
+            <!-- Card 3: Learning -->
+            <div class="explore-card">
+                <div>
+                    <div class="explore-card-top">
+                        <span class="explore-card-icon" aria-hidden="true">🌐</span>
+                        <span class="explore-card-kicker">CURATED TRACKS</span>
                     </div>
-                    <div class="tool-station-info">
-                        <div class="tool-station-meta">
-                            <span class="station-index">DEV // 02</span>
-                            <span class="station-tag">CODE &amp; CRYPTO</span>
-                        </div>
-                        <h3 class="tool-station-title">Developer Utilities Suite</h3>
-                        <p class="tool-station-desc">Formatters, base64 converters, crypto hashing tools, and system utility helpers.</p>
+                    <h3 class="explore-card-title">Learning Hub</h3>
+                    <p class="explore-card-desc">Comprehensive curriculum covering Cisco CCNA 200-301 in Bangla, JavaScript A-Z, and MySQL database engineering.</p>
+                </div>
+                <a href="/Learn/Learn-CCNA/learn-ccna" class="explore-card-link"><span>Start Learning</span> <span aria-hidden="true">↗</span></a>
+            </div>
+
+            <!-- Card 4: Streams -->
+            <div class="explore-card">
+                <div>
+                    <div class="explore-card-top">
+                        <span class="explore-card-icon" aria-hidden="true">📡</span>
+                        <span class="explore-card-kicker">BROADCAST STUDIO</span>
                     </div>
-                    <div class="tool-station-action">
-                        <span class="station-action-btn">Launch <span class="station-arrow" aria-hidden="true">↗</span></span>
-                    </div>
-                </a>
+                    <h3 class="explore-card-title">Streams &amp; Media</h3>
+                    <p class="explore-card-desc">Live technology presentations, architecture walkthroughs, lab demos, and recorded engineering broadcasts.</p>
+                </div>
+                <a href="/streams" class="explore-card-link"><span>Watch Streams</span> <span aria-hidden="true">↗</span></a>
             </div>
         </div>
     </section>
 
-    <!-- DEVELOPMENT — profile API supplies the editable GitHub profile link -->
+<!-- DEVELOPMENT — profile API supplies the editable GitHub profile link -->
     <section class="section development-section" id="development" data-section-key="development">
         <div class="development-copy reveal">
-            <span class="section-label">13 — Development Pulse</span>
+            <span class="section-label">08 — Development Pulse</span>
             <h2 class="section-title">
                 <span class="dev-title-lead">Work continues</span><br>
                 <span class="dev-title-accent">in the open.</span>
@@ -1904,7 +1242,7 @@
                     <span class="pulse-dot"></span>
                     <span>LIVE PULSE · STREAMING</span>
                 </div>
-                <a id="development-github-link" class="dev-cta-button button-amber" href="#" target="_blank" rel="noopener">
+                <a id="development-github-link" class="dev-cta-button button-amber" href="https://github.com/Sabbir-Hasan-670?tab=repositories" target="_blank" rel="noopener">
                     <span>Explore Repositories</span>
                     <span class="dev-btn-arrow" aria-hidden="true">↗</span>
                 </a>
@@ -1955,81 +1293,9 @@
         </div>
     </section>
  
-    <!-- 14 — BROADCAST STUDIO (YouTube, Kick, Twitch Media & Streams) -->
-    <section class="section streams-section" id="streams" data-section-key="streams">
-        <div class="streams-header reveal">
-            <div class="streams-header-left">
-                <div class="streams-eyebrow-row">
-                    <span class="section-label">14 — Broadcast Studio</span>
-                    <div class="broadcast-beacon-badge" aria-label="Streaming status">
-                        <span class="pulse-beacon-dot"></span>
-                        <span id="broadcast-status-label">BROADCAST PIPELINE · ACTIVE</span>
-                    </div>
-                </div>
-                <h2 class="section-title">
-                    <span class="stream-title-lead">Live streams, tutorials</span><br>
-                    <span class="stream-title-accent">&amp; tech broadcasts.</span>
-                </h2>
-                <p class="section-sidecopy">Hands-on network engineering labs, full-stack architectural builds, cybersecurity breakdowns, and interactive live streams across YouTube, Twitch, and Kick.</p>
-            </div>
-            <div class="streams-header-right">
-                <div class="streams-soundwave" aria-hidden="true" title="Live audio feed">
-                    <span class="sound-bar bar-1"></span>
-                    <span class="sound-bar bar-2"></span>
-                    <span class="sound-bar bar-3"></span>
-                    <span class="sound-bar bar-4"></span>
-                    <span class="sound-bar bar-5"></span>
-                    <span class="sound-bar bar-6"></span>
-                    <span class="sound-bar bar-7"></span>
-                </div>
-                <div class="streams-filter-tabs" role="tablist" aria-label="Filter media channels">
-                    <button type="button" class="stream-tab active" data-platform="all" role="tab" aria-selected="true">
-                        <span>All Platforms</span>
-                    </button>
-                    <button type="button" class="stream-tab tab-yt" data-platform="youtube" role="tab" aria-selected="false">
-                        <span class="tab-dot dot-yt"></span>
-                        <span>YouTube</span>
-                    </button>
-                    <button type="button" class="stream-tab tab-twitch" data-platform="twitch" role="tab" aria-selected="false">
-                        <span class="tab-dot dot-twitch"></span>
-                        <span>Twitch</span>
-                    </button>
-                    <button type="button" class="stream-tab tab-kick" data-platform="kick" role="tab" aria-selected="false">
-                        <span class="tab-dot dot-kick"></span>
-                        <span>Kick</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+    
 
-        <!-- Channels Showcase Deck -->
-        <div class="streams-channels-container reveal">
-            <div class="streams-channels-deck" id="streams-channels-deck">
-                <div class="streams-loading-state">
-                    <span class="dev-spinner" aria-hidden="true"></span>
-                    <span>Connecting to broadcast channels…</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Video / Stream Highlights Matrix -->
-        <div class="streams-video-section reveal">
-            <div class="streams-video-subheader">
-                <div class="video-sub-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>FEATURED BROADCAST HIGHLIGHTS</span>
-                </div>
-                <span class="video-sub-counter" id="streams-video-counter">3 HIGHLIGHTS</span>
-            </div>
-            <div class="streams-video-grid" id="streams-video-grid">
-                <!-- Populated dynamically via JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- 15 — CONTACT & DISPATCH CHANNEL -->
+    <!-- 09 — CONTACT & DISPATCH CHANNEL -->
     <section class="section contact-cta" id="contact" data-section-key="contact">
         <div class="contact-header-row reveal">
             <div class="contact-eyebrow-wrap">
@@ -2077,13 +1343,13 @@
                         </div>
                         <div class="node-content">
                             <span class="node-label">GEOGRAPHICAL STATION</span>
-                            <span class="node-val" id="contact-location-display">Faridpur, Bangladesh</span>
+                            <span class="node-val" id="contact-location-display">Dhaka, Bangladesh · Remote</span>
                         </div>
                         <span class="node-tag-pill">UTC+6 · REMOTE READY</span>
                     </div>
 
                     <!-- Phone Node Card (Dynamic) -->
-                    <div class="contact-node-card" id="contact-phone-item" hidden>
+                    <div class="contact-node-card" id="contact-phone-item" hidden style="display: none;">
                         <div class="node-icon-shell node-icon-green" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1Z"></path></svg>
                         </div>
@@ -2116,7 +1382,7 @@
                         <span class="dot green"></span>
                     </div>
                     <span class="terminal-title">TERMINAL // DISPATCH_SOCKET_v2.4</span>
-                    <span class="terminal-badge">ENCRYPTED</span>
+                    
                 </div>
 
                 <form class="contact-form" id="contactForm">
@@ -2169,7 +1435,8 @@
     </section>
 
     <!-- ===== ARCHITECTURAL SYSTEM FOOTER ===== -->
-    <footer class="site-footer" id="site-footer" role="contentinfo">
+    
+<footer class="site-footer" id="site-footer" role="contentinfo">
         <div class="footer-inner">
             
             <!-- Top: Brand Dossier & Multi-Column Navigation -->
@@ -2191,12 +1458,12 @@
                             <span class="station-icon" aria-hidden="true">🌐</span>
                             <div class="station-info">
                                 <span class="station-label">STATION &amp; TIMEZONE</span>
-                                <span class="station-val"><span id="footer-station-loc">Faridpur, BD</span> · <span id="footer-live-clock">--:--:-- BST</span></span>
+                                <span class="station-val"><span id="footer-station-loc">Dhaka, Bangladesh · Remote</span> · <span id="footer-live-clock">--:--:-- BST</span></span>
                             </div>
                         </div>
                         <div class="station-status-indicator">
                             <span class="station-pulse-dot" aria-hidden="true"></span>
-                            <span class="station-status-text" id="footer-station-status">SYSTEM OPERATIONAL // ALL SIGNALS NORMAL</span>
+                            <span class="station-status-text" id="footer-station-status">SYSTEM ONLINE // ALL SERVICES READY</span>
                         </div>
                     </div>
                 </div>
@@ -2225,7 +1492,7 @@
                         <li><a href="/Learn/Learn-MySQL/learn-mysql">Database Engineering</a></li>
                         <li><a href="/tools/subnet-calculator">IP Subnetting Utility</a></li>
                         <li><a href="/tools/dev-utilities">Developer Utilities</a></li>
-                        <li><a href="/#cybersecurity">Cybersecurity SOC</a></li>
+                        <li><a href="/#services">Cybersecurity Systems</a></li>
                     </ul>
                 </div>
 
@@ -2236,7 +1503,7 @@
                         <li><a href="https://github.com/Sabbir-Hasan-670" target="_blank" rel="noopener" id="footer-link-github">GitHub Archive ↗</a></li>
                         <li><a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="noopener" id="footer-link-linkedin">LinkedIn Profile ↗</a></li>
                         <li><a href="/streams" id="footer-link-streams">Broadcast Streams ↗</a></li>
-                        <li id="footer-item-facebook" style="display: none;"><a href="#" target="_blank" rel="noopener" id="footer-link-facebook">Facebook Network ↗</a></li>
+                        <li id="footer-item-facebook"><a href="https://www.facebook.com/sabbirhasan800" target="_blank" rel="noopener" id="footer-link-facebook">Facebook Network ↗</a></li>
                         <li><a href="mailto:contact@sabbirhasan.com" id="footer-link-email">Direct Dispatch ✉️</a></li>
                     </ul>
                 </div>
@@ -2251,25 +1518,25 @@
                 </div>
                 <div class="telemetry-separator">/</div>
                 <div class="telemetry-item">
-                    <span class="telemetry-k">ENCRYPTION</span>
-                    <span class="telemetry-v">TLS 1.3 SECURE</span>
+                    <span class="telemetry-k">TIMEZONE</span>
+                    <span class="telemetry-v">ASIA/DHAKA (UTC+6)</span>
                 </div>
                 <div class="telemetry-separator">/</div>
                 <div class="telemetry-item">
-                    <span class="telemetry-k">ZONE</span>
-                    <span class="telemetry-v">ASIA-PACIFIC (BD)</span>
+                    <span class="telemetry-k">LOCATION</span>
+                    <span class="telemetry-v">DHAKA, BANGLADESH</span>
                 </div>
                 <div class="telemetry-separator">/</div>
                 <div class="telemetry-item">
-                    <span class="telemetry-k">DISCIPLINE</span>
-                    <span class="telemetry-v">ZERO-TRUST</span>
+                    <span class="telemetry-k">ENGINEERING</span>
+                    <span class="telemetry-v">FULL-STACK &amp; NETWORKS</span>
                 </div>
             </div>
 
             <!-- Bottom Bar: Clean Copyright & Back To Top -->
             <div class="footer-bottom-row">
                 <p class="footer-copyright-text" id="footer-text">
-                    &copy; <span id="year">2026</span> <a href="/admin/login" class="footer-owner-link">Sabbir Hasan</a>. All rights reserved.
+                    &copy; <span id="year">2026</span> Sabbir Hasan. All rights reserved.
                 </p>
                 <div class="footer-assurance-badge">
                     <span>Engineered with Architectural Rigor &amp; Defense-in-Depth</span>

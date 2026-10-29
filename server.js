@@ -2001,29 +2001,51 @@ app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
         
         setImmediate(async () => {
             try {
+                const postTitle = title || 'Untitled AI Post';
                 let imagePath = '';
                 
-                if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
-                    const imageName = 'blog_' + Date.now() + '.png';
-                    const absolutePath = path.join(__dirname, 'public/uploads', imageName);
-                    
+                // Helper to safely download and save an image buffer
+                const downloadAndSaveImage = async (url, timeoutMs = 45000) => {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                     try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 10000);
-                        const response = await fetch(imageUrl, { signal: controller.signal });
+                        const response = await fetch(url, { signal: controller.signal });
                         clearTimeout(timeoutId);
-
                         if (response.ok) {
                             const buffer = await response.arrayBuffer();
-                            fs.writeFileSync(absolutePath, Buffer.from(buffer));
-                            imagePath = '/uploads/' + imageName;
+                            if (buffer && buffer.byteLength > 1000) {
+                                const imageName = 'blog_' + Date.now() + '.png';
+                                const absolutePath = path.join(__dirname, 'public/uploads', imageName);
+                                fs.writeFileSync(absolutePath, Buffer.from(buffer));
+                                return '/uploads/' + imageName;
+                            }
+                        } else {
+                            console.warn(`[Image Fetch]: Response status ${response.status} for ${url}`);
                         }
-                    } catch (imgErr) { 
-                        console.error("Background Image Fetch Error:", imgErr.message); 
+                    } catch (err) {
+                        clearTimeout(timeoutId);
+                        console.error("[Image Fetch Error]:", err.message);
+                    }
+                    return '';
+                };
+
+                // 1. Try supplied imageUrl first (with 45s timeout)
+                if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+                    imagePath = await downloadAndSaveImage(imageUrl, 45000);
+                }
+
+                // 2. Fallback: If primary image failed or was missing, generate topic-related image automatically
+                if (!imagePath && postTitle) {
+                    try {
+                        console.log(`[Auto Image Fallback]: Generating topic image for "${postTitle}"...`);
+                        const cleanTopic = postTitle.replace(/[^a-zA-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+                        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent('modern sleek tech illustration header for ' + cleanTopic + ', clean digital art 4k')}?width=1024&height=576&nologo=true`;
+                        imagePath = await downloadAndSaveImage(fallbackUrl, 30000);
+                    } catch (fbErr) {
+                        console.error("[Image Fallback Error]:", fbErr.message);
                     }
                 }
 
-                const postTitle = title || 'Untitled AI Post';
                 const finalSlug = await ensureUniqueSlug(postTitle);
                 const finalExcerpt = excerpt || generateExcerpt(content);
                 const readingTime = calculateReadingTime(content);
@@ -2038,7 +2060,7 @@ app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
                         [postTitle, finalSlug, category || 'Cybersecurity', content || 'No Content Provided', imagePath || '', postStatus, finalExcerpt, finalMetaTitle, finalMetaDesc, tags || '', readingTime]
                     );
                     delete apiCache['blog'];
-                    console.log(`✅ [N8N SUCCESS]: "${postTitle}" saved in status "${postStatus}" with slug "${finalSlug}"`);
+                    console.log(`✅ [N8N SUCCESS]: "${postTitle}" saved in status "${postStatus}" with slug "${finalSlug}" (Image: ${imagePath || 'none'})`);
                 } catch (dbErr) { 
                     console.error("Background DB Insert Error:", dbErr.message); 
                 }

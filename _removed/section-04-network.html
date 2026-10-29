@@ -1,0 +1,147 @@
+<section class="section showcase-section network-showcase" id="network-showcase" data-section-key="network">
+        <div class="section-header reveal">
+            <div>
+                <span class="section-label">04 — Network Engineering</span>
+                <h2 class="section-title"><span class="network-title-lead">Traffic with</span><br><span class="network-title-accent">clear intent.</span></h2>
+            </div>
+            <div class="network-header-aside">
+                <p class="showcase-summary">A resilient path from the public internet to segmented systems.</p>
+                <div class="network-telemetry-badge" aria-label="Network state">
+                    <span class="pulse-dot"></span>
+                    <span>10G L3 BACKBONE · ZERO-DROP</span>
+                </div>
+            </div>
+        </div>
+        <div class="network-showcase-map" id="network-showcase-map" aria-label="Network engineering topology">
+            <!-- Grid & Radar Scan Backdrop -->
+            <div class="network-grid" aria-hidden="true"></div>
+            <div class="network-scanline" aria-hidden="true"></div>
+
+            <!-- Precision SVG Fiber Optical Conduits -->
+            <svg class="network-conduits-svg" viewBox="0 0 1000 640" preserveAspectRatio="none" aria-hidden="true">
+                <!-- Static Conduit Guides -->
+                <path class="conduit-base" d="M 500, 58 L 500, 142" />
+                <path class="conduit-base" d="M 500, 185 L 500, 258" />
+                <path class="conduit-base" d="M 500, 302 L 500, 372" />
+                <path class="conduit-base" d="M 500, 418 C 500, 465 220, 455 220, 498" />
+                <path class="conduit-base" d="M 500, 418 L 500, 498" />
+                <path class="conduit-base" d="M 500, 418 C 500, 465 780, 455 780, 498" />
+
+                <!-- High-Velocity Animated Laser Pulses -->
+                <path class="conduit-laser laser-wan" d="M 500, 58 L 500, 142" />
+                <path class="conduit-laser laser-fw" d="M 500, 185 L 500, 258" />
+                <path class="conduit-laser laser-rtr" d="M 500, 302 L 500, 372" />
+                <path class="conduit-laser laser-branch-left" d="M 500, 418 C 500, 465 220, 455 220, 498" />
+                <path class="conduit-laser laser-branch-mid" d="M 500, 418 L 500, 498" />
+                <path class="conduit-laser laser-branch-right" d="M 500, 418 C 500, 465 780, 455 780, 498" />
+            </svg>
+
+            <!-- Traveling Optical Packets -->
+            <span class="network-packet pkt-trunk-1" aria-hidden="true"></span>
+            <span class="network-packet pkt-trunk-2" aria-hidden="true"></span>
+            <span class="network-packet pkt-trunk-3" aria-hidden="true"></span>
+            <span class="network-packet pkt-leaf-vlan" aria-hidden="true"></span>
+            <span class="network-packet pkt-leaf-server" aria-hidden="true"></span>
+            <span class="network-packet pkt-leaf-client" aria-hidden="true"></span>
+
+            <!-- Top Network Telemetry HUD Tag -->
+            <div class="network-noc-telemetry">
+                <span class="noc-badge"><span class="pulse-dot"></span> TOPOLOGY ACTIVE</span>
+                <span class="noc-spec">LATENCY: <b>0.8ms</b> · LOSS: <b>0.00%</b></span>
+            </div>
+
+            <!-- Core Network Devices -->
+            <div class="network-device network-internet" role="region" aria-label="Internet Gateway">
+                <div class="device-header">
+                    <span class="device-led led-cyan"></span>
+                    <span class="device-type">WAN EDGE</span>
+                    <span class="device-port">BGP-AS65001</span>
+                </div>
+                <div class="device-body">
+                    <span class="device-icon">◈</span>
+                    <div class="device-info">
+                        <b class="device-name">PUBLIC INTERNET</b>
+                        <span class="device-spec">0.0.0.0/0 · UPSTREAM PEER</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-device network-firewall" role="region" aria-label="Next-Gen Firewall">
+                <div class="device-header">
+                    <span class="device-led led-amber"></span>
+                    <span class="device-type">PERIMETER DEFENSE</span>
+                    <span class="device-port">STATEFUL IDS/IPS</span>
+                </div>
+                <div class="device-body">
+                    <span class="device-icon">🔒</span>
+                    <div class="device-info">
+                        <b class="device-name">SECURITY FIREWALL</b>
+                        <span class="device-spec">TLS INSPECTION · ZERO-TRUST DROP</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-device network-router" role="region" aria-label="Cisco Core Router">
+                <div class="device-header">
+                    <span class="device-led led-cyan"></span>
+                    <span class="device-type">L3 ROUTING CORE</span>
+                    <span class="device-port">OSPF AREA 0</span>
+                </div>
+                <div class="device-body">
+                    <span class="device-icon">▲</span>
+                    <div class="device-info">
+                        <b class="device-name">CISCO IOS-XE ROUTER</b>
+                        <span class="device-spec">WIRE-SPEED FORWARDING · ACL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-device network-core" role="region" aria-label="Distribution Core Switch">
+                <div class="device-header">
+                    <span class="device-led led-amber"></span>
+                    <span class="device-type">DISTRIBUTION MATRIX</span>
+                    <span class="device-port">10GbE LACP TRUNK</span>
+                </div>
+                <div class="device-body">
+                    <span class="device-icon">⚙</span>
+                    <div class="device-info">
+                        <b class="device-name">CORE SWITCH MATRIX</b>
+                        <span class="device-spec">802.1Q TRUNKING · STP ROOT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segmented Leaf Enclaves -->
+            <div class="network-leaf leaf-vlan" role="region" aria-label="VLAN 10 Management">
+                <div class="leaf-header">
+                    <span class="leaf-led led-cyan"></span>
+                    <span class="leaf-tag">VLAN 10</span>
+                </div>
+                <b class="leaf-title">SECURE MGMT</b>
+                <span class="leaf-subnet">10.10.0.0/24</span>
+            </div>
+
+            <div class="network-leaf leaf-server" role="region" aria-label="VLAN 20 Production Servers">
+                <div class="leaf-header">
+                    <span class="leaf-led led-amber"></span>
+                    <span class="leaf-tag">VLAN 20</span>
+                </div>
+                <b class="leaf-title">PROD SERVERS</b>
+                <span class="leaf-subnet">10.20.0.0/24</span>
+            </div>
+
+            <div class="network-leaf leaf-client" role="region" aria-label="VLAN 30 Endpoints">
+                <div class="leaf-header">
+                    <span class="leaf-led led-cyan"></span>
+                    <span class="leaf-tag">VLAN 30</span>
+                </div>
+                <b class="leaf-title">WORKSTATIONS</b>
+                <span class="leaf-subnet">10.30.0.0/24</span>
+            </div>
+
+            <!-- Bottom Live Telemetry & Dynamic Services -->
+            <div class="showcase-data" id="network-showcase-data">
+                <p>Network service data loads from the admin system.</p>
+            </div>
+        </div>
+    </section>
