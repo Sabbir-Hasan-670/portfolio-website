@@ -431,84 +431,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
         }
     });
     </script>
-    <!-- Built-in First-Party Blog Engagement & Analytics Beacon -->
-    <script>
-    (function() {
-        var blogId = ${parseInt(post.id, 10) || 0};
-        if (!blogId) return;
 
-        var startTime = Date.now();
-        var maxScroll = 0;
-        var fired75 = false;
-        var isDnt = (navigator.doNotTrack === '1' || window.doNotTrack === '1');
-
-        function calculateScroll() {
-            var doc = document.documentElement;
-            var total = doc.scrollHeight - window.innerHeight;
-            if (total > 0) {
-                var pct = Math.round((window.scrollY / total) * 100);
-                if (pct > maxScroll) maxScroll = Math.min(pct, 100);
-                if (maxScroll >= 75 && !fired75) {
-                    fired75 = true;
-                    if (window.pushTrackingEvent) {
-                        window.pushTrackingEvent('blog_read_75', {
-                            event_category: 'engagement',
-                            event_label: '${escapeHtml(post.title || "").replace(/'/g, "\\'")}',
-                            blog_id: blogId
-                        });
-                    }
-                }
-            }
-        }
-
-        window.addEventListener('scroll', calculateScroll, { passive: true });
-
-        // Initial view beacon
-        try {
-            fetch('/api/track/blog-view', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    blogId: blogId,
-                    referrer: document.referrer || '',
-                    isDnt: isDnt
-                }),
-                keepalive: true
-            }).catch(function() {});
-        } catch(e) {}
-
-        // Leave beacon capturing reading duration and maximum scroll depth
-        function sendLeaveBeacon() {
-            var duration = Math.round((Date.now() - startTime) / 1000);
-            calculateScroll();
-            var payload = JSON.stringify({
-                blogId: blogId,
-                duration: duration,
-                scrollDepth: maxScroll,
-                isLeave: true,
-                isDnt: isDnt
-            });
-            if (navigator.sendBeacon) {
-                var blob = new Blob([payload], { type: 'application/json' });
-                navigator.sendBeacon('/api/track/blog-view', blob);
-            } else {
-                fetch('/api/track/blog-view', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: payload,
-                    keepalive: true
-                }).catch(function() {});
-            }
-        }
-
-        window.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'hidden') {
-                sendLeaveBeacon();
-            }
-        });
-        window.addEventListener('pagehide', sendLeaveBeacon);
-    })();
-    </script>
 </body>
 </html>`;
 }
@@ -1040,6 +963,84 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                 });
             })
             .catch(function() {});
+    })();
+    </script>
+    <!-- Built-in First-Party Blog Engagement & Analytics Beacon -->
+    <script>
+    (function() {
+        var blogId = ${parseInt(post.id, 10) || 0};
+        if (!blogId) return;
+
+        var startTime = Date.now();
+        var maxScroll = 0;
+        var fired75 = false;
+        var isDnt = (navigator.doNotTrack === '1' || window.doNotTrack === '1');
+
+        function calculateScroll() {
+            var doc = document.documentElement;
+            var total = doc.scrollHeight - window.innerHeight;
+            if (total > 0) {
+                var pct = Math.round((window.scrollY / total) * 100);
+                if (pct > maxScroll) maxScroll = Math.min(pct, 100);
+                if (maxScroll >= 75 && !fired75) {
+                    fired75 = true;
+                    if (window.pushTrackingEvent) {
+                        window.pushTrackingEvent('blog_read_75', {
+                            event_category: 'engagement',
+                            event_label: '${escapeHtml(post.title || "").replace(/'/g, "\\'")}',
+                            blog_id: blogId
+                        });
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('scroll', calculateScroll, { passive: true });
+
+        // Initial view beacon
+        try {
+            fetch('/api/track/blog-view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    blogId: blogId,
+                    referrer: document.referrer || '',
+                    isDnt: isDnt
+                }),
+                keepalive: true
+            }).catch(function() {});
+        } catch(e) {}
+
+        // Leave beacon capturing reading duration and maximum scroll depth
+        function sendLeaveBeacon() {
+            var duration = Math.round((Date.now() - startTime) / 1000);
+            calculateScroll();
+            var payload = JSON.stringify({
+                blogId: blogId,
+                duration: duration,
+                scrollDepth: maxScroll,
+                isLeave: true,
+                isDnt: isDnt
+            });
+            if (navigator.sendBeacon) {
+                var blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon('/api/track/blog-view', blob);
+            } else {
+                fetch('/api/track/blog-view', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true
+                }).catch(function() {});
+            }
+        }
+
+        window.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                sendLeaveBeacon();
+            }
+        });
+        window.addEventListener('pagehide', sendLeaveBeacon);
     })();
     </script>
 </body>
