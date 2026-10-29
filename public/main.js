@@ -119,7 +119,13 @@
 })();
 
 // ⌨️ Typing Effect
-window.typingTitles = ['Network Engineer & Cybersecurity', 'Cisco Infrastructure (CCNA)', 'Full-Stack Developer & Systems Architect'];
+window.typingTitles = [
+    'Network Engineer & Cybersecurity',
+    'Cisco Infrastructure (CCNA)',
+    'Full-Stack Developer & Systems Architect',
+    'Digital Marketing, SEO & Social Media',
+    'Graphic Design & Brand Identity'
+];
 window.setTypingRoles = (rolesStr) => {
     if (rolesStr) {
         const arr = rolesStr.split(',').map(r => r.trim()).filter(r => r);
@@ -390,7 +396,7 @@ async function fetchProfile() {
         }
 
         if (has('profile_pic_path')) {
-            const fallbackPic = window.GlobalProfile ? window.GlobalProfile.fallbackImage : '/uploads/1789156728823-569590328.jpg';
+            const fallbackPic = window.GlobalProfile ? window.GlobalProfile.fallbackImage : '/uploads/hero-portrait-400.webp';
             const globalProfileImage = window.GlobalProfile
                 ? window.GlobalProfile.getImage(data)
                 : (hasText(data.profile_pic_path) ? data.profile_pic_path.trim() : fallbackPic);
@@ -601,13 +607,13 @@ async function fetchProfile() {
             const graphImg = document.getElementById('github-graph-mini');
             const graphLoading = document.getElementById('github-loading');
             if (graphImg && graphLoading) {
-                loadGraphWithTimeout(graphImg, graphLoading, `https://ghchart.rshah.org/38bdf8/${username}`);
+                loadGraphWithTimeout(graphImg, graphLoading, '/api/github-graph?color=38bdf8');
             }
 
             const developmentGraph = document.getElementById('development-github-graph');
             const developmentLoading = document.getElementById('development-github-loading');
             if (developmentGraph && developmentLoading) {
-                loadGraphWithTimeout(developmentGraph, developmentLoading, `https://ghchart.rshah.org/d5a34a/${username}`);
+                loadGraphWithTimeout(developmentGraph, developmentLoading, '/api/github-graph');
             }
         } else {
             const graphLoading = document.getElementById('github-loading');

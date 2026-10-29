@@ -4,7 +4,7 @@
  */
 (function() {
     window.GlobalProfile = {
-        fallbackImage: '/uploads/1789156728823-569590328.jpg',
+        fallbackImage: '/uploads/hero-portrait-400.webp',
         getImage: function(data) {
             if (!data) return this.fallbackImage;
             return data.profile_pic_path || this.fallbackImage;
@@ -18,4 +18,3 @@
         }
     };
 })();
-

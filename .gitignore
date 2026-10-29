@@ -36,3 +36,6 @@ frontend-next/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+lh-*.json
+public/favicon-original.png
