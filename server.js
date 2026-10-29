@@ -2079,7 +2079,7 @@ app.post('/api/admin/blogs/delete-zero-views', requireAuth, express.json(), asyn
 
         // Target articles that have 0 entries in blog_views
         const query = isPermanent
-            ? 'SELECT id, image_path FROM blog_posts WHERE id NOT IN (SELECT DISTINCT blog_id FROM blog_views)'
+            ? 'SELECT id, image_path FROM blog_posts WHERE deleted_at IS NOT NULL AND id NOT IN (SELECT DISTINCT blog_id FROM blog_views)'
             : 'SELECT id FROM blog_posts WHERE deleted_at IS NULL AND id NOT IN (SELECT DISTINCT blog_id FROM blog_views)';
 
         const [rows] = await conn.query(query);

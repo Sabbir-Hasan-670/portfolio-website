@@ -1065,6 +1065,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnZeroCount) btnZeroCount.textContent = countZero;
         if (btnDeleteZero) {
             btnDeleteZero.style.display = countZero > 0 ? 'inline-flex' : 'none';
+            const isTrashTab = window.currentBlogFilter === 'trash';
+            btnDeleteZero.innerHTML = isTrashTab
+                ? `⚠️ Permanently Delete 0-View (<span id="btn-zero-count">${countZero}</span>)`
+                : `🗑️ Delete All 0-View (<span id="btn-zero-count">${countZero}</span>)`;
         }
         if (btnApproveAll) {
             btnApproveAll.style.display = countReview > 0 ? 'inline-block' : 'none';
