@@ -1699,6 +1699,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 window.showToast('Channel live status updated!');
                 fetchMediaChannelsAdmin();
+            } else {
+                window.showToast('Failed to update live status.', 'error');
+            }
+        } catch(e) {
+            window.showToast('Network error.', 'error');
+        }
+    };
 
 
     // =========================================================================
@@ -2706,13 +2713,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-            } else {
-                window.showToast('Failed to update live status.', 'error');
-            }
-        } catch(e) {
-            window.showToast('Network error.', 'error');
-        }
-    };
 
     window.syncChannelVideos = async function(id) {
         window.showToast('Syncing channel videos from YouTube feed...', 'info');
