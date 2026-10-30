@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/favicon.png?v=1">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css?v=p4b3">
+    <link rel="stylesheet" href="dashboard.css?v=p4b4">
 </head>
 <body class="dashboard-body" id="main-body">
 
@@ -1044,7 +1044,7 @@
                     </div>
 
                     <!-- 4 Summary Metric Cards Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 25px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 25px;">
                         <!-- Card 1: Total Views -->
                         <div class="analytics-metric-card" style="border-left: 3px solid #38bdf8;">
                             <div class="metric-header">
@@ -1136,6 +1136,7 @@
                                 <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 2px;">Click any article to view its drill-down engagement breakdown</p>
                             </div>
                             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <button type="button" class="delete-btn" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 700; background: #ef4444; color: #fff; border-radius: 6px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px;" onclick="window.deleteZeroViewsBlogs()">🗑️ Delete All 0-View</button>
                                 <input type="text" id="analytics-search-input" placeholder="Search by title..." style="padding: 6px 12px; font-size: 0.82rem; width: 200px;" oninput="window.filterAnalyticsTable()">
                                 <select id="analytics-sort-select" style="padding: 6px 12px; font-size: 0.82rem;" onchange="window.sortAnalyticsTable()">
                                     <option value="views-desc">Views (High to Low)</option>
@@ -1175,18 +1176,24 @@
                         </div>
                     </div>
 
-                    <!-- Zero Views Alert Card -->
-                    <div style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 18px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <span style="font-size: 1.2rem;">📢</span>
-                            <h4 style="margin: 0; color: #f87171; font-size: 0.95rem;">Content Opportunity: Zero Views in Last 30 Days</h4>
+                                        <!-- Zero Views Alert Card -->
+                    <div style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 18px; margin-top: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.2rem;">📢</span>
+                                <h4 style="margin: 0; color: #f87171; font-size: 0.95rem;">Content Opportunity: Zero Views in Last 30 Days (<span id="analytics-zero-count">0</span>)</h4>
+                            </div>
+                            <button type="button" id="btn-delete-zero-analytics" class="delete-btn" style="padding: 7px 16px; font-size: 0.85rem; font-weight: 700; background: #ef4444; color: #fff; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: none; box-shadow: 0 2px 10px rgba(239,68,68,0.3);" onclick="window.deleteZeroViewsBlogs()">
+                                🗑️ Delete All 0-View Articles (<span id="btn-zero-count-analytics">0</span>)
+                            </button>
                         </div>
                         <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 12px;">
-                            These published articles haven't received traffic in the past month. Consider promoting them on LinkedIn/X, refreshing content, or adding internal links.
+                            These published articles haven't received traffic in the past month. You can delete them all in 1-click or promote them.
                         </p>
                         <div id="zero-views-list" style="display: flex; flex-wrap: wrap; gap: 8px;">
                             <span style="color: #94a3b8; font-size: 0.82rem;">Checking content health...</span>
                         </div>
+                    </div>
                     </div>
                 </div>
             </section>
@@ -1349,7 +1356,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="/admin/dashboard/dashboard.js?v=track5"></script>
+    <script src="/admin/dashboard/dashboard.js?v=track6"></script>
     <script src="/toast.js"></script>
 
 

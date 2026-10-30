@@ -2297,7 +2297,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderZeroViewsList(zeroPosts = []) {
         const container = document.getElementById('zero-views-list');
         if (!container) return;
-        if (!zeroPosts.length) {
+        const count = Array.isArray(zeroPosts) ? zeroPosts.length : 0;
+        const countSpan = document.getElementById('analytics-zero-count');
+        const btnCount = document.getElementById('btn-zero-count-analytics');
+        const btnDel = document.getElementById('btn-delete-zero-analytics');
+        if (countSpan) countSpan.textContent = count;
+        if (btnCount) btnCount.textContent = count;
+        if (btnDel) btnDel.style.display = count > 0 ? 'inline-flex' : 'none';
+
+        if (!count) {
             container.innerHTML = '<span style="color:#10b981; font-size:0.85rem; font-weight:600;">🎉 Excellent! All published articles received active traffic in the last 30 days.</span>';
             return;
         }
@@ -2925,22 +2933,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1-Click Delete All 0-View Articles
     window.deleteZeroViewsBlogs = async function() {
         const isTrashTab = window.currentBlogFilter === 'trash';
+
+        // Ensure cachedBlogs is loaded even if triggered from Blog Analytics tab
+        if (!window.cachedBlogs || window.cachedBlogs.length === 0) {
+            try {
+                if (typeof window.showLoader === 'function') window.showLoader();
+                const res = await fetch('/api/admin/blog');
+                if (res.ok) {
+                    const data = await res.json();
+                    window.cachedBlogs = Array.isArray(data) ? data : [];
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                if (typeof window.hideLoader === 'function') window.hideLoader();
+            }
+        }
+
         const zeroList = window.cachedBlogs?.filter(b => (b.views || 0) === 0) || [];
         const count = zeroList.length;
 
         if (count === 0) {
-            return window.showToast('No articles with 0 views found.', 'info');
+            return window.showToast('No articles with 0 views found in database.', 'info');
         }
 
         const confirmMsg = isTrashTab
             ? `⚠️ PERMANENT DELETE: Are you sure you want to permanently delete all ${count} articles in trash with 0 views? This CANNOT be undone!`
-            : `🗑️ MOVE TO TRASH: Move all ${count} articles with 0 views to Trash? (You can restore them anytime).`;
+            : `🗑️ MOVE TO TRASH: Move all ${count} articles with 0 views to Trash? (You can restore them anytime from Trash tab).`;
 
         const confirmed = await window.customConfirm(confirmMsg);
         if (!confirmed) return;
 
         try {
-            window.showLoader();
+            if (typeof window.showLoader === 'function') window.showLoader();
             const res = await fetch('/api/admin/blogs/delete-zero-views', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -2950,11 +2975,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to delete articles');
             window.showToast(data.message || `Deleted ${data.count} 0-view articles!`, 'success');
-            await window.fetchAdminBlogs();
+
+            // Refresh both Blog tab and Blog Analytics tab
+            if (typeof window.fetchAdminBlogs === 'function') await window.fetchAdminBlogs();
+            if (typeof window.loadBlogAnalytics === 'function') await window.loadBlogAnalytics();
         } catch (err) {
             window.showToast(err.message || 'Error deleting articles', 'error');
         } finally {
-            window.hideLoader();
+            if (typeof window.hideLoader === 'function') window.hideLoader();
         }
     };
 
