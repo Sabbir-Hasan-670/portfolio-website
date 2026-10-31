@@ -63,11 +63,14 @@ async function minifyFiles() {
 
   console.log('--- MINIFYING CSS FILES ---');
   for (const f of cssFiles) {
-    if (fs.existsSync(f)) {
-      const orig = fs.readFileSync(f, 'utf8');
-      const backupDir = path.join('public_src', path.dirname(f));
-      fs.mkdirSync(backupDir, { recursive: true });
-      fs.writeFileSync(path.join('public_src', f), orig, 'utf8');
+    const srcPath = path.join('public_src', f);
+    const readPath = fs.existsSync(srcPath) ? srcPath : f;
+    if (fs.existsSync(readPath)) {
+      const orig = fs.readFileSync(readPath, 'utf8');
+      if (!fs.existsSync(srcPath)) {
+        fs.mkdirSync(path.dirname(srcPath), { recursive: true });
+        fs.writeFileSync(srcPath, orig, 'utf8');
+      }
 
       const res = cssCleaner.minify(orig);
       if (res.errors && res.errors.length > 0) {
@@ -84,11 +87,14 @@ async function minifyFiles() {
 
   console.log('\n--- MINIFYING JS FILES ---');
   for (const f of jsFiles) {
-    if (fs.existsSync(f)) {
-      const orig = fs.readFileSync(f, 'utf8');
-      const backupDir = path.join('public_src', path.dirname(f));
-      fs.mkdirSync(backupDir, { recursive: true });
-      fs.writeFileSync(path.join('public_src', f), orig, 'utf8');
+    const srcPath = path.join('public_src', f);
+    const readPath = fs.existsSync(srcPath) ? srcPath : f;
+    if (fs.existsSync(readPath)) {
+      const orig = fs.readFileSync(readPath, 'utf8');
+      if (!fs.existsSync(srcPath)) {
+        fs.mkdirSync(path.dirname(srcPath), { recursive: true });
+        fs.writeFileSync(srcPath, orig, 'utf8');
+      }
 
       try {
         const res = await minify(orig, terserOptions);
@@ -109,4 +115,3 @@ async function minifyFiles() {
 }
 
 minifyFiles();
-

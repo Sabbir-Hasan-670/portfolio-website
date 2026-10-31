@@ -816,8 +816,8 @@ async function updateGithubCache() {
         const headers = process.env.GITHUB_TOKEN ? { Authorization: `token ${process.env.GITHUB_TOKEN}` } : {};
         // If we have a token, use /user/repos to get ALL (including private), else fallback to public only
         const endpoint = process.env.GITHUB_TOKEN 
-            ? `https://api.github.com/user/repos?sort=updated&per_page=10&visibility=all` 
-            : `https://api.github.com/users/${process.env.GITHUB_USERNAME}/repos?sort=updated&per_page=10`;
+            ? `https://api.github.com/user/repos?sort=updated&per_page=100&visibility=all` 
+            : `https://api.github.com/users/${process.env.GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
             
         const ghRes = await fetch(endpoint, { headers });
         
