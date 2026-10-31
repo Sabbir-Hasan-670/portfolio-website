@@ -209,20 +209,22 @@ app.get('/sitemap.xml', async (req, res) => {
         { loc: `${host}/tools`,                    priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
         { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
         { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-30' },
-        { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-25' },
-        { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
-        { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
-        { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-10-25' },
-        { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' }
+        { loc: `${host}/learn/learn-ccna/learn-ccna`, priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/learn/learn-js/learn-js`,  priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/learn/learn-mysql/learn-mysql`, priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/learn/learn-english/learn-english`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-10-25' }
     ];
     try {
         const [posts] = await db.query('SELECT slug, id, updated_at, created_at, category FROM blog_posts WHERE status="published" AND deleted_at IS NULL AND LOWER(category) NOT IN ("gaming", "sports") ORDER BY created_at DESC');
-        posts.forEach(post => {
-            const slug = post.slug || post.id;
-            const dateToUse = post.updated_at || post.created_at;
-            const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : '2026-10-31';
-            urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
-        });
+        if (posts && posts.length >= 5) {
+            urls.push({ loc: `${host}/blog`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-10-31' });
+            posts.forEach(post => {
+                const slug = post.slug || post.id;
+                const dateToUse = post.updated_at || post.created_at;
+                const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : '2026-10-31';
+                urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
+            });
+        }
     } catch (e) { /* DB fallback */ }
 
     const urlEntries = urls.map(u => `
@@ -234,7 +236,9 @@ app.get('/sitemap.xml', async (req, res) => {
   </url>`).join('');
 
     res.set('Content-Type', 'application/xml; charset=utf-8');
-    res.set('Cache-Control', 'public, max-age=3600');
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -360,14 +364,27 @@ app.get('/blog/:slug', async (req, res) => {
             [slug, isNaN(slug) ? 0 : parseInt(slug, 10)]
         );
 
-        if (rows.length === 0) {
-            return res.status(404).send('<!DOCTYPE html><html><head><title>Article Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Article Not Found</h1><p style="color:#94a3b8;">The article you are looking for does not exist or has been relocated.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
+if (rows.length === 0 || rows[0]?.deleted_at) {
+            res.set('Content-Type', 'text/html; charset=utf-8');
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            return res.status(410).send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>410 Gone — Article Removed | Sabbir Hasan</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;">
+    <h1 style="font-size:2.2rem; margin-bottom:1rem; color:#fff;">410 — Article Removed</h1>
+    <p style="color:#94a3b8; max-width:520px; margin:0 auto 1.5rem; line-height:1.6;">This publication has been permanently removed and is no longer available.</p>
+    <a href="/" style="display:inline-block; padding:0.75rem 1.5rem; background:rgba(200,255,0,0.1); border:1px solid #c8ff00; border-radius:8px; color:#c8ff00; text-decoration:none; font-weight:700;">← Return to Home</a>
+</body>
+</html>`);
         }
 
         const post = rows[0];
-        if (post.deleted_at) {
-            return res.status(404).send('<!DOCTYPE html><html><head><title>Article Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Article Not Available</h1><p style="color:#94a3b8;">This article has been moved to trash or is no longer published.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
-        }
 
         // Fetch related posts from same category
         let relatedPosts = [];

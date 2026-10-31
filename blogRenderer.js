@@ -204,7 +204,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <title>${pageTitle}</title>
     <meta name="description" content="${escapeHtml(pageDesc)}">
     <meta name="author" content="Sabbir Hasan">
-    ${(currentPage > 1 || Boolean(currentCategory)) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
+    ${(currentPage > 1 || Boolean(currentCategory) || totalPosts < 5) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
     <link rel="canonical" href="${canonicalUrl}">
     ${prevPageUrl ? `<link rel="prev" href="${siteUrl}${prevPageUrl}">` : ''}
     ${nextPageUrl ? `<link rel="next" href="${siteUrl}${nextPageUrl}">` : ''}
