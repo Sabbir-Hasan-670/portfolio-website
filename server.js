@@ -21,6 +21,7 @@ const {
 const path = require('path');
 const multer = require('multer');
 const mammoth = require('mammoth');
+const sharp = require('sharp');
 const nodemailer = require('nodemailer');
 const session = require('express-session');
 const fs = require('fs');
@@ -2329,6 +2330,47 @@ app.post('/api/admin/blog/approve-all', requireAuth, async (req, res) => {
 // =========================================================================
 // WORD DOCUMENT (.DOCX) IMPORT FOR BLOG
 // =========================================================================
+// WORD DOCUMENT (.DOCX) IMPORT & CONTENT OPTIMIZER FOR BLOG
+// =========================================================================
+function optimizeWordHtml(rawHtml) {
+    if (!rawHtml) return '';
+    let html = rawHtml;
+
+    // 1. Strip zero-width and invisible control characters
+    html = html.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
+
+    // 2. Remove Word-specific inline styles and non-blog classes
+    html = html.replace(/\s*style="[^"]*"/gi, '');
+    html = html.replace(/\s*class="(?!blog-)[^"]*"/gi, '');
+
+    // 3. Remove useless empty spans
+    html = html.replace(/<span>([\s\S]*?)<\/span>/gi, '$1');
+
+    // 4. Remove empty paragraphs or paragraphs with only whitespace or &nbsp;
+    html = html.replace(/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '');
+
+    // 5. Clean consecutive <br>
+    html = html.replace(/(<br\s*\/?>\s*){2,}/gi, '<br/>');
+
+    // 6. Wrap tables in responsive div
+    html = html.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (match) => {
+        return `<div class="table-responsive" style="overflow-x:auto; margin:16px 0;">${match}</div>`;
+    });
+
+    // 7. External link security
+    html = html.replace(/<a\s+href="([^"]+)"([^>]*)>([\s\S]*?)<\/a>/gi, (match, href, rest, text) => {
+        if ((href.startsWith('http://') || href.startsWith('https://')) && !href.includes('sabbirhasan.com')) {
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer"${rest}>${text}</a>`;
+        }
+        return match;
+    });
+
+    // 8. Collapse excessive whitespace between tags
+    html = html.replace(/>\s{2,}</g, '> <').trim();
+
+    return html;
+}
+
 app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'Please select a Word (.docx) file to upload.' });
@@ -2342,59 +2384,97 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
 
     try {
         const extractedImages = [];
+        let totalOriginalBytes = 0;
+        let totalOptimizedBytes = 0;
+
         const mammothOptions = {
             convertImage: mammoth.images.imgElement(async (image) => {
                 try {
-                    const buffer = await image.read();
-                    let imgExt = 'png';
-                    if (image.contentType) {
-                        if (image.contentType.includes('jpeg') || image.contentType.includes('jpg')) imgExt = 'jpg';
-                        else if (image.contentType.includes('png')) imgExt = 'png';
-                        else if (image.contentType.includes('webp')) imgExt = 'webp';
-                        else if (image.contentType.includes('gif')) imgExt = 'gif';
+                    const rawBuffer = await (image.readAsBuffer ? image.readAsBuffer() : image.read());
+                    if (!rawBuffer || rawBuffer.length === 0) return { src: '' };
+
+                    totalOriginalBytes += rawBuffer.length;
+
+                    // Compress & optimize with Sharp to lightweight WebP (max width 1200, quality 78)
+                    let finalBuffer;
+                    let outExt = 'webp';
+                    try {
+                        finalBuffer = await sharp(rawBuffer)
+                            .rotate()
+                            .resize({
+                                width: 1200,
+                                height: 1200,
+                                fit: 'inside',
+                                withoutEnlargement: true
+                            })
+                            .webp({ quality: 78, effort: 5 })
+                            .toBuffer();
+                    } catch (sharpErr) {
+                        console.warn('Sharp optimization fallback:', sharpErr.message);
+                        finalBuffer = rawBuffer;
+                        outExt = 'png';
+                        if (image.contentType && image.contentType.includes('jpeg')) outExt = 'jpg';
                     }
-                    const imgName = `word_img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${imgExt}`;
+
+                    totalOptimizedBytes += finalBuffer.length;
+
+                    const imgName = `word_img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${outExt}`;
                     const targetPath = path.join(__dirname, 'public/uploads', imgName);
-                    fs.writeFileSync(targetPath, buffer);
+                    fs.writeFileSync(targetPath, finalBuffer);
+
                     const publicUrl = `/uploads/${imgName}`;
-                    extractedImages.push(publicUrl);
-                    return { src: publicUrl };
+                    extractedImages.push({
+                        url: publicUrl,
+                        originalSize: rawBuffer.length,
+                        optimizedSize: finalBuffer.length
+                    });
+
+                    return {
+                        src: publicUrl,
+                        loading: 'lazy',
+                        decoding: 'async',
+                        class: 'blog-docx-img',
+                        style: 'max-width:100%; height:auto; border-radius:8px; margin:18px 0; display:block;'
+                    };
                 } catch (imgErr) {
-                    console.error("Failed to extract Word image:", imgErr);
+                    console.error("Failed to extract & optimize Word image:", imgErr);
                     return { src: '' };
                 }
             })
         };
 
         const result = await mammoth.convertToHtml({ path: req.file.path }, mammothOptions);
-        let htmlContent = (result.value || '').trim();
+        let rawHtml = (result.value || '').trim();
 
-        // Remove temporary uploaded docx file
+        // Remove temporary uploaded docx file from disk
         try { fs.unlinkSync(req.file.path); } catch(e) {}
 
-        if (!htmlContent) {
+        if (!rawHtml) {
             return res.status(400).json({ error: 'The uploaded Word document appears to be empty.' });
         }
 
         // Title Extraction
         let title = (req.body.title || '').trim();
         if (!title) {
-            const h1Match = htmlContent.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+            const h1Match = rawHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
             if (h1Match) {
                 title = stripHtml(h1Match[1]).trim();
-                htmlContent = htmlContent.replace(h1Match[0], '').trim();
+                rawHtml = rawHtml.replace(h1Match[0], '').trim();
             } else {
-                const pMatch = htmlContent.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+                const pMatch = rawHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
                 if (pMatch && stripHtml(pMatch[1]).trim().length > 0 && stripHtml(pMatch[1]).trim().length < 100) {
                     title = stripHtml(pMatch[1]).trim();
-                    htmlContent = htmlContent.replace(pMatch[0], '').trim();
+                    rawHtml = rawHtml.replace(pMatch[0], '').trim();
                 } else {
                     title = path.basename(req.file.originalname, ext).replace(/[-_]+/g, ' ').trim();
                 }
             }
         }
 
-        const coverImage = extractedImages.length > 0 ? extractedImages[0] : '';
+        // Clean and optimize HTML markup
+        const htmlContent = optimizeWordHtml(rawHtml);
+
+        const coverImage = extractedImages.length > 0 ? extractedImages[0].url : '';
         const category = (req.body.category || 'Networking').trim();
         const tags = (req.body.tags || '').trim();
         const customSlug = (req.body.custom_slug || '').trim();
@@ -2405,11 +2485,18 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
         const metaDesc = excerpt;
         const status = req.body.status || 'published';
 
+        const savedPercentage = totalOriginalBytes > 0
+            ? Math.max(0, Math.round((1 - (totalOptimizedBytes / totalOriginalBytes)) * 100))
+            : 0;
+
+        console.log(`[Word Import] "${title}" processed: ${extractedImages.length} images, Original ${totalOriginalBytes}B -> Optimized ${totalOptimizedBytes}B (${savedPercentage}% saved)`);
+
         // Check if user requested preview/load-into-editor
         if (req.body.action === 'preview') {
             return res.json({
                 success: true,
                 preview: true,
+                savedPercentage,
                 data: {
                     title,
                     slug: finalSlug,
@@ -2438,11 +2525,12 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
 
         return res.json({
             success: true,
-            message: 'Word document successfully imported and published!',
+            message: 'Word document successfully imported, optimized, and published!',
             blogId: insertResult.insertId,
             slug: finalSlug,
             title: title,
-            imagesCount: extractedImages.length
+            imagesCount: extractedImages.length,
+            savedPercentage
         });
     } catch (err) {
         console.error("Word Document Import Error:", err);

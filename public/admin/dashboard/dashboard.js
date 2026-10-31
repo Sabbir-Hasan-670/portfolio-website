@@ -1210,36 +1210,51 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     fetchAdminBlogs();
 
-    // DIRECT WORD (.DOCX) IMPORT
-    const wordForm = document.getElementById('word-import-form');
-    const wordStatusDiv = document.getElementById('word-import-status');
-    const btnWordPublish = document.getElementById('btn-word-publish');
-    const btnWordPreview = document.getElementById('btn-word-preview');
-
-    const handleWordImport = async (action) => {
+    // DIRECT WORD (.DOCX) IMPORT & CONTENT OPTIMIZER
+    window.handleWordImport = async function(action) {
+        console.log('[Word Import] Triggered action:', action);
         const fileInput = document.getElementById('word-file');
+        const wordStatusDiv = document.getElementById('word-import-status');
+        const btnWordPublish = document.getElementById('btn-word-publish');
+        const btnWordPreview = document.getElementById('btn-word-preview');
+
+        const notify = (msg, type) => {
+            if (typeof window.showToast === 'function') {
+                window.showToast(msg, type);
+            } else {
+                alert(msg);
+            }
+        };
+
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-            window.showToast('Please select a .docx Word document first.', 'error');
+            notify('Please select a .docx Word document first.', 'error');
+            if (fileInput) fileInput.focus();
+            return;
+        }
+
+        const file = fileInput.files[0];
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+            notify('Invalid format. Only Microsoft Word (.docx) documents are supported.', 'error');
             return;
         }
 
         const formData = new FormData();
-        formData.append('word_file', fileInput.files[0]);
+        formData.append('word_file', file);
         formData.append('custom_slug', document.getElementById('word-slug')?.value || '');
         formData.append('tags', document.getElementById('word-tags')?.value || '');
         formData.append('category', document.getElementById('word-category')?.value || 'Networking');
         formData.append('status', document.getElementById('word-status')?.value || 'published');
         formData.append('action', action);
 
-        const originalPublishText = btnWordPublish ? btnWordPublish.innerHTML : '';
-        const originalPreviewText = btnWordPreview ? btnWordPreview.innerHTML : '';
+        const origPublishHtml = btnWordPublish ? btnWordPublish.innerHTML : '';
+        const origPreviewHtml = btnWordPreview ? btnWordPreview.innerHTML : '';
         if (btnWordPublish) btnWordPublish.disabled = true;
         if (btnWordPreview) btnWordPreview.disabled = true;
 
         if (action === 'publish' && btnWordPublish) {
-            btnWordPublish.innerHTML = '<span>⏳</span> Uploading & Extracting...';
+            btnWordPublish.innerHTML = '<span>⏳</span> Compressing & Publishing...';
         } else if (action === 'preview' && btnWordPreview) {
-            btnWordPreview.innerHTML = '<span>⏳</span> Extracting Content...';
+            btnWordPreview.innerHTML = '<span>⏳</span> Extracting & Optimizing...';
         }
 
         if (wordStatusDiv) {
@@ -1247,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             wordStatusDiv.style.background = 'rgba(56, 189, 248, 0.1)';
             wordStatusDiv.style.border = '1px solid rgba(56, 189, 248, 0.3)';
             wordStatusDiv.style.color = '#38bdf8';
-            wordStatusDiv.innerHTML = '⏳ Reading Word document, extracting embedded images, formatting hyperlinks and structure...';
+            wordStatusDiv.innerHTML = '⏳ Reading Word docx, compressing photos to WebP, optimizing clean semantic HTML...';
         }
 
         try {
@@ -1256,7 +1271,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const data = await response.json();
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.success) {
                 throw new Error(data.error || 'Failed to import Word document.');
@@ -1277,20 +1297,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     wordStatusDiv.style.background = 'rgba(16, 185, 129, 0.15)';
                     wordStatusDiv.style.border = '1px solid rgba(16, 185, 129, 0.35)';
                     wordStatusDiv.style.color = '#34d399';
-                    wordStatusDiv.innerHTML = `✅ <strong>Word Document extracted successfully!</strong> (${d.images_count} images extracted). Content loaded into the manual editor below for your review.`;
+                    wordStatusDiv.innerHTML = `✅ <strong>Word Document extracted & optimized!</strong><br>
+                    📸 ${d.images_count} images compressed to WebP (${data.savedPercentage || 0}% file size saved).<br>
+                    📝 HTML cleaned & loaded into manual editor below.`;
                 }
-                window.showToast('Word content loaded into editor!', 'success');
+                notify('Word content extracted & loaded into editor!', 'success');
                 document.getElementById('blog-form')?.scrollIntoView({ behavior: 'smooth' });
             } else {
                 if (wordStatusDiv) {
                     wordStatusDiv.style.background = 'rgba(16, 185, 129, 0.15)';
                     wordStatusDiv.style.border = '1px solid rgba(16, 185, 129, 0.35)';
                     wordStatusDiv.style.color = '#34d399';
-                    wordStatusDiv.innerHTML = `🎉 <strong>Article Published!</strong> Title: "<em>${data.title}</em>" with ${data.imagesCount} embedded images.<br>🔗 <a href="/blog/${data.slug}" target="_blank" style="color:#38bdf8; text-decoration:underline; font-weight:600; margin-top:5px; display:inline-block;">View Live Post: /blog/${data.slug} ↗</a>`;
+                    wordStatusDiv.innerHTML = `🎉 <strong>Article Published & Optimized!</strong><br>
+                    📌 Title: "<em>${data.title}</em>"<br>
+                    📸 ${data.imagesCount} images compressed to WebP (${data.savedPercentage || 0}% file size saved).<br>
+                    🔗 <a href="/blog/${data.slug}" target="_blank" style="color:#38bdf8; text-decoration:underline; font-weight:700; margin-top:8px; display:inline-block; font-size:1rem;">👉 Click Here to View Live Post: /blog/${data.slug} ↗</a>`;
                 }
-                wordForm?.reset();
-                window.showToast('Article published directly from Word!', 'success');
-                if (typeof fetchAdminBlogs === 'function') fetchAdminBlogs();
+                document.getElementById('word-import-form')?.reset();
+                notify('Article published directly from Word!', 'success');
+                if (typeof window.fetchAdminBlogs === 'function') window.fetchAdminBlogs();
             }
         } catch (err) {
             console.error('Word Import Error:', err);
@@ -1300,27 +1325,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 wordStatusDiv.style.color = '#f87171';
                 wordStatusDiv.innerHTML = `❌ Error: ${err.message}`;
             }
-            window.showToast(err.message, 'error');
+            notify(err.message, 'error');
         } finally {
             if (btnWordPublish) {
                 btnWordPublish.disabled = false;
-                btnWordPublish.innerHTML = originalPublishText;
+                btnWordPublish.innerHTML = origPublishHtml;
             }
             if (btnWordPreview) {
                 btnWordPreview.disabled = false;
-                btnWordPreview.innerHTML = originalPreviewText;
+                btnWordPreview.innerHTML = origPreviewHtml;
             }
         }
     };
 
-    wordForm?.addEventListener('submit', (e) => {
+    const wordFormEl = document.getElementById('word-import-form');
+    if (wordFormEl) {
+        wordFormEl.addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.handleWordImport('publish');
+        });
+    }
+    document.getElementById('btn-word-publish')?.addEventListener('click', (e) => {
         e.preventDefault();
-        handleWordImport('publish');
+        window.handleWordImport('publish');
     });
-
-    btnWordPreview?.addEventListener('click', (e) => {
+    document.getElementById('btn-word-preview')?.addEventListener('click', (e) => {
         e.preventDefault();
-        handleWordImport('preview');
+        window.handleWordImport('preview');
     });
 
     document.getElementById('blog-form')?.addEventListener('submit', async (e) => {
