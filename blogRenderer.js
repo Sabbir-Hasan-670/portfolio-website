@@ -122,11 +122,11 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
     const pageTitle = displayCategory 
         ? `${escapeHtml(displayCategory)} Articles (Page ${currentPage}) | Sabbir Hasan`
-        : (currentPage > 1 ? `Latest Articles — Page ${currentPage} | Sabbir Hasan Blog` : `Blog & Resources | Sabbir Hasan`);
+        : (currentPage > 1 ? `Latest Articles — Page ${currentPage} | Sabbir Hasan Blog` : `Blog | Sabbir Hasan — Networking, Cybersecurity & Tech Articles`);
 
     const pageDesc = displayCategory
         ? `Read in-depth ${escapeHtml(displayCategory)} tutorials, articles and practical guides by Sabbir Hasan.`
-        : `Read actionable articles and guides by Sabbir Hasan on digital marketing, social media marketing, logo design, branding, and networking for businesses worldwide.`;
+        : `Read latest technical articles by Sabbir Hasan on CCNA networking, cybersecurity, full-stack web development, and Linux administration from Bangladesh.`;
 
     const prevPageUrl = currentPage > 1
         ? (currentCategory ? `/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${currentPage - 1}` : `/blog/page/${currentPage - 1}`)
@@ -272,33 +272,21 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
                 <a href="/" class="nav-logo">SH.</a>
-                                <div class="nav-links" id="navLinks">
+                <div class="nav-links" id="navLinks">
                     <a href="/" class="nav-visible-btn">Home</a>
-                    <div class="nav-dropdown-item" style="position:relative; display:inline-block;">
-                        <a href="/social-media-marketing" class="nav-visible-btn">Services ▾</a>
-                        <div class="nav-dropdown-menu" style="display:none; position:absolute; top:100%; left:0; background:#0b1120; border:1px solid #1e293b; border-radius:8px; padding:8px 0; min-width:220px; z-index:1000; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
-                            <a href="/social-media-marketing" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Social Media Marketing</a>
-                            <a href="/graphic-design" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Graphic Design</a>
-                            <a href="/logo-design" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Logo Design</a>
-                            <a href="/digital-marketing" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Digital Marketing</a>
-                            <a href="/networking" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Networking</a>
-                        </div>
-                    </div>
-                    <a href="/portfolio" class="nav-visible-btn">Portfolio</a>
-                    <a href="/blog" class="nav-visible-btn" style="color:var(--lime,#38bdf8);">Blog</a>
                     <a href="/about" class="nav-visible-btn">About</a>
+                    <a href="/resume" class="nav-visible-btn">Resume</a>
+                    <a href="/blog" class="nav-visible-btn" style="color:var(--lime);">Blog</a>
+                    <a href="/tools" class="nav-visible-btn">Tools</a>
                     <a href="/contact" class="nav-cta">Contact</a>
                     <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
                     <div class="nav-menu-dropdown" id="navDropdown">
-                        <a href="/">Home</a>
-                        <a href="/social-media-marketing">Social Media Marketing</a>
-                        <a href="/graphic-design">Graphic Design</a>
-                        <a href="/logo-design">Logo Design</a>
-                        <a href="/digital-marketing">Digital Marketing</a>
-                        <a href="/networking">Networking</a>
-                        <a href="/portfolio">Portfolio</a>
-                        <a href="/blog">Blog</a>
                         <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/#projects">Projects</a>
+                        <a href="/#experience">Experience</a>
+                        <a href="/#education">Education</a>
+                        <a href="/tools">Interactive Tools</a>
                         <a href="/contact" class="nav-cta">Let's Talk</a>
                     </div>
                 </div>
@@ -307,9 +295,9 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
         <main class="blog-listing-section">
             <header class="blog-hero-header reveal active">
-                <div class="blog-eyebrow"><span class="blog-dot"></span> ${displayCategory ? 'CATEGORY ARCHIVE' : 'ARTICLES &amp; GUIDES'}</div>
-                <h1 class="blog-hero-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Insights, Guides &amp; <span>Resources</span>'}</h1>
-                <p class="blog-hero-desc">${displayCategory ? 'Practical tutorials and breakdowns filed under ' + escapeHtml(displayCategory) + '.' : 'Actionable guides and strategies on digital marketing, social media growth, custom logo design, branding, and networking for worldwide clients.'}</p>
+                <div class="blog-eyebrow"><span class="blog-dot"></span> ${displayCategory ? 'CATEGORY ARCHIVE' : 'ENGINEERING NOTES'}</div>
+                <h1 class="blog-hero-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Technical <span>Articles</span> &amp; Guides'}</h1>
+                <p class="blog-hero-desc">${displayCategory ? 'Practical tutorials and lab breakdowns filed under ' + escapeHtml(displayCategory) + '.' : 'CCNA network guides, cybersecurity defense, Linux administration, and full-stack engineering notes.'}</p>
             </header>
 
             <!-- SEARCH & FILTERS -->
@@ -347,25 +335,23 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
                             <span class="footer-logo-badge">SH.</span>
                             <span class="footer-brand-title">Sabbir Hasan</span>
                         </a>
-                        <span class="footer-status-tag">Freelance Specialist</span>
+                        <span class="footer-status-tag">Systems &amp; Full-Stack</span>
                     </div>
                     <p class="blog-footer-copy">
                         &copy; <span id="year">${new Date().getFullYear()}</span> Sabbir Hasan. All rights reserved.
                         <span class="copy-sep">·</span>
-                        <span class="copy-desc">Freelance Digital Marketer &amp; Graphic Designer &bull; Worldwide Clients</span>
+                        <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
                     </p>
                 </div>
 
                 <div class="blog-footer-right">
-                                        <nav class="blog-footer-nav" aria-label="Footer navigation">
+                    <nav class="blog-footer-nav" aria-label="Footer navigation">
                         <a href="/">Home</a>
-                        <a href="/social-media-marketing">Services</a>
-                        <a href="/portfolio">Portfolio</a>
-                        <a href="/blog">Blog</a>
                         <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/blog">Blog</a>
+                        <a href="/tools">Tools</a>
                         <a href="/contact">Contact</a>
-                        <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="me noopener">LinkedIn</a>
-                        <a href="mailto:contact@sabbirhasan.com">Email</a>
                     </nav>
                     <a href="#top" class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" title="Scroll to top" aria-label="Back to top">
                         <span>Top</span> ↑
@@ -586,9 +572,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
         "@id": "${siteUrl}/#person",
         "name": "Sabbir Hasan",
         "url": "${siteUrl}/",
-        "jobTitle": "Freelance Digital Marketer & Graphic Designer",
-      "knowsAbout": ["Digital Marketing", "Social Media Marketing", "Graphic Design", "Logo Design", "Networking", "Learning Cyber Security"],
-      "sameAs": ["https://www.linkedin.com/in/sabbir670/"]
+        "jobTitle": "Network Engineer & Full-Stack Developer"
       },
       "publisher": {
         "@id": "${siteUrl}/#person"
@@ -650,33 +634,21 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
                 <a href="/" class="nav-logo">SH.</a>
-                                <div class="nav-links" id="navLinks">
+                <div class="nav-links" id="navLinks">
                     <a href="/" class="nav-visible-btn">Home</a>
-                    <div class="nav-dropdown-item" style="position:relative; display:inline-block;">
-                        <a href="/social-media-marketing" class="nav-visible-btn">Services ▾</a>
-                        <div class="nav-dropdown-menu" style="display:none; position:absolute; top:100%; left:0; background:#0b1120; border:1px solid #1e293b; border-radius:8px; padding:8px 0; min-width:220px; z-index:1000; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
-                            <a href="/social-media-marketing" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Social Media Marketing</a>
-                            <a href="/graphic-design" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Graphic Design</a>
-                            <a href="/logo-design" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Logo Design</a>
-                            <a href="/digital-marketing" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Digital Marketing</a>
-                            <a href="/networking" style="display:block; padding:8px 16px; color:#cbd5e1; text-decoration:none; font-size:14px;">Networking</a>
-                        </div>
-                    </div>
-                    <a href="/portfolio" class="nav-visible-btn">Portfolio</a>
-                    <a href="/blog" class="nav-visible-btn" style="color:var(--lime,#38bdf8);">Blog</a>
                     <a href="/about" class="nav-visible-btn">About</a>
+                    <a href="/resume" class="nav-visible-btn">Resume</a>
+                    <a href="/blog" class="nav-visible-btn" style="color:var(--lime);">Blog</a>
+                    <a href="/tools" class="nav-visible-btn">Tools</a>
                     <a href="/contact" class="nav-cta">Contact</a>
                     <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
                     <div class="nav-menu-dropdown" id="navDropdown">
-                        <a href="/">Home</a>
-                        <a href="/social-media-marketing">Social Media Marketing</a>
-                        <a href="/graphic-design">Graphic Design</a>
-                        <a href="/logo-design">Logo Design</a>
-                        <a href="/digital-marketing">Digital Marketing</a>
-                        <a href="/networking">Networking</a>
-                        <a href="/portfolio">Portfolio</a>
-                        <a href="/blog">Blog</a>
                         <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/#projects">Projects</a>
+                        <a href="/#experience">Experience</a>
+                        <a href="/#education">Education</a>
+                        <a href="/tools">Interactive Tools</a>
                         <a href="/contact" class="nav-cta">Let's Talk</a>
                     </div>
                 </div>
@@ -723,7 +695,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                         <div class="author-meta-info">
                             <div class="author-name-row">
                                 <a href="/about" class="author-name-link" rel="author">Sabbir Hasan</a>
-                                <span class="author-role-chip">Freelance Digital Marketer &amp; Graphic Designer</span>
+                                <span class="author-role-chip">Network Engineer &amp; Developer</span>
                             </div>
                             <div class="article-pub-dates">
                                 <span>📅 Published <time datetime="${publishedIso}" itemprop="datePublished">${formattedPublishedDate}</time></span>
@@ -802,27 +774,26 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                                     </div>
                                 </div>
                                 <div class="author-bio-content">
-                                    <div class="author-bio-eyebrow">ABOUT THE AUTHOR</div>
+                                    <div class="author-bio-eyebrow">ENGINEERING PROFILE</div>
                                     <h3 class="author-bio-name" itemprop="name">
                                         Sabbir Hasan <span class="bio-verified-check">✓</span>
                                     </h3>
                                     <p class="author-bio-tagline">CCNA-Trained Network Engineer · Full-Stack Developer · Cybersecurity Enthusiast</p>
                                     <p class="author-bio-text" itemprop="description">
-                                        Sabbir Hasan is a freelance digital marketer, graphic designer, and networking professional working with clients worldwide. Helping brands scale through strategic social media marketing, bespoke logo design, memorable visual identity, and robust network setup. Currently learning Cyber Security.
+                                        Computer Science graduate and IT professional bridging the gap between secure network engineering and full-stack software development. Specialized in Cisco enterprise configurations, packet analysis, cybersecurity practices, and resilient Node.js architectures.
                                     </p>
                                     <div class="author-bio-skills">
-                                        <span class="skill-tag">Digital Marketing</span>
-                                        <span class="skill-tag">Social Media Marketing</span>
-                                        <span class="skill-tag">Graphic Design</span>
-                                        <span class="skill-tag">Logo Design</span>
-                                        <span class="skill-tag">Networking</span>
-                                        <span class="skill-tag">Learning Cyber Security</span>
+                                        <span class="skill-tag">Cisco CCNA 200-301</span>
+                                        <span class="skill-tag">Network Architecture</span>
+                                        <span class="skill-tag">Node.js &amp; Express</span>
+                                        <span class="skill-tag">Linux Server Admin</span>
+                                        <span class="skill-tag">Cybersecurity Defense</span>
                                     </div>
                                     <div class="author-bio-links">
-                                        <a href="/about" class="author-link-btn">About Sabbir</a>
-                                        <a href="/portfolio" class="author-resume-btn">View Portfolio</a>
-                                        <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="me noopener" class="author-social-link">LinkedIn</a>
-                                        <a href="mailto:contact@sabbirhasan.com" class="author-social-link">Email</a>
+                                        <a href="/about" class="author-link-btn">Full Biography &amp; Story →</a>
+                                        <a href="/resume" class="author-resume-btn">Inspect Executive CV</a>
+                                        <a href="https://github.com/Sabbir-Hasan-670" target="_blank" rel="noopener noreferrer" class="author-social-link">GitHub</a>
+                                        <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="noopener noreferrer" class="author-social-link">LinkedIn</a>
                                     </div>
                                 </div>
                             </div>
@@ -852,11 +823,11 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                 <div class="cta-banner-inner">
                     <div class="cta-banner-glow"></div>
                     <div class="cta-eyebrow"><span class="cta-dot"></span> LET'S COLLABORATE</div>
-                    <h2 class="cta-title">Need Digital Marketing, Graphic Design, or Networking?</h2>
-                    <p class="cta-desc">Whether you need high-impact social media management, a custom business logo, brand identity, or reliable network configuration, I help clients worldwide achieve measurable growth.</p>
+                    <h2 class="cta-title">Have a Network Architecture or Web Engineering Challenge?</h2>
+                    <p class="cta-desc">Whether you need enterprise network topology design, security hardening, or high-performance full-stack web platforms, let's explore technical solutions together.</p>
                     <div class="cta-actions">
-                        <a href="/contact" class="cta-btn-primary">Hire Me / Get a Quote →</a>
-                        <a href="/social-media-marketing" class="cta-btn-secondary">Explore Services</a>
+                        <a href="/contact" class="cta-btn-primary">Start a Conversation →</a>
+                        <a href="/resume" class="cta-btn-secondary">Review Executive Resume</a>
                     </div>
                 </div>
             </section>
@@ -879,25 +850,23 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                             <span class="footer-logo-badge">SH.</span>
                             <span class="footer-brand-title">Sabbir Hasan</span>
                         </a>
-                        <span class="footer-status-tag">Freelance Specialist</span>
+                        <span class="footer-status-tag">Systems &amp; Full-Stack</span>
                     </div>
                     <p class="blog-footer-copy">
                         &copy; <span id="year">${new Date().getFullYear()}</span> Sabbir Hasan. All rights reserved.
                         <span class="copy-sep">·</span>
-                        <span class="copy-desc">Freelance Digital Marketer &amp; Graphic Designer &bull; Worldwide Clients</span>
+                        <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
                     </p>
                 </div>
 
                 <div class="blog-footer-right">
-                                        <nav class="blog-footer-nav" aria-label="Footer navigation">
+                    <nav class="blog-footer-nav" aria-label="Footer navigation">
                         <a href="/">Home</a>
-                        <a href="/social-media-marketing">Services</a>
-                        <a href="/portfolio">Portfolio</a>
-                        <a href="/blog">Blog</a>
                         <a href="/about">About</a>
+                        <a href="/resume">Resume</a>
+                        <a href="/blog">Blog</a>
+                        <a href="/tools">Tools</a>
                         <a href="/contact">Contact</a>
-                        <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="me noopener">LinkedIn</a>
-                        <a href="mailto:contact@sabbirhasan.com">Email</a>
                     </nav>
                     <a href="#top" class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" title="Scroll to top" aria-label="Back to top">
                         <span>Top</span> ↑
