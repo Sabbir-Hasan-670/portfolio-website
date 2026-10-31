@@ -172,6 +172,9 @@ app.get('/sitemap.xml', async (req, res) => {
         { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly'  },
         { loc: `${host}/social-media-marketing`, priority: '0.9', changefreq: 'weekly' },
         { loc: `${host}/digital-marketing`, priority: '0.9', changefreq: 'weekly' },
+        { loc: `${host}/graphic-design`, priority: '0.9', changefreq: 'weekly' },
+        { loc: `${host}/logo-design`, priority: '0.9', changefreq: 'weekly' },
+        { loc: `${host}/networking`, priority: '0.9', changefreq: 'weekly' },
         { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'daily'   },
@@ -503,6 +506,18 @@ app.get('/social-media-marketing', (req, res) => {
 
 app.get('/digital-marketing', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/digital-marketing.html'));
+});
+
+app.get('/graphic-design', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/graphic-design.html'));
+});
+
+app.get('/logo-design', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/logo-design.html'));
+});
+
+app.get('/networking', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/networking.html'));
 });
 
 app.get('/about', (req, res) => {
