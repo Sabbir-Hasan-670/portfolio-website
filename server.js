@@ -622,7 +622,11 @@ app.get('/tools/dev-utilities', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/tools/dev-utilities.html'));
 });
 
-// Learn Sections (Case-Insensitive Route Handlers for Linux)
+// Learn Sections (Case-Insensitive Static Assets & Route Handlers for Linux)
+app.use(['/learn/learn-ccna', '/Learn/Learn-CCNA'], express.static(path.join(__dirname, 'public/Learn/Learn-CCNA'), { maxAge: '30d' }));
+app.use(['/learn/learn-js', '/Learn/Learn-JS'], express.static(path.join(__dirname, 'public/Learn/Learn-JS'), { maxAge: '30d' }));
+app.use(['/learn/learn-mysql', '/Learn/Learn-MySQL'], express.static(path.join(__dirname, 'public/Learn/Learn-MySQL'), { maxAge: '30d' }));
+app.use(['/learn/learn-english', '/Learn/Learn-English'], express.static(path.join(__dirname, 'public/Learn/Learn-English'), { maxAge: '30d' }));
 app.get(['/learn/learn-ccna/learn-ccna', '/Learn/Learn-CCNA/learn-ccna'], (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/Learn/Learn-CCNA/learn-ccna.html'));
 });

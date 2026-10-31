@@ -53,6 +53,11 @@
         "@id": "https://sabbirhasan.com/#person",
         "name": "Sabbir Hasan",
         "url": "https://sabbirhasan.com/"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
       }
     }
     </script>
@@ -433,12 +438,17 @@
                         </tbody>
                     </table>
                 </div>
+
+                <h3 style="color: var(--lime); font-size: 1.15rem; margin: 2rem 0 0.8rem 0;">Frequently Asked Subnetting Questions</h3>
+                <p><strong>What is a wildcard mask?</strong> A wildcard mask is the bitwise inverse of a subnet mask, commonly used in Cisco Access Control Lists (ACLs) and OSPF network statements. For example, a <code>/24</code> subnet mask of <code>255.255.255.0</code> has an inverse wildcard mask of <code>0.0.0.255</code>.</p>
+                <p><strong>Why are two addresses reserved?</strong> In every IPv4 subnet, the first address represents the Network Identifier and the last address represents the Broadcast Address for all hosts on that wire. Neither can be assigned to an endpoint.</p>
+                <p><strong>What is the difference between VLSM and FLSM?</strong> Variable-Length Subnet Masking (VLSM) allows network engineers to subdivide an IP space into differently sized subnets according to host requirements, preventing address waste across point-to-point links.</p>
             </article>
         </main>
 
         <footer class="footer">
             <div class="footer-inner">
-                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
+                <p>&copy; <span id="year">2026</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
                 <div class="footer-links">
                     <a href="/">Home</a>
                     <a href="/about">About</a>

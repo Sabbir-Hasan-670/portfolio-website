@@ -25,7 +25,27 @@
     <meta name="twitter:description" content="Free, secure, client-side JSON formatting, Base64 conversion, and URL encoding utilities.">
     <meta name="twitter:image" content="https://sabbirhasan.com/og-image.png">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"WebApplication","name":"Developer Utilities","url":"https://sabbirhasan.com/tools/dev-utilities","applicationCategory":"DeveloperApplication","operatingSystem":"All","description":"Client-side utilities for JSON formatting, Base64 conversion, and URL encoding.","author":{"@type":"Person","@id":"https://sabbirhasan.com/#person","name":"Sabbir Hasan","url":"https://sabbirhasan.com/"}}
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Developer Utilities",
+      "url": "https://sabbirhasan.com/tools/dev-utilities",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript",
+      "description": "Client-side utilities for JSON formatting, Base64 conversion, and URL encoding.",
+      "author": {
+        "@type": "Person",
+        "@id": "https://sabbirhasan.com/#person",
+        "name": "Sabbir Hasan",
+        "url": "https://sabbirhasan.com/"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
     </script>
 
     <!-- ===== THEME & FAVICON ===== -->
@@ -235,11 +255,37 @@
                 </div>
                 <div id="urlStatus" class="util-status"></div>
             </div>
+
+            <!-- EDUCATIONAL GUIDE -->
+            <section style="margin-top: 3.5rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+                <h2 style="font-family:'Syne',sans-serif; color:var(--text1); font-size:1.35rem; margin-bottom:1rem;">How These Utilities Work</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.5rem; color:var(--text2); font-size:0.92rem; line-height:1.6;">
+                    <div>
+                        <h3 style="color:var(--lime); font-size:1rem; margin-bottom:0.5rem;">JSON Formatter &amp; Validator</h3>
+                        <p>Paste any compact, minified, or disorganized JSON payload to format it with two or four spaces of indentation. Syntax errors are caught immediately with line and column position indicators for rapid debugging.</p>
+                    </div>
+                    <div>
+                        <h3 style="color:var(--lime); font-size:1rem; margin-bottom:0.5rem;">Base64 Conversion</h3>
+                        <p>Convert raw UTF-8 strings into Base64 format or decode encoded authentication headers and data payloads directly. This is useful for inspection of tokens, basic authentication headers, and serialized parameters.</p>
+                    </div>
+                    <div>
+                        <h3 style="color:var(--lime); font-size:1rem; margin-bottom:0.5rem;">URL Encoding &amp; Privacy</h3>
+                        <p>Safely encode query string parameters to conform with RFC 3986 URI standards, preventing malformed requests. All processing is 100% private and executes in your browser sandbox without any network calls.</p>
+                    </div>
+                </div>
+            
+                <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.06); font-size:0.92rem; color:var(--text2); line-height:1.6;">
+                    <h3 style="color:var(--lime); font-size:1.05rem; margin-bottom:0.6rem;">Technical Standards &amp; RFC Compliance</h3>
+                    <p style="margin-bottom:0.6rem;"><strong>JSON (JavaScript Object Notation):</strong> Formatted according to RFC 8259 specifications, supporting nested objects, arrays, string primitives, numeric values, booleans, and null types with automatic syntax tree validation.</p>
+                    <p style="margin-bottom:0.6rem;"><strong>Base64 Data Encoding:</strong> Complies with RFC 4648 standard base64 alphabet, utilizing padding characters (=) where necessary for accurate binary-to-text representation across networks.</p>
+                    <p><strong>Percent-Encoding (URL Encoding):</strong> Adheres to RFC 3986 for uniform resource identifiers, ensuring reserved characters are safely encoded as UTF-8 hex byte sequences.</p>
+                </div>
+            </section>
         </main>
 
         <footer class="footer">
             <div class="footer-inner">
-                <p>&copy; <span id="year">${new Date().getFullYear()}</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
+                <p>&copy; <span id="year">2026</span> <a href="/about">Sabbir Hasan</a>. All rights reserved.</p>
                 <div class="footer-links">
                     <a href="/">Home</a>
                     <a href="/about">About</a>
