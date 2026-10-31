@@ -204,7 +204,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <title>${pageTitle}</title>
     <meta name="description" content="${escapeHtml(pageDesc)}">
     <meta name="author" content="Sabbir Hasan">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    ${(currentPage > 1 || Boolean(currentCategory)) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
     <link rel="canonical" href="${canonicalUrl}">
     ${prevPageUrl ? `<link rel="prev" href="${siteUrl}${prevPageUrl}">` : ''}
     ${nextPageUrl ? `<link rel="next" href="${siteUrl}${nextPageUrl}">` : ''}
@@ -525,7 +525,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
     <title>${metaTitle}</title>
     <meta name="description" content="${metaDesc}">
     <meta name="author" content="Sabbir Hasan">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    ${['gaming', 'sports'].includes(String(post.category || '').trim().toLowerCase()) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
     <link rel="canonical" href="${canonicalUrl}">
 
     <!-- ===== OPEN GRAPH (Social Sharing & Rich Previews) ===== -->

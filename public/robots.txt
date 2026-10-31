@@ -15,6 +15,7 @@ Disallow: /login
 Disallow: /dashboard
 Disallow: /api
 Disallow: /api/
+Disallow: /g/collect
 
 # --------------------------------------------------------------
 # Major Traditional Search Engines

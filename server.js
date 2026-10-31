@@ -72,13 +72,42 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// Remove .html from URLs (301 Permanent Redirect)
+// ==========================================
+// 🔄 301 URL NORMALIZATION MIDDLEWARE
+// Strips trailing slashes (except root), lowercases path, strips .html
+// Does not break /api, static asset extensions, or query strings
+// ==========================================
 app.use((req, res, next) => {
-    if (req.path.endsWith('.html') && req.path.length > 5) {
-        const newPath = req.path.slice(0, -5);
-        const query = req.url.slice(req.path.length);
-        return res.redirect(301, newPath + query);
+    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+
+    const urlPath = req.path;
+    if (urlPath === '/' || urlPath.startsWith('/api/') || urlPath === '/api') return next();
+
+    // Skip static assets with extensions (e.g. .css, .js, .png, .jpg, .webp, .svg, .ico, .xml, .txt, .json)
+    const ext = path.extname(urlPath).toLowerCase();
+    if (ext && ext !== '.html') return next();
+
+    let cleanPath = urlPath;
+
+    // 1. Remove .html if present
+    if (cleanPath.endsWith('.html') && cleanPath.length > 5) {
+        cleanPath = cleanPath.slice(0, -5);
     }
+
+    // 2. Remove trailing slash (except root)
+    if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
+        cleanPath = cleanPath.replace(/\/+$/, '');
+    }
+
+    // 3. Lowercase path
+    const lowerPath = cleanPath.toLowerCase();
+
+    // 4. Redirect 301 if path changed
+    if (urlPath !== lowerPath) {
+        const query = req.url.slice(urlPath.length);
+        return res.redirect(301, lowerPath + query);
+    }
+
     next();
 });
 
@@ -167,47 +196,39 @@ app.get('/robots.txt', (req, res) => {
 // sitemap.xml — dynamic & comprehensive
 app.get('/sitemap.xml', async (req, res) => {
     const host = 'https://sabbirhasan.com';
-    const now = new Date().toISOString().split('T')[0];
     let urls = [
-        { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly'  },
-        { loc: `${host}/social-media-marketing`, priority: '0.9', changefreq: 'weekly' },
-        { loc: `${host}/digital-marketing`, priority: '0.9', changefreq: 'weekly' },
-        { loc: `${host}/graphic-design`, priority: '0.9', changefreq: 'weekly' },
-        { loc: `${host}/logo-design`, priority: '0.9', changefreq: 'weekly' },
-        { loc: `${host}/networking`, priority: '0.9', changefreq: 'weekly' },
-        { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'daily'   },
-        { loc: `${host}/tools`,                    priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/contact`,                  priority: '0.6', changefreq: 'monthly' },
-        { loc: `${host}/sitemap`,                  priority: '0.8', changefreq: 'weekly'  },
-        { loc: `${host}/streams`,                  priority: '0.9', changefreq: 'weekly'  },
-        { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly' }
+        { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/digital-marketing`,        priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/social-media-marketing`,   priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/graphic-design`,           priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/logo-design`,              priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/networking`,               priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' },
+        { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-31' },
+        { loc: `${host}/contact`,                  priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
+        { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
+        { loc: `${host}/tools`,                    priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
+        { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-30' },
+        { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-30' },
+        { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly', lastmod: '2026-10-25' },
+        { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'weekly',  lastmod: '2026-10-31' }
     ];
     try {
-        const [posts] = await db.query('SELECT slug, id, updated_at, created_at FROM blog_posts WHERE status="published" AND deleted_at IS NULL ORDER BY created_at DESC');
+        const [posts] = await db.query('SELECT slug, id, updated_at, created_at, category FROM blog_posts WHERE status="published" AND deleted_at IS NULL AND LOWER(category) NOT IN ("gaming", "sports") ORDER BY created_at DESC');
         posts.forEach(post => {
             const slug = post.slug || post.id;
             const dateToUse = post.updated_at || post.created_at;
-            const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : now;
+            const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : '2026-10-31';
             urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
         });
-
-        const [cats] = await db.query('SELECT DISTINCT category FROM blog_posts WHERE status="published" AND deleted_at IS NULL AND category IS NOT NULL AND category != ""');
-        cats.forEach(c => {
-            urls.push({ loc: `${host}/blog/category/${encodeURIComponent(c.category.toLowerCase())}`, priority: '0.6', changefreq: 'weekly', lastmod: now });
-        });
-    } catch (e) { /* DB not available, fallback */ }
+    } catch (e) { /* DB fallback */ }
 
     const urlEntries = urls.map(u => `
   <url>
     <loc>${u.loc}</loc>
-    <lastmod>${u.lastmod || now}</lastmod>
+    ${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('');
@@ -256,6 +277,16 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
         const [countRes] = await db.query(countQuery, queryParams);
         const totalPosts = countRes[0]?.total || 0;
         const totalPages = Math.max(1, Math.ceil(totalPosts / limit));
+
+        // Return real 404 if non-existent category has 0 posts
+        if (categoryParam && totalPosts === 0) {
+            return res.status(404).send('<!DOCTYPE html><html><head><title>Category Not Found | Sabbir Hasan Blog</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Category Not Found</h1><p style="color:#94a3b8;">No published articles exist in this category.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
+        }
+
+        // Return real 404 if pagination page exceeds totalPages (for page > 1)
+        if (page > 1 && page > totalPages) {
+            return res.status(404).send('<!DOCTYPE html><html><head><title>Page Not Found | Sabbir Hasan Blog</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Page Not Found</h1><p style="color:#94a3b8;">This blog page does not exist.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
+        }
 
         const [posts] = await db.query(postsQuery, [...queryParams, limit, offset]);
         const [categories] = await db.query('SELECT category, COUNT(*) as count FROM blog_posts WHERE status = "published" AND deleted_at IS NULL AND category IS NOT NULL AND category != "" GROUP BY category ORDER BY count DESC');
@@ -528,8 +559,20 @@ app.get('/projects', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/projects.html'));
 });
 
-app.get('/project/:slug', (req, res) => {
-    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/project.html'));
+app.get('/project/:slug', async (req, res) => {
+    const slug = req.params.slug;
+    try {
+        const [rows] = await db.query(
+            'SELECT id, title, slug FROM projects WHERE (slug = ? OR id = ?) AND is_visible = 1 LIMIT 1',
+            [slug, isNaN(slug) ? 0 : parseInt(slug, 10)]
+        );
+        if (rows.length === 0) {
+            return res.status(404).send('<!DOCTYPE html><html><head><title>Project Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Project Not Found</h1><p style="color:#94a3b8;">The project you are looking for does not exist or has been removed.</p><a href="/projects" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Projects</a></body></html>');
+        }
+        sendHtmlWithTracking(req, res, path.join(__dirname, 'public/project.html'));
+    } catch (e) {
+        return res.status(404).send('<!DOCTYPE html><html><head><title>Project Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Project Not Found</h1><p style="color:#94a3b8;">The project you are looking for does not exist.</p><a href="/projects" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Projects</a></body></html>');
+    }
 });
 
 app.get('/contact', (req, res) => {
@@ -546,6 +589,20 @@ app.get('/tools/subnet-calculator', (req, res) => {
 
 app.get('/tools/dev-utilities', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/tools/dev-utilities.html'));
+});
+
+// Learn Sections (Case-Insensitive Route Handlers for Linux)
+app.get(['/learn/learn-ccna/learn-ccna', '/Learn/Learn-CCNA/learn-ccna'], (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/Learn/Learn-CCNA/learn-ccna.html'));
+});
+app.get(['/learn/learn-js/learn-js', '/Learn/Learn-JS/learn-js'], (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/Learn/Learn-JS/learn-js.html'));
+});
+app.get(['/learn/learn-mysql/learn-mysql', '/Learn/Learn-MySQL/learn-mysql'], (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/Learn/Learn-MySQL/learn-mysql.html'));
+});
+app.get(['/learn/learn-english/learn-english', '/Learn/Learn-English/learn-english'], (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/Learn/Learn-English/learn-english.html'));
 });
 
 app.get('/streams', (req, res) => {
@@ -2464,6 +2521,12 @@ app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
 // N8N AUTOMATION ROUTE (With Review Workflow)
 // ==========================================
 app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
+    // AUTOMATED PUBLISHING POLICY: Disabled per site owner instruction.
+    // To re-enable, set N8N_AUTO_PUBLISHING_ENABLED = true or set N8N_AUTO_PUBLISHING_ENABLED=true in .env
+    const N8N_AUTO_PUBLISHING_ENABLED = process.env.N8N_AUTO_PUBLISHING_ENABLED === 'true';
+    if (!N8N_AUTO_PUBLISHING_ENABLED) {
+        return res.status(410).json({ error: 'Automated publishing endpoint is disabled.' });
+    }
     try {
         const { secret, title, category, content, imageUrl, status, meta_title, meta_description, excerpt, tags } = req.body;
         const expectedSecret = process.env.N8N_SECRET_KEY;
@@ -2509,17 +2572,8 @@ app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
                     imagePath = await downloadAndSaveImage(imageUrl, 45000);
                 }
 
-                // 2. Fallback: If primary image failed or was missing, generate topic-related image automatically
-                if (!imagePath && postTitle) {
-                    try {
-                        console.log(`[Auto Image Fallback]: Generating topic image for "${postTitle}"...`);
-                        const cleanTopic = postTitle.replace(/[^a-zA-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-                        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent('modern sleek tech illustration header for ' + cleanTopic + ', clean digital art 4k')}?width=1024&height=576&nologo=true`;
-                        imagePath = await downloadAndSaveImage(fallbackUrl, 30000);
-                    } catch (fbErr) {
-                        console.error("[Image Fallback Error]:", fbErr.message);
-                    }
-                }
+                // 2. Fallback: Disabled per site owner policy (no auto-generated pollinations images)
+                // imagePath remains empty unless supplied explicitly via imageUrl
 
                 const finalSlug = await ensureUniqueSlug(postTitle);
                 const finalExcerpt = excerpt || generateExcerpt(content);
