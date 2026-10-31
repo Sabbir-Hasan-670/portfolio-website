@@ -114,21 +114,21 @@
                     <form id="exp-form">
                         <div class="input-group">
                             <input type="text" id="role" name="role" required autocomplete="off">
-                            <label>Role</label>
+                            <label for="company">Role</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="company" name="company_or_project" required autocomplete="off">
-                            <label>Company / Project Name</label>
+                            <label for="role">Company / Project Name</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="duration" name="duration" required autocomplete="off">
-                            <label>Duration</label>
+                            <label for="exp-sort-order">Duration</label>
                         </div>
                         <div class="input-group">
                             <textarea id="desc" name="description" required rows="3" placeholder="Describe responsibilities..."></textarea>
                         </div>
-                        <div class="input-group"><input type="number" id="exp-sort-order" name="sort_order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="exp-visible" name="is_visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="number" id="exp-sort-order" name="sort_order" min="0" step="1" value="0"><label for="duration">Display Order (lower first)</label></div>
+                        <label for="exp-visible" style="display:block; margin:12px 0;"><input type="checkbox" id="exp-visible" name="is_visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Save Experience ⚡</button>
                     </form>
                 </div>
@@ -144,20 +144,20 @@
                     <form id="project-form">
                         <div class="input-group">
                             <input type="text" id="proj-title" name="title" required autocomplete="off">
-                            <label>Project Title</label>
+                            <label for="proj-github">Project Title</label>
                         </div>
                         <div class="input-group">
                             <textarea id="proj-desc" name="description" required rows="3" placeholder="Project Description..."></textarea>
                         </div>
                         <div class="input-group">
                             <input type="text" id="proj-github" name="github_url" autocomplete="off">
-                            <label>GitHub URL (Optional)</label>
+                            <label for="proj-title">GitHub URL (Optional)</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="proj-live" name="live_url" autocomplete="off">
-                            <label>Live Preview URL (Optional)</label>
+                            <label for="proj-technologies">Live Preview URL (Optional)</label>
                         </div>
-                        <div class="input-group"><input type="text" id="proj-technologies" autocomplete="off"><label>Technology Stack (comma separated)</label></div>
+                        <div class="input-group"><input type="text" id="proj-technologies" autocomplete="off"><label for="proj-live">Technology Stack (comma separated)</label></div>
                         <div class="input-group"><textarea id="proj-features" rows="3" placeholder="Key features, one per line"></textarea></div>
                         <div class="input-group"><textarea id="proj-challenge" rows="3" placeholder="Challenge"></textarea></div>
                         <div class="input-group"><textarea id="proj-solution" rows="3" placeholder="Solution"></textarea></div>
@@ -165,13 +165,13 @@
                         <div class="input-group"><textarea id="proj-security" rows="3" placeholder="Security details"></textarea></div>
                         <div class="input-group"><textarea id="proj-database" rows="3" placeholder="Database and backend details"></textarea></div>
                         <div class="input-group"><textarea id="proj-screenshots" rows="3" placeholder="Screenshot URLs, one per line"></textarea></div>
-                        <div class="input-group"><input type="number" id="proj-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="proj-featured"> Featured project</label>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="proj-visible" checked> Visible on public site</label>
-                        <div class="input-group"><input type="text" id="proj-status" value="published" maxlength="20" autocomplete="off"><label>Publishing Status</label></div>
+                        <div class="input-group"><input type="number" id="proj-sort-order" min="0" step="1" value="0"><label for="proj-featured">Display Order (lower first)</label></div>
+                        <label for="proj-features" style="display:block; margin:12px 0;"><input type="checkbox" id="proj-featured"> Featured project</label>
+                        <label for="proj-visible" style="display:block; margin:12px 0;"><input type="checkbox" id="proj-visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="text" id="proj-status" value="published" maxlength="20" autocomplete="off"><label for="proj-image">Publishing Status</label></div>
 
                         <div class="input-group file-group">
-                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Project Thumbnail (Required)</label>
+                            <label for="proj-status" style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Project Thumbnail (Required)</label>
                             <input type="file" id="proj-image" name="project_image" accept="image/*" required class="file-input">
                         </div>
                         <button type="submit" class="action-btn">Upload Project 🚀</button>
@@ -187,18 +187,18 @@
                 <div class="dash-card">
                     <h3>Add Service / Expertise</h3>
                     <form id="service-form">
-                        <div class="input-group"><input type="text" id="service-title" required autocomplete="off"><label>Service Title</label></div>
+                        <div class="input-group"><input type="text" id="service-title" required autocomplete="off"><label for="service-title">Service Title</label></div>
                         <div class="input-group"><textarea id="service-description" rows="3" required placeholder="Short service description"></textarea></div>
-                        <div class="input-group"><input type="text" id="service-icon" value="💻" autocomplete="off"><label>Icon</label></div>
-                        <div class="input-group"><input type="text" id="service-tags" autocomplete="off" placeholder="Routing, VLAN, Firewall"><label>Tags (comma separated)</label></div>
+                        <div class="input-group"><input type="text" id="service-icon" value="💻" autocomplete="off"><label for="service-tags">Icon</label></div>
+                        <div class="input-group"><input type="text" id="service-tags" autocomplete="off" placeholder="Routing, VLAN, Firewall"><label for="service-description">Tags (comma separated)</label></div>
                         <div class="input-group">
-                            <label style="position:static; opacity:1; display:block; margin-bottom:5px;">Category</label>
+                            <label for="service-sort-order" style="position:static; opacity:1; display:block; margin-bottom:5px;">Category</label>
                             <select id="service-category" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:6px;">
                                 <option value="network">Network</option><option value="cybersecurity">Cybersecurity</option><option value="fullstack">Full-Stack</option><option value="seo">SEO</option><option value="server">Server</option><option value="other" selected>Other</option>
                             </select>
                         </div>
-                        <div class="input-group"><input type="number" id="service-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="service-visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="number" id="service-sort-order" min="0" step="1" value="0"><label for="service-category">Display Order (lower first)</label></div>
+                        <label for="service-visible" style="display:block; margin:12px 0;"><input type="checkbox" id="service-visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Save Service</button>
                     </form>
                 </div>
@@ -247,47 +247,47 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" id="channel-name" name="channel_name" required placeholder="e.g. Sabbir Hasan Tech" autocomplete="off">
-                                <label>Channel Display Name</label>
+                                <label for="channel-handle">Channel Display Name</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="channel-handle" name="channel_handle" placeholder="e.g. @sabbirhasan" autocomplete="off">
-                                <label>Channel Handle / Username</label>
+                                <label for="channel-platform">Channel Handle / Username</label>
                             </div>
                             <div class="input-group">
                                 <input type="url" id="channel-url" name="channel_url" required placeholder="https://youtube.com/@... or https://twitch.tv/..." autocomplete="off">
-                                <label>Channel Direct Link (Subscribe/Follow)</label>
+                                <label for="channel-subscribers">Channel Direct Link (Subscribe/Follow)</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="channel-subscribers" name="subscribers_count" placeholder="e.g. 15.4K Subs / 3.2K Followers" autocomplete="off">
-                                <label>Subscribers / Followers Tag</label>
+                                <label for="channel-url">Subscribers / Followers Tag</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="channel-badge" name="badge_text" value="OFFICIAL" placeholder="e.g. MAIN HUB, CREATOR, PRO" autocomplete="off">
-                                <label>Badge Text</label>
+                                <label for="channel-sort">Badge Text</label>
                             </div>
                             <div class="input-group">
                                 <input type="number" id="channel-sort" name="sort_order" value="0" min="0" step="1">
-                                <label>Display Order (Lower First)</label>
+                                <label for="channel-badge">Display Order (Lower First)</label>
                             </div>
                         </div>
 
                         <div class="input-group" style="margin-top: 14px;">
                             <textarea id="channel-desc" name="description" rows="2" placeholder="Brief channel focus: e.g. Full-stack coding, CCNA networking, and cybersecurity tutorials..."></textarea>
-                            <label>Channel Description</label>
+                            <label for="channel-avatar-file">Channel Description</label>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; margin: 16px 0;">
                             <div>
-                                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Avatar Image (Optional)</label>
+                                <label for="channel-avatar-file" style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Avatar Image (Optional)</label>
                                 <input type="file" id="channel-avatar-file" name="avatar_file" accept="image/*" style="width: 100%; color: #94a3b8;">
                                 <input type="hidden" id="channel-avatar-url" name="avatar_url" value="">
                             </div>
                             <div style="display: flex; gap: 20px; align-items: center;">
-                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                <label for="video-thumb-file" style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
                                     <input type="checkbox" id="channel-is-live" name="is_live" value="1">
                                     <span style="color: #ef4444; font-weight: 600;">🔴 Currently LIVE Now</span>
                                 </label>
-                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                <label for="channel-is-visible" style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
                                     <input type="checkbox" id="channel-is-visible" name="is_visible" value="1" checked>
                                     <span>Visible on Public Site</span>
                                 </label>
@@ -329,30 +329,30 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" id="video-title" name="title" required placeholder="e.g. Building Zero-Trust Network Topologies" autocomplete="off">
-                                <label>Video / Stream Title</label>
+                                <label for="video-url">Video / Stream Title</label>
                             </div>
                             <div class="input-group">
                                 <input type="url" id="video-url" name="video_url" required placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." autocomplete="off">
-                                <label>Video Watch URL</label>
+                                <label for="video-platform">Video Watch URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="video-duration" name="duration" placeholder="e.g. 24:18 or 1:04:12" autocomplete="off">
-                                <label>Video Duration (e.g. 24:18)</label>
+                                <label for="video-views">Video Duration (e.g. 24:18)</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="video-views" name="views_count" placeholder="e.g. 4.8K views / Stream VOD" autocomplete="off">
-                                <label>Views / Tag Text</label>
+                                <label for="video-duration">Views / Tag Text</label>
                             </div>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; margin: 16px 0;">
                             <div>
-                                <label style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Thumbnail (Optional - auto-extracted for YouTube)</label>
+                                <label for="video-thumb-file" style="display:block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8;">Custom Thumbnail (Optional - auto-extracted for YouTube)</label>
                                 <input type="file" id="video-thumb-file" name="thumbnail_file" accept="image/*" style="width: 100%; color: #94a3b8;">
                                 <input type="hidden" id="video-thumb-url" name="thumbnail_url" value="">
                             </div>
                             <div>
-                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
+                                <label for="cert-image" style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #e2e8f0;">
                                     <input type="checkbox" id="video-is-featured" name="is_featured" value="1" checked>
                                     <span>Featured on Homepage</span>
                                 </label>
@@ -379,21 +379,21 @@
                     <form id="admin-education-form">
                         <div class="input-group">
                             <input type="text" id="edu-degree" name="degree" required autocomplete="off">
-                            <label>Degree / Qualification</label>
+                            <label for="edu-institution">Degree / Qualification</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="edu-institution" name="institution" required autocomplete="off">
-                            <label>Institution / University</label>
+                            <label for="edu-degree">Institution / University</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="edu-duration" name="duration" required autocomplete="off">
-                            <label>Duration / Years</label>
+                            <label for="edu-sort-order">Duration / Years</label>
                         </div>
                         <div class="input-group">
                             <textarea id="edu-description" name="description" rows="3" placeholder="Achievements, CGPA, major focus..."></textarea>
                         </div>
-                        <div class="input-group"><input type="number" id="edu-sort-order" name="sort_order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="edu-visible" name="is_visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="number" id="edu-sort-order" name="sort_order" min="0" step="1" value="0"><label for="edu-duration">Display Order (lower first)</label></div>
+                        <label for="edu-visible" style="display:block; margin:12px 0;"><input type="checkbox" id="edu-visible" name="is_visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Add Education Entry 🎓</button>
                     </form>
                 </div>
@@ -409,22 +409,22 @@
                     <form id="admin-certificates-form" enctype="multipart/form-data">
                         <div class="input-group">
                             <input type="text" id="cert-title" name="title" required autocomplete="off">
-                            <label>Certification Title</label>
+                            <label for="cert-issuer">Certification Title</label>
                         </div>
                         <div class="input-group">
                             <input type="text" id="cert-issuer" name="issuer" required autocomplete="off">
-                            <label>Issuing Organization</label>
+                            <label for="cert-title">Issuing Organization</label>
                         </div>
                         <div class="input-group">
                             <input type="url" id="cert-link" name="link" autocomplete="off" placeholder="https://credly.com/...">
-                            <label>Verification Link (Optional)</label>
+                            <label for="cert-image">Verification Link (Optional)</label>
                         </div>
                         <div class="input-group file-group">
-                            <label style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Certificate Badge/Image</label>
+                            <label for="cert-link" style="position: static; opacity: 1; margin-bottom: 5px; display: block;">Certificate Badge/Image</label>
                             <input type="file" id="cert-image" name="cert_image" accept="image/*" required class="file-input">
                         </div>
-                        <div class="input-group"><input type="number" id="cert-sort-order" min="0" step="1" value="0"><label>Display Order (lower first)</label></div>
-                        <label style="display:block; margin:12px 0;"><input type="checkbox" id="cert-visible" checked> Visible on public site</label>
+                        <div class="input-group"><input type="number" id="cert-sort-order" min="0" step="1" value="0"><label for="cert-sort-order">Display Order (lower first)</label></div>
+                        <label for="cert-visible" style="display:block; margin:12px 0;"><input type="checkbox" id="cert-visible" checked> Visible on public site</label>
                         <button type="submit" class="action-btn">Add Certificate 📜</button>
                     </form>
                 </div>
@@ -442,33 +442,33 @@
                             <h3>Update Social Links</h3>
                             <div class="input-group">
                                 <input type="text" id="social-github" name="github_link" autocomplete="off">
-                                <label>GitHub Profile URL</label>
+                                <label for="social-linkedin">GitHub Profile URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="social-linkedin" name="linkedin_link" autocomplete="off">
-                                <label>LinkedIn URL</label>
+                                <label for="social-github">LinkedIn URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="social-facebook" name="facebook_link" autocomplete="off">
-                                <label>Facebook URL</label>
+                                <label for="social-fiverr">Facebook URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="social-fiverr" name="fiverr_link" autocomplete="off">
-                                <label>Fiverr URL</label>
+                                <label for="social-facebook">Fiverr URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="social-pinterest" name="pinterest_link" autocomplete="off">
-                                <label>Pinterest URL</label>
+                                <label for="social-adobe">Pinterest URL</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="social-adobe" name="adobe_stock_link" autocomplete="off">
-                                <label>Adobe Stock URL</label>
+                                <label for="social-pinterest">Adobe Stock URL</label>
                             </div>
 
                             <h4 style="margin-top: 30px; margin-bottom: 20px;">Hero Section Text</h4>
                             <div class="input-group">
                                 <input type="text" id="hero-roles" name="hero_roles" autocomplete="off" placeholder="e.g. Graphic Designer, Web Developer">
-                                <label>Typing Roles (Comma Separated)</label>
+                                <label for="stat-ccna-title">Typing Roles (Comma Separated)</label>
                             </div>
                             <div class="input-group">
                                 <textarea id="hero-desc" name="hero_description" rows="3" placeholder="e.g. CCNA-trained Network Engineer..."></textarea>
@@ -479,33 +479,33 @@
                             <h3 style="margin-bottom: 20px;">Hero Bento Stats</h3>
                             <div class="input-group">
                                 <input type="text" id="stat-ccna-title" name="stat_ccna_title" autocomplete="off" placeholder="e.g. CCNA">
-                                <label>CCNA Title</label>
+                                <label for="hero-roles">CCNA Title</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="stat-ccna" name="stat_ccna" autocomplete="off" placeholder="e.g. 200-301 Trained">
-                                <label>CCNA Stat Label</label>
+                                <label for="stat-ceh-title">CCNA Stat Label</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="stat-ceh-title" name="stat_ceh_title" autocomplete="off" placeholder="e.g. CEH">
-                                <label>CEH Title</label>
+                                <label for="stat-ccna">CEH Title</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="stat-ceh" name="stat_ceh" autocomplete="off" placeholder="e.g. Cybersecurity">
-                                <label>CEH Stat Label</label>
+                                <label for="stat-years">CEH Stat Label</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="stat-years" name="stat_years" autocomplete="off" placeholder="e.g. 3+">
-                                <label>Years Experience Stat</label>
+                                <label for="stat-ceh">Years Experience Stat</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="stat-projects" name="stat_projects" autocomplete="off" placeholder="e.g. 20+">
-                                <label>Projects Built Stat</label>
+                                <label for="about-title">Projects Built Stat</label>
                             </div>
 
                             <h4 style="margin-top: 30px; margin-bottom: 20px;">About Section ("Who I Am")</h4>
                             <div class="input-group">
                                 <input type="text" id="about-title" name="about_title" autocomplete="off" placeholder="e.g. CS Graduate · CCNA Trained · IT Professional">
-                                <label>About Subtitle</label>
+                                <label for="stat-projects">About Subtitle</label>
                             </div>
                             <div class="input-group">
                                 <textarea id="about-desc" name="about_desc" rows="5" placeholder="Write your about text here..."></textarea>
@@ -514,25 +514,25 @@
                             <h4 style="margin-top: 30px; margin-bottom: 20px;">Contact Options</h4>
                             <div class="input-group">
                                 <input type="email" id="contact-email" name="contact_email" autocomplete="off" placeholder="e.g. hello@example.com">
-                                <label>Contact Email</label>
+                                <label for="contact-location">Contact Email</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="contact-location" name="contact_location" autocomplete="off" placeholder="e.g. Faridpur, Dhaka, Bangladesh">
-                                <label>Location Text</label>
+                                <label for="about-desc">Location Text</label>
                             </div>
                             <div class="input-group">
                                 <textarea id="contact-map" name="contact_map_url" rows="3" placeholder="Paste Google Maps Embed URL src here..."></textarea>
-                                <label style="font-size:0.75rem; color:#64748b; margin-top:5px; position:static;">Go to Google Maps -> Share -> Embed a map -> Copy the src url only.</label>
+                                <label for="station-location" style="font-size:0.75rem; color:#64748b; margin-top:5px; position:static;">Go to Google Maps -> Share -> Embed a map -> Copy the src url only.</label>
                             </div>
 
                             <h4 style="margin-top:30px; margin-bottom:20px;">Footer Station &amp; Live Timezone</h4>
                             <div class="input-group">
                                 <input type="text" id="station-location" name="station_location" autocomplete="off" placeholder="e.g. Faridpur, BD or Dhaka, Bangladesh or London, UK">
-                                <label>Station Location Badge</label>
+                                <label for="contact-map">Station Location Badge</label>
                             </div>
                             <div class="input-group">
                                 <input type="text" id="station-timezone" name="station_timezone" list="timezone-suggestions" autocomplete="off" placeholder="e.g. Asia/Dhaka or Europe/London or America/New_York">
-                                <label>Station Timezone (City / Region)</label>
+                                <label for="station-status">Station Timezone (City / Region)</label>
                                 <datalist id="timezone-suggestions">
                                     <option value="Asia/Dhaka">Asia/Dhaka (UTC+6 - Bangladesh BST)</option>
                                     <option value="Asia/Kolkata">Asia/Kolkata (UTC+5:30 - India IST)</option>
@@ -555,21 +555,21 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" id="station-status" name="station_status" autocomplete="off" placeholder="e.g. SYSTEM OPERATIONAL // ALL SIGNALS NORMAL">
-                                <label>Station Status Badge</label>
+                                <label for="station-timezone">Station Status Badge</label>
                             </div>
 
                             <h4 style="margin-top:30px; margin-bottom:20px;">Hero, Footer & SEO Settings</h4>
                             <p style="color:#f1c40f; font-size:.85rem;">These newer settings require the Phase A database migration on databases where it has not yet been applied.</p>
-                            <div class="input-group"><input type="text" id="hero-primary-cta-label" maxlength="80" autocomplete="off"><label>Hero Primary CTA Label</label></div>
-                            <div class="input-group"><input type="text" id="hero-primary-cta-url" maxlength="500" autocomplete="off" placeholder="/projects or https://..."><label>Hero Primary CTA URL</label></div>
-                            <div class="input-group"><input type="text" id="hero-secondary-cta-label" maxlength="80" autocomplete="off"><label>Hero Secondary CTA Label</label></div>
-                            <div class="input-group"><input type="text" id="hero-secondary-cta-url" maxlength="500" autocomplete="off" placeholder="/resume or https://..."><label>Hero Secondary CTA URL</label></div>
-                            <div class="input-group"><input type="text" id="hero-availability-text" maxlength="255" autocomplete="off"><label>Hero Availability Text</label></div>
-                            <div class="input-group"><input type="text" id="contact-phone" maxlength="50" autocomplete="off"><label>Contact Phone</label></div>
+                            <div class="input-group"><input type="text" id="hero-primary-cta-label" maxlength="80" autocomplete="off"><label for="hero-primary-cta-url">Hero Primary CTA Label</label></div>
+                            <div class="input-group"><input type="text" id="hero-primary-cta-url" maxlength="500" autocomplete="off" placeholder="/projects or https://..."><label for="hero-primary-cta-label">Hero Primary CTA URL</label></div>
+                            <div class="input-group"><input type="text" id="hero-secondary-cta-label" maxlength="80" autocomplete="off"><label for="hero-secondary-cta-url">Hero Secondary CTA Label</label></div>
+                            <div class="input-group"><input type="text" id="hero-secondary-cta-url" maxlength="500" autocomplete="off" placeholder="/resume or https://..."><label for="hero-secondary-cta-label">Hero Secondary CTA URL</label></div>
+                            <div class="input-group"><input type="text" id="hero-availability-text" maxlength="255" autocomplete="off"><label for="contact-phone">Hero Availability Text</label></div>
+                            <div class="input-group"><input type="text" id="contact-phone" maxlength="50" autocomplete="off"><label for="hero-availability-text">Contact Phone</label></div>
                             <div class="input-group"><textarea id="footer-text" rows="3" maxlength="5000" placeholder="Footer text"></textarea></div>
-                            <div class="input-group"><input type="text" id="default-seo-title" maxlength="255" autocomplete="off"><label>Default SEO Title</label></div>
+                            <div class="input-group"><input type="text" id="default-seo-title" maxlength="255" autocomplete="off"><label for="default-og-image">Default SEO Title</label></div>
                             <div class="input-group"><textarea id="default-seo-description" rows="3" maxlength="5000" placeholder="Default SEO Description"></textarea></div>
-                            <div class="input-group"><input type="text" id="default-og-image" maxlength="500" autocomplete="off" placeholder="/uploads/... or https://..."><label>Default OG Image URL / Existing Media Path</label></div>
+                            <div class="input-group"><input type="text" id="default-og-image" maxlength="500" autocomplete="off" placeholder="/uploads/... or https://..."><label for="footer-text">Default OG Image URL / Existing Media Path</label></div>
                         </div>
                     </div>
                     <button type="submit" class="action-btn" style="margin-top: 20px; width: 100%;">Save Links & Text 🚀</button>
@@ -586,7 +586,7 @@
                                 <span id="avatar-status" style="font-size: 12px; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.1);">Checking...</span>
                             </div>
                             <form id="pic-form">
-                                <label style="display:block; margin-bottom: 5px; opacity: 0.8;">Profile picture used across the entire website:</label>
+                                <label for="profile_image" style="display:block; margin-bottom: 5px; opacity: 0.8;">Profile picture used across the entire website:</label>
                                 <input type="file" id="profile_image" name="profile_image" accept="image/*" required class="file-input">
                                 <div style="display: flex; gap: 10px;">
                                     <button type="submit" class="action-btn" style="flex: 1;">Upload Avatar 🖼️</button>
@@ -646,34 +646,34 @@
 
                     <form id="word-import-form" onsubmit="event.preventDefault(); return false;" enctype="multipart/form-data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
                         <div class="admin-field" style="grid-column: 1 / -1;">
-                            <label style="color: #f1f5f9; font-weight: 600;">Select Word Document (.docx) <span style="color: #ef4444;">*</span></label>
+                            <label for="word-file" style="color: #f1f5f9; font-weight: 600;">Select Word Document (.docx) <span style="color: #ef4444;">*</span></label>
                             <input type="file" id="word-file" name="word_file" accept=".docx" required class="file-input" style="padding: 10px; border-color: rgba(56, 189, 248, 0.4); background: rgba(0,0,0,0.25);">
                             <small style="color: #64748b; font-size: 0.78rem; display: block; margin-top: 4px;">Supports all standard Microsoft Word .docx files. Every embedded photo is saved, compressed to WebP &amp; linked automatically.</small>
                         </div>
 
                         <div class="admin-field" style="grid-column: 1 / -1;">
-                            <label style="color: #38bdf8; font-weight: 600;">Article Title (Optional - Type exact title you want)</label>
+                            <label for="word-title" style="color: #38bdf8; font-weight: 600;">Article Title (Optional - Type exact title you want)</label>
                             <input type="text" id="word-title" name="title" placeholder="e.g. How to Be a Good Social Media Manager (if empty, uses Word heading or filename)" autocomplete="off" style="border-color: rgba(56, 189, 248, 0.5); font-size: 0.98rem; padding: 10px;">
                             <small style="color: #94a3b8; font-size: 0.78rem; display: block; margin-top: 4px;">Enter your title here so the system uses your exact title instead of guessing from text.</small>
                         </div>
 
                         <div class="admin-field">
-                            <label>Custom URL Slug (Optional)</label>
+                            <label for="word-slug">Custom URL Slug (Optional)</label>
                             <input type="text" id="word-slug" name="custom_slug" placeholder="e.g. how-to-be-a-good-social-media-manager (auto-generated if empty)" autocomplete="off">
                         </div>
 
                         <div class="admin-field">
-                            <label>Category</label>
+                            <label for="word-category">Category</label>
                             <input type="text" id="word-category" name="category" value="Networking" placeholder="e.g. Networking, Marketing, Tech" autocomplete="off" required>
                         </div>
 
                         <div class="admin-field">
-                            <label>Focus Keywords / Tags</label>
+                            <label for="word-tags">Focus Keywords / Tags</label>
                             <input type="text" id="word-tags" name="tags" placeholder="e.g. Social Media, Branding, Marketing" autocomplete="off">
                         </div>
 
                         <div class="admin-field">
-                            <label>Publication Status</label>
+                            <label for="word-meta-title">Publication Status</label>
                             <select id="word-status" name="status">
                                 <option value="published" selected>🚀 Published (Instant Live on Site)</option>
                                 <option value="review">🔍 Under Review</option>
@@ -682,12 +682,12 @@
                         </div>
 
                         <div class="admin-field" style="grid-column: 1 / -1;">
-                            <label style="color: #94a3b8; font-weight: 600;">SEO Meta Title (Optional)</label>
+                            <label for="word-meta-title" style="color: #94a3b8; font-weight: 600;">SEO Meta Title (Optional)</label>
                             <input type="text" id="word-meta-title" name="meta_title" placeholder="e.g. How to Be a Good Social Media Manager | Sabbir Hasan" autocomplete="off">
                         </div>
 
                         <div class="admin-field" style="grid-column: 1 / -1;">
-                            <label style="color: #94a3b8; font-weight: 600;">SEO Meta Description / Excerpt (Optional)</label>
+                            <label for="word-meta-desc" style="color: #94a3b8; font-weight: 600;">SEO Meta Description / Excerpt (Optional)</label>
                             <textarea id="word-meta-desc" name="meta_description" rows="2" placeholder="e.g. Learn actionable strategies and daily responsibilities to become a successful social media manager." style="width: 100%; border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
                         </div>
 
@@ -706,29 +706,29 @@
                     <h2>Write New Article (Manual Editor)</h2>
                     <form id="blog-form">
                         <div class="admin-field">
-                            <label>Article Title</label>
+                            <label for="blog-title">Article Title</label>
                             <input type="text" id="blog-title" name="title" required autocomplete="off">
                         </div>
                         
                         <div class="admin-field">
-                            <label>Custom URL Slug (Optional - auto-generated if left empty)</label>
+                            <label for="blog-slug">Custom URL Slug (Optional - auto-generated if left empty)</label>
                             <input type="text" id="blog-slug" name="custom_slug" autocomplete="off" placeholder="e.g. english-tips">
                         </div>
                         
                         <div class="admin-field">
-                            <label>Category (e.g., Cybersecurity)</label>
+                            <label for="blog-category">Category (e.g., Cybersecurity)</label>
                             <input type="text" id="blog-category" name="category" required autocomplete="off">
                         </div>
                         <div class="admin-checkbox-group">
-                            <label><input type="checkbox" id="blog-featured"> Featured article</label>
+                            <label for="blog-featured-order"><input type="checkbox" id="blog-featured"> Featured article</label>
                         </div>
                         <div class="admin-field">
-                            <label>Featured Order (lower first)</label>
+                            <label for="blog-featured-order">Featured Order (lower first)</label>
                             <input type="number" id="blog-featured-order" min="0" step="1" value="0">
                         </div>
 
                         <div class="admin-field">
-                            <label>Publication Status</label>
+                            <label for="blog-status">Publication Status</label>
                             <select id="blog-status" name="status">
                                 <option value="published" selected>🚀 Published (Live on Site)</option>
                                 <option value="review">🔍 Under Review (Needs Check)</option>
@@ -736,29 +736,29 @@
                             </select>
                         </div>
                         <div class="admin-field">
-                            <label>Article Excerpt / Summary</label>
+                            <label for="blog-excerpt">Article Excerpt / Summary</label>
                             <input type="text" id="blog-excerpt" name="excerpt" autocomplete="off" maxlength="160" placeholder="Short summary for cards & search (up to 160 characters)">
                         </div>
                         <div class="admin-field">
-                            <label>SEO Meta Title</label>
+                            <label for="blog-meta-title">SEO Meta Title</label>
                             <input type="text" id="blog-meta-title" name="meta_title" autocomplete="off" maxlength="60" placeholder="SEO title (up to 60 characters)">
                         </div>
                         <div class="admin-field">
-                            <label>SEO Meta Description</label>
+                            <label for="blog-meta-desc">SEO Meta Description</label>
                             <input type="text" id="blog-meta-desc" name="meta_description" autocomplete="off" maxlength="160" placeholder="SEO meta description (up to 160 characters)">
                         </div>
                         <div class="admin-field">
-                            <label>Tags</label>
+                            <label for="blog-tags">Tags</label>
                             <input type="text" id="blog-tags" name="tags" autocomplete="off" placeholder="Cisco, VLAN, CCNA">
                         </div>
 
                         <div class="admin-field">
-                            <label>Cover Image</label>
+                            <label for="blog-image">Cover Image</label>
                             <input type="file" id="blog-image" name="blog_image" accept="image/*" class="file-input">
                         </div>
                         
                         <div class="admin-field">
-                            <label>Article Content</label>
+                            <label for="blog-content">Article Content</label>
                             <textarea id="blog-content" name="content" rows="12" required placeholder="Write your full article here..."></textarea>
                         </div>
                         
@@ -786,7 +786,7 @@
                     </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #cbd5e1; cursor: pointer; user-select: none;">
+                        <label for="blog-select-all" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #cbd5e1; cursor: pointer; user-select: none;">
                             <input type="checkbox" id="blog-select-all" onchange="window.handleBlogSelectAll(this)" style="width: 16px; height: 16px; accent-color: #38bdf8; cursor: pointer;">
                             <span>Select All Articles</span>
                         </label>
@@ -843,13 +843,13 @@
                                         <span style="font-size:1.2rem;">📊</span>
                                         <strong style="color: #f8fafc; font-size: 0.95rem;">Google Analytics 4</strong>
                                     </div>
-                                    <label class="tracking-switch">
+                                    <label for="track-ga4-enabled" class="tracking-switch">
                                         <input type="checkbox" id="track-ga4-enabled" onchange="window.updateTrackingLivePreview()">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="admin-field" style="margin-bottom: 8px;">
-                                    <label>Measurement ID (format: G-XXXXXXXXXX)</label>
+                                    <label for="track-ga4-id">Measurement ID (format: G-XXXXXXXXXX)</label>
                                     <input type="text" id="track-ga4-id" placeholder="G-XXXXXXXXXX" autocomplete="off" oninput="window.updateTrackingLivePreview()">
                                 </div>
                                 <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
@@ -867,13 +867,13 @@
                                         <span style="font-size:1.2rem;">🏷️</span>
                                         <strong style="color: #f8fafc; font-size: 0.95rem;">Google Tag Manager</strong>
                                     </div>
-                                    <label class="tracking-switch">
+                                    <label for="track-gtm-id" class="tracking-switch">
                                         <input type="checkbox" id="track-gtm-enabled" onchange="window.updateTrackingLivePreview()">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="admin-field" style="margin-bottom: 8px;">
-                                    <label>Container ID (format: GTM-XXXXXXX)</label>
+                                    <label for="track-gtm-id">Container ID (format: GTM-XXXXXXX)</label>
                                     <input type="text" id="track-gtm-id" placeholder="GTM-XXXXXXX" autocomplete="off" oninput="window.updateTrackingLivePreview()">
                                 </div>
                                 <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
@@ -888,13 +888,13 @@
                                         <span style="font-size:1.2rem;">🎯</span>
                                         <strong style="color: #f8fafc; font-size: 0.95rem;">Meta (Facebook) Pixel</strong>
                                     </div>
-                                    <label class="tracking-switch">
+                                    <label for="track-pixel-id" class="tracking-switch">
                                         <input type="checkbox" id="track-pixel-enabled" onchange="window.updateTrackingLivePreview()">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="admin-field" style="margin-bottom: 8px;">
-                                    <label>Pixel ID (8-20 numeric digits)</label>
+                                    <label for="track-pixel-id">Pixel ID (8-20 numeric digits)</label>
                                     <input type="text" id="track-pixel-id" placeholder="123456789012345" autocomplete="off" oninput="window.updateTrackingLivePreview()">
                                 </div>
                                 <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
@@ -909,13 +909,13 @@
                                         <span style="font-size:1.2rem;">🔥</span>
                                         <strong style="color: #f8fafc; font-size: 0.95rem;">Microsoft Clarity (Heatmaps)</strong>
                                     </div>
-                                    <label class="tracking-switch">
+                                    <label for="track-clarity-id" class="tracking-switch">
                                         <input type="checkbox" id="track-clarity-enabled" onchange="window.updateTrackingLivePreview()">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="admin-field" style="margin-bottom: 8px;">
-                                    <label>Project ID (alphanumeric, 6-16 chars)</label>
+                                    <label for="track-clarity-id">Project ID (alphanumeric, 6-16 chars)</label>
                                     <input type="text" id="track-clarity-id" placeholder="e.g. k7x9p2m4" autocomplete="off" oninput="window.updateTrackingLivePreview()">
                                 </div>
                                 <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
@@ -934,7 +934,7 @@
                                     <strong style="color: #f8fafc; font-size: 0.95rem;">Google Search Console Verification</strong>
                                 </div>
                                 <div class="admin-field" style="margin-bottom: 8px;">
-                                    <label>HTML Meta Tag or Verification Code</label>
+                                    <label for="track-gsc-tag">HTML Meta Tag or Verification Code</label>
                                     <input type="text" id="track-gsc-tag" placeholder="&lt;meta name=&quot;google-site-verification&quot; content=&quot;...&quot;&gt;" autocomplete="off" oninput="window.updateTrackingLivePreview()">
                                 </div>
                                 <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
@@ -949,7 +949,7 @@
                                         <span style="font-size:1.2rem;">🍪</span>
                                         <strong style="color: #f8fafc; font-size: 0.95rem;">Cookie Consent &amp; Consent Mode v2</strong>
                                     </div>
-                                    <label class="tracking-switch">
+                                    <label for="track-consent-required" class="tracking-switch">
                                         <input type="checkbox" id="track-consent-required" onchange="window.updateTrackingLivePreview()">
                                         <span class="slider round"></span>
                                     </label>
@@ -974,11 +974,11 @@
                             </div>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
                                 <div class="admin-field">
-                                    <label>Custom &lt;head&gt; Scripts (runs before page renders)</label>
+                                    <label for="track-ga4-property-id">Custom &lt;head&gt; Scripts (runs before page renders)</label>
                                     <textarea id="track-head-script" rows="4" placeholder="&lt;!-- custom head scripts e.g. custom font tags or web verification --&gt;" oninput="window.updateTrackingLivePreview()"></textarea>
                                 </div>
                                 <div class="admin-field">
-                                    <label>Custom &lt;body&gt; Scripts (runs right before &lt;/body&gt;)</label>
+                                    <label for="track-body-script">Custom &lt;body&gt; Scripts (runs right before &lt;/body&gt;)</label>
                                     <textarea id="track-body-script" rows="4" placeholder="&lt;!-- custom body scripts e.g. chat widget or embed scripts --&gt;" oninput="window.updateTrackingLivePreview()"></textarea>
                                 </div>
                             </div>
@@ -998,11 +998,11 @@
                             </p>
                             <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px;">
                                 <div class="admin-field">
-                                    <label>GA4 Property ID (numeric digits only)</label>
+                                    <label for="track-ga4-property-id">GA4 Property ID (numeric digits only)</label>
                                     <input type="text" id="track-ga4-property-id" placeholder="e.g. 439281729" autocomplete="off">
                                 </div>
                                 <div class="admin-field">
-                                    <label>Google Cloud Service Account JSON Key</label>
+                                    <label for="track-ga4-sa-json">Google Cloud Service Account JSON Key</label>
                                     <textarea id="track-ga4-sa-json" rows="2" placeholder='{"type": "service_account", "project_id": "...", ...}'></textarea>
                                 </div>
                             </div>
@@ -1107,11 +1107,11 @@
                     <div id="custom-date-bar" style="display: none; background: rgba(0,0,0,0.25); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.2); margin-bottom: 20px; align-items: center; gap: 15px; flex-wrap: wrap;">
                         <span style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600;">Custom Range:</span>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <label style="font-size: 0.78rem; color: #94a3b8;">Start:</label>
+                            <label for="custom-start-date" style="font-size: 0.78rem; color: #94a3b8;">Start:</label>
                             <input type="date" id="custom-start-date" style="padding: 4px 8px; font-size: 0.8rem;">
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <label style="font-size: 0.78rem; color: #94a3b8;">End:</label>
+                            <label for="custom-end-date" style="font-size: 0.78rem; color: #94a3b8;">End:</label>
                             <input type="date" id="custom-end-date" style="padding: 4px 8px; font-size: 0.8rem;">
                         </div>
                         <button type="button" class="action-btn" style="padding: 4px 12px; font-size: 0.8rem;" onclick="window.applyCustomDateRange()">Apply Filter ⚡</button>
@@ -1295,22 +1295,22 @@
                 <input type="hidden" id="edit-blog-id"> 
                 
                 <div class="admin-field">
-                    <label>Article Title</label>
+                    <label for="edit-blog-title">Article Title</label>
                     <input type="text" id="edit-blog-title" name="title" required autocomplete="off">
                 </div>
                 
                 <div class="admin-field">
-                    <label>Custom URL Slug (Optional)</label>
+                    <label for="edit-blog-slug">Custom URL Slug (Optional)</label>
                     <input type="text" id="edit-blog-slug" name="custom_slug" autocomplete="off">
                 </div>
                 
                 <div class="admin-field">
-                    <label>Category</label>
+                    <label for="edit-blog-category">Category</label>
                     <input type="text" id="edit-blog-category" name="category" required autocomplete="off">
                 </div>
                 
                 <div class="admin-field">
-                    <label>Publication Status</label>
+                    <label for="edit-blog-status">Publication Status</label>
                     <select id="edit-blog-status" name="status">
                         <option value="published">🚀 Published (Live on Site)</option>
                         <option value="review">🔍 Under Review (Needs Check)</option>
@@ -1318,35 +1318,35 @@
                     </select>
                 </div>
                 <div class="admin-checkbox-group">
-                    <label><input type="checkbox" id="edit-blog-featured"> Featured article</label>
+                    <label for="edit-blog-featured"><input type="checkbox" id="edit-blog-featured"> Featured article</label>
                 </div>
                 <div class="admin-field">
-                    <label>Featured Order (lower first)</label>
+                    <label for="edit-blog-featured-order">Featured Order (lower first)</label>
                     <input type="number" id="edit-blog-featured-order" min="0" step="1" value="0">
                 </div>
                 <div class="admin-field">
-                    <label>Article Excerpt</label>
+                    <label for="edit-blog-excerpt">Article Excerpt</label>
                     <input type="text" id="edit-blog-excerpt" name="excerpt" autocomplete="off">
                 </div>
                 <div class="admin-field">
-                    <label>SEO Meta Title</label>
+                    <label for="edit-blog-meta-title">SEO Meta Title</label>
                     <input type="text" id="edit-blog-meta-title" name="meta_title" autocomplete="off">
                 </div>
                 <div class="admin-field">
-                    <label>SEO Meta Description</label>
+                    <label for="edit-blog-meta-desc">SEO Meta Description</label>
                     <input type="text" id="edit-blog-meta-desc" name="meta_description" autocomplete="off">
                 </div>
                 <div class="admin-field">
-                    <label>Tags</label>
+                    <label for="edit-blog-tags">Tags</label>
                     <input type="text" id="edit-blog-tags" name="tags" autocomplete="off">
                 </div>
                 <div class="admin-field">
-                    <label>Change Cover Image (Optional)</label>
+                    <label for="edit-blog-image">Change Cover Image (Optional)</label>
                     <input type="file" id="edit-blog-image" name="blog_image" accept="image/*" class="file-input">
                 </div>
                 
                 <div class="admin-field">
-                    <label>Article Content</label>
+                    <label for="universal-item-id">Article Content</label>
                     <textarea id="edit-blog-content" name="content" rows="10" required placeholder="Modify your article content here..."></textarea>
                 </div>
                 
@@ -1383,7 +1383,7 @@
                 <input type="hidden" id="reply-to-email">
                 <div class="input-group">
                     <input type="text" id="reply-subject" autocomplete="off" required value="Reply to your inquiry">
-                    <label>Subject</label>
+                    <label for="reply-subject">Subject</label>
                 </div>
                 <div class="input-group">
                     <textarea id="reply-message" rows="5" required placeholder="Type your reply here..."></textarea>
@@ -1419,7 +1419,7 @@
             <input type="hidden" id="link-modal-repo-id">
             <div class="input-group">
                 <input type="url" id="link-modal-url" placeholder="https://example.com" autocomplete="off" style="width: 100%; box-sizing: border-box;">
-                <label>Website URL</label>
+                <label for="reply-message">Website URL</label>
             </div>
             <div class="modal-actions" style="margin-top: 25px; justify-content: center; gap: 15px;">
                 <button type="button" class="logout-btn" onclick="document.getElementById('link-modal').classList.add('hidden')">Cancel</button>
@@ -1430,7 +1430,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="/admin/dashboard/dashboard.js?v=word_opt_v4"></script>
+    <script src="/admin/dashboard/dashboard.js?v=word_opt_v5"></script>
     <script src="/toast.js"></script>
 
 

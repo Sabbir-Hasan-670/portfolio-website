@@ -61,7 +61,7 @@ app.use((req, res, next) => {
     res.set('Cross-Origin-Opener-Policy', 'same-origin');
     // Allow admin CDN dependencies (cropper.js, google fonts, clarity)
     if (req.path.startsWith('/admin')) {
-        res.set('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' data: https: blob:; font-src 'self' data: https:; frame-ancestors 'self';");
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; frame-ancestors 'self';");
     } else {
         res.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://tagassistant.google.com https://*.google.com https://connect.facebook.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com https://*.cloudflareinsights.com https://www.clarity.ms https://*.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.googletagmanager.com https://*.googletagmanager.com https://tagassistant.google.com https://*.google.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com https://*.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://tagassistant.google.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://stats.g.doubleclick.net https://*.g.doubleclick.net https://*.google.com https://*.google-analytics.com https://ghchart.rshah.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.clarity.ms https://connect.facebook.net; frame-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://tagassistant.google.com https://*.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
     }
@@ -765,7 +765,7 @@ async function ensureUniqueSlug(baseSlug, currentId = null) {
     let counter = 1;
     while (true) {
         const checkSlug = counter === 1 ? slug : `${slug}-${counter}`;
-        let query = 'SELECT id FROM blog_posts WHERE slug = ?';
+        let query = 'SELECT id FROM blog_posts WHERE slug = ? AND deleted_at IS NULL';
         let params = [checkSlug];
         if (currentId) {
             query += ' AND id != ?';
@@ -2777,21 +2777,15 @@ app.delete('/api/admin/certificates/:id', requireAuth, async (req, res) => {
 
 app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
     try {
-        const isPermanent = req.query.permanent === 'true' || req.query.permanent === '1';
-        if (isPermanent) {
-            const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [req.params.id]);
-            if (rows[0]?.image_path) fs.unlink(path.join(__dirname, 'public', rows[0].image_path), () => {});
-            try { await db.query('DELETE FROM blog_views WHERE blog_id = ?', [req.params.id]); } catch(e) {}
-            await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]);
-            delete apiCache['blog'];
-            invalidateApiCache('blog');
-            res.json({ message: 'Permanently deleted' });
-        } else {
-            await db.query('UPDATE blog_posts SET deleted_at = NOW() WHERE id = ?', [req.params.id]);
-            delete apiCache['blog'];
-            invalidateApiCache('blog');
-            res.json({ message: 'Moved to trash' });
+        const [rows] = await db.query('SELECT image_path FROM blog_posts WHERE id = ?', [req.params.id]);
+        if (rows[0]?.image_path && (rows[0].image_path.startsWith('/uploads/word_img_') || rows[0].image_path.startsWith('/uploads/blog_'))) {
+            try { fs.unlinkSync(path.join(__dirname, 'public', rows[0].image_path)); } catch(e) {}
         }
+        try { await db.query('DELETE FROM blog_views WHERE blog_id = ?', [req.params.id]); } catch(e) {}
+        await db.query('DELETE FROM blog_posts WHERE id = ?', [req.params.id]);
+        delete apiCache['blog'];
+        try { invalidateApiCache('blog'); } catch(e) {}
+        res.json({ message: 'Permanently deleted and slug completely released.' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete article' });
     }
