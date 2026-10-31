@@ -3,9 +3,6 @@
 # Generative Engine Optimization (GEO) & AI Search Enabled
 # ==============================================================
 
-# W3C / TDM Content Signals for AI & Search
-# Content-Signal: search=yes,ai-input=yes,ai-train=yes,use=reference
-
 # Standard Crawlers
 User-agent: *
 Allow: /
