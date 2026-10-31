@@ -93,6 +93,9 @@ app.use((req, res, next) => {
     if (cleanPath.endsWith('.html') && cleanPath.length > 5) {
         cleanPath = cleanPath.slice(0, -5);
     }
+    if (cleanPath.toLowerCase() === '/index') {
+        cleanPath = '/';
+    }
 
     // 2. Remove trailing slash (except root)
     if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
@@ -184,6 +187,17 @@ app.get('/llms.txt', (req, res) => {
     res.set('Content-Type', 'text/plain; charset=utf-8');
     res.set('Cache-Control', 'public, max-age=86400');
     res.sendFile(path.join(__dirname, 'public/llms.txt'));
+});
+
+
+// 301 Redirect for legacy CV PDF to prevent 404
+app.get('/uploads/1785277362300-699811154.pdf', (req, res) => {
+    res.redirect(301, '/uploads/1789238348425-640476792.pdf');
+});
+
+// 301 Redirect for Cloudflare email protection crawler endpoint
+app.get('/cdn-cgi/l/email-protection', (req, res) => {
+    res.redirect(301, '/contact');
 });
 
 // robots.txt

@@ -4,7 +4,7 @@
 # ==============================================================
 
 # W3C / TDM Content Signals for AI & Search
-Content-Signal: search=yes,ai-input=yes,ai-train=yes,use=reference
+# Content-Signal: search=yes,ai-input=yes,ai-train=yes,use=reference
 
 # Standard Crawlers
 User-agent: *
@@ -52,6 +52,12 @@ User-agent: ChatGPT-User
 Allow: /
 
 # Anthropic (Claude Search, Retrieval & Citations)
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
 User-agent: ClaudeBot
 Allow: /
 
@@ -62,6 +68,9 @@ User-agent: anthropic-ai
 Allow: /
 
 # Perplexity AI Search Engine
+User-agent: Perplexity-User
+Allow: /
+
 User-agent: PerplexityBot
 Allow: /
 

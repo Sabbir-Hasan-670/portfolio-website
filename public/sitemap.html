@@ -570,7 +570,7 @@
                         const slug = p.slug || p.id;
                         return `
                         <li class="link-item" style="background:rgba(255,255,255,0.03); padding:0.75rem 1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                            <a href="/blog/${slug}" class="link-anchor" style="font-size:0.9rem;">
+                            <a href="' + '/blog/' + slug + '" class="link-anchor" style="font-size:0.9rem;">
                                 ${escapeHtml(p.title)}
                             </a>
                             <span class="link-desc" style="font-size:0.75rem; color:var(--accent-cyan); font-family:'JetBrains Mono', monospace;">
