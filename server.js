@@ -20,6 +20,7 @@ const {
 } = require('./analyticsService');
 const path = require('path');
 const multer = require('multer');
+const mammoth = require('mammoth');
 const nodemailer = require('nodemailer');
 const session = require('express-session');
 const fs = require('fs');
@@ -2322,6 +2323,131 @@ app.post('/api/admin/blog/approve-all', requireAuth, async (req, res) => {
     } catch (err) {
         console.error("Auto-Approve All Error:", err);
         res.status(500).json({ error: 'Failed to auto-approve articles' });
+    }
+});
+
+// =========================================================================
+// WORD DOCUMENT (.DOCX) IMPORT FOR BLOG
+// =========================================================================
+app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'Please select a Word (.docx) file to upload.' });
+    }
+
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    if (ext !== '.docx') {
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+        return res.status(400).json({ error: 'Invalid file format. Only Microsoft Word (.docx) files are supported.' });
+    }
+
+    try {
+        const extractedImages = [];
+        const mammothOptions = {
+            convertImage: mammoth.images.imgElement(async (image) => {
+                try {
+                    const buffer = await image.read();
+                    let imgExt = 'png';
+                    if (image.contentType) {
+                        if (image.contentType.includes('jpeg') || image.contentType.includes('jpg')) imgExt = 'jpg';
+                        else if (image.contentType.includes('png')) imgExt = 'png';
+                        else if (image.contentType.includes('webp')) imgExt = 'webp';
+                        else if (image.contentType.includes('gif')) imgExt = 'gif';
+                    }
+                    const imgName = `word_img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${imgExt}`;
+                    const targetPath = path.join(__dirname, 'public/uploads', imgName);
+                    fs.writeFileSync(targetPath, buffer);
+                    const publicUrl = `/uploads/${imgName}`;
+                    extractedImages.push(publicUrl);
+                    return { src: publicUrl };
+                } catch (imgErr) {
+                    console.error("Failed to extract Word image:", imgErr);
+                    return { src: '' };
+                }
+            })
+        };
+
+        const result = await mammoth.convertToHtml({ path: req.file.path }, mammothOptions);
+        let htmlContent = (result.value || '').trim();
+
+        // Remove temporary uploaded docx file
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+
+        if (!htmlContent) {
+            return res.status(400).json({ error: 'The uploaded Word document appears to be empty.' });
+        }
+
+        // Title Extraction
+        let title = (req.body.title || '').trim();
+        if (!title) {
+            const h1Match = htmlContent.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+            if (h1Match) {
+                title = stripHtml(h1Match[1]).trim();
+                htmlContent = htmlContent.replace(h1Match[0], '').trim();
+            } else {
+                const pMatch = htmlContent.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+                if (pMatch && stripHtml(pMatch[1]).trim().length > 0 && stripHtml(pMatch[1]).trim().length < 100) {
+                    title = stripHtml(pMatch[1]).trim();
+                    htmlContent = htmlContent.replace(pMatch[0], '').trim();
+                } else {
+                    title = path.basename(req.file.originalname, ext).replace(/[-_]+/g, ' ').trim();
+                }
+            }
+        }
+
+        const coverImage = extractedImages.length > 0 ? extractedImages[0] : '';
+        const category = (req.body.category || 'Networking').trim();
+        const tags = (req.body.tags || '').trim();
+        const customSlug = (req.body.custom_slug || '').trim();
+        const finalSlug = await ensureUniqueSlug(customSlug || title);
+        const excerpt = generateExcerpt(htmlContent);
+        const readingTime = calculateReadingTime(htmlContent);
+        const metaTitle = `${title} | Sabbir Hasan`;
+        const metaDesc = excerpt;
+        const status = req.body.status || 'published';
+
+        // Check if user requested preview/load-into-editor
+        if (req.body.action === 'preview') {
+            return res.json({
+                success: true,
+                preview: true,
+                data: {
+                    title,
+                    slug: finalSlug,
+                    category,
+                    tags,
+                    excerpt,
+                    meta_title: metaTitle,
+                    meta_description: metaDesc,
+                    reading_time: readingTime,
+                    content: htmlContent,
+                    cover_image: coverImage,
+                    images_count: extractedImages.length
+                }
+            });
+        }
+
+        // Action: direct publish
+        const [insertResult] = await db.query(
+            `INSERT INTO blog_posts (title, slug, category, content, image_path, status, excerpt, meta_title, meta_description, tags, reading_time)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [title, finalSlug, category, htmlContent, coverImage, status, excerpt, metaTitle, metaDesc, tags, readingTime]
+        );
+
+        delete apiCache['blog'];
+        try { invalidateApiCache('blog'); } catch(e) {}
+
+        return res.json({
+            success: true,
+            message: 'Word document successfully imported and published!',
+            blogId: insertResult.insertId,
+            slug: finalSlug,
+            title: title,
+            imagesCount: extractedImages.length
+        });
+    } catch (err) {
+        console.error("Word Document Import Error:", err);
+        try { if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path); } catch(e) {}
+        return res.status(500).json({ error: 'Failed to process Word document: ' + err.message });
     }
 });
 

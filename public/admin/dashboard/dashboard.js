@@ -1210,6 +1210,119 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     fetchAdminBlogs();
 
+    // DIRECT WORD (.DOCX) IMPORT
+    const wordForm = document.getElementById('word-import-form');
+    const wordStatusDiv = document.getElementById('word-import-status');
+    const btnWordPublish = document.getElementById('btn-word-publish');
+    const btnWordPreview = document.getElementById('btn-word-preview');
+
+    const handleWordImport = async (action) => {
+        const fileInput = document.getElementById('word-file');
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            window.showToast('Please select a .docx Word document first.', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('word_file', fileInput.files[0]);
+        formData.append('custom_slug', document.getElementById('word-slug')?.value || '');
+        formData.append('tags', document.getElementById('word-tags')?.value || '');
+        formData.append('category', document.getElementById('word-category')?.value || 'Networking');
+        formData.append('status', document.getElementById('word-status')?.value || 'published');
+        formData.append('action', action);
+
+        const originalPublishText = btnWordPublish ? btnWordPublish.innerHTML : '';
+        const originalPreviewText = btnWordPreview ? btnWordPreview.innerHTML : '';
+        if (btnWordPublish) btnWordPublish.disabled = true;
+        if (btnWordPreview) btnWordPreview.disabled = true;
+
+        if (action === 'publish' && btnWordPublish) {
+            btnWordPublish.innerHTML = '<span>⏳</span> Uploading & Extracting...';
+        } else if (action === 'preview' && btnWordPreview) {
+            btnWordPreview.innerHTML = '<span>⏳</span> Extracting Content...';
+        }
+
+        if (wordStatusDiv) {
+            wordStatusDiv.style.display = 'block';
+            wordStatusDiv.style.background = 'rgba(56, 189, 248, 0.1)';
+            wordStatusDiv.style.border = '1px solid rgba(56, 189, 248, 0.3)';
+            wordStatusDiv.style.color = '#38bdf8';
+            wordStatusDiv.innerHTML = '⏳ Reading Word document, extracting embedded images, formatting hyperlinks and structure...';
+        }
+
+        try {
+            const response = await fetch('/api/admin/blog/import-word', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || 'Failed to import Word document.');
+            }
+
+            if (action === 'preview') {
+                const d = data.data;
+                if (document.getElementById('blog-title')) document.getElementById('blog-title').value = d.title || '';
+                if (document.getElementById('blog-slug')) document.getElementById('blog-slug').value = d.slug || '';
+                if (document.getElementById('blog-category')) document.getElementById('blog-category').value = d.category || '';
+                if (document.getElementById('blog-tags')) document.getElementById('blog-tags').value = d.tags || '';
+                if (document.getElementById('blog-excerpt')) document.getElementById('blog-excerpt').value = d.excerpt || '';
+                if (document.getElementById('blog-meta-title')) document.getElementById('blog-meta-title').value = d.meta_title || '';
+                if (document.getElementById('blog-meta-desc')) document.getElementById('blog-meta-desc').value = d.meta_description || '';
+                if (document.getElementById('blog-content')) document.getElementById('blog-content').value = d.content || '';
+
+                if (wordStatusDiv) {
+                    wordStatusDiv.style.background = 'rgba(16, 185, 129, 0.15)';
+                    wordStatusDiv.style.border = '1px solid rgba(16, 185, 129, 0.35)';
+                    wordStatusDiv.style.color = '#34d399';
+                    wordStatusDiv.innerHTML = `✅ <strong>Word Document extracted successfully!</strong> (${d.images_count} images extracted). Content loaded into the manual editor below for your review.`;
+                }
+                window.showToast('Word content loaded into editor!', 'success');
+                document.getElementById('blog-form')?.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                if (wordStatusDiv) {
+                    wordStatusDiv.style.background = 'rgba(16, 185, 129, 0.15)';
+                    wordStatusDiv.style.border = '1px solid rgba(16, 185, 129, 0.35)';
+                    wordStatusDiv.style.color = '#34d399';
+                    wordStatusDiv.innerHTML = `🎉 <strong>Article Published!</strong> Title: "<em>${data.title}</em>" with ${data.imagesCount} embedded images.<br>🔗 <a href="/blog/${data.slug}" target="_blank" style="color:#38bdf8; text-decoration:underline; font-weight:600; margin-top:5px; display:inline-block;">View Live Post: /blog/${data.slug} ↗</a>`;
+                }
+                wordForm?.reset();
+                window.showToast('Article published directly from Word!', 'success');
+                if (typeof fetchAdminBlogs === 'function') fetchAdminBlogs();
+            }
+        } catch (err) {
+            console.error('Word Import Error:', err);
+            if (wordStatusDiv) {
+                wordStatusDiv.style.background = 'rgba(239, 68, 68, 0.15)';
+                wordStatusDiv.style.border = '1px solid rgba(239, 68, 68, 0.35)';
+                wordStatusDiv.style.color = '#f87171';
+                wordStatusDiv.innerHTML = `❌ Error: ${err.message}`;
+            }
+            window.showToast(err.message, 'error');
+        } finally {
+            if (btnWordPublish) {
+                btnWordPublish.disabled = false;
+                btnWordPublish.innerHTML = originalPublishText;
+            }
+            if (btnWordPreview) {
+                btnWordPreview.disabled = false;
+                btnWordPreview.innerHTML = originalPreviewText;
+            }
+        }
+    };
+
+    wordForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleWordImport('publish');
+    });
+
+    btnWordPreview?.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleWordImport('preview');
+    });
+
     document.getElementById('blog-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (asNonNegativeInteger(document.getElementById('blog-featured-order').value) === null) return window.showToast('Featured order must be a non-negative integer.', 'error');
