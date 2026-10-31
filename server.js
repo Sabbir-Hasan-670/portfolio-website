@@ -203,7 +203,7 @@ app.get('/cdn-cgi/l/email-protection', (req, res) => {
 // robots.txt
 app.get('/robots.txt', (req, res) => {
     res.set('Content-Type', 'text/plain; charset=utf-8');
-    res.set('Cache-Control', 'public, max-age=3600');
+    res.set('Cache-Control', 'public, max-age=3600, no-transform');
     res.sendFile(path.join(__dirname, 'public/robots.txt'));
 });
 
