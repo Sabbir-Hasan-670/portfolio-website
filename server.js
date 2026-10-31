@@ -170,6 +170,7 @@ app.get('/sitemap.xml', async (req, res) => {
     const now = new Date().toISOString().split('T')[0];
     let urls = [
         { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly'  },
+        { loc: `${host}/digital-marketing`, priority: '0.9', changefreq: 'weekly' },
         { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'daily'   },
@@ -493,6 +494,10 @@ function sendHtmlWithTracking(req, res, filePath) {
 // Dedicated Clean Pages
 app.get('/resume', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/resume.html'));
+});
+
+app.get('/digital-marketing', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/digital-marketing.html'));
 });
 
 app.get('/about', (req, res) => {
