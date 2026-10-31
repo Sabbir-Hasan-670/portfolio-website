@@ -170,19 +170,19 @@ app.get('/sitemap.xml', async (req, res) => {
     const now = new Date().toISOString().split('T')[0];
     let urls = [
         { loc: `${host}/`,                         priority: '1.0', changefreq: 'weekly'  },
+        { loc: `${host}/social-media-marketing`,   priority: '0.9', changefreq: 'weekly'  },
+        { loc: `${host}/graphic-design`,           priority: '0.9', changefreq: 'weekly'  },
+        { loc: `${host}/logo-design`,              priority: '0.9', changefreq: 'weekly'  },
+        { loc: `${host}/digital-marketing`,        priority: '0.9', changefreq: 'weekly'  },
+        { loc: `${host}/networking`,               priority: '0.8', changefreq: 'weekly'  },
+        { loc: `${host}/portfolio`,                priority: '0.8', changefreq: 'weekly'  },
         { loc: `${host}/about`,                    priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/resume`,                   priority: '0.8', changefreq: 'monthly' },
         { loc: `${host}/blog`,                     priority: '0.9', changefreq: 'daily'   },
-        { loc: `${host}/tools`,                    priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/tools/subnet-calculator`,  priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/tools/dev-utilities`,      priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/contact`,                  priority: '0.6', changefreq: 'monthly' },
-        { loc: `${host}/sitemap`,                  priority: '0.8', changefreq: 'weekly'  },
-        { loc: `${host}/streams`,                  priority: '0.9', changefreq: 'weekly'  },
-        { loc: `${host}/Learn/Learn-CCNA/learn-ccna`, priority: '0.8', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-JS/learn-js`,  priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-MySQL/learn-mysql`, priority: '0.7', changefreq: 'monthly' },
-        { loc: `${host}/Learn/Learn-English/learn-english`, priority: '0.6', changefreq: 'monthly' }
+        { loc: `${host}/blog/how-to-design-a-logo`, priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/blog/how-to-be-a-good-social-media-manager`, priority: '0.8', changefreq: 'monthly' },
+        { loc: `${host}/contact`,                  priority: '0.7', changefreq: 'monthly' },
+        { loc: `${host}/resume`,                   priority: '0.6', changefreq: 'monthly' },
+        { loc: `${host}/sitemap`,                  priority: '0.6', changefreq: 'weekly'  }
     ];
     try {
         const [posts] = await db.query('SELECT slug, id, updated_at, created_at FROM blog_posts WHERE status="published" AND deleted_at IS NULL ORDER BY created_at DESC');
@@ -227,6 +227,77 @@ app.get('/sitemap.xsl', (req, res) => {
 // ==========================================
 // 🚀 SERVER-SIDE CRAWLABLE BLOG ROUTES (SSR)
 // ==========================================
+
+
+// ==========================================
+// 📝 MARKDOWN BLOG LOADER (OFFLINE & SEED POSTS)
+// ==========================================
+function loadMarkdownPost(slug) {
+    try {
+        const filePath = path.join(__dirname, 'content/blog', `${slug}.md`);
+        if (!fs.existsSync(filePath)) return null;
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const match = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+        if (!match) return null;
+        const frontmatterLines = match[1].split(/\r?\n/);
+        const mdBody = match[2];
+        const meta = {};
+        for (const line of frontmatterLines) {
+            const idx = line.indexOf(':');
+            if (idx > 0) {
+                const key = line.slice(0, idx).trim();
+                let val = line.slice(idx + 1).trim();
+                if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.slice(1, -1);
+                }
+                meta[key] = val;
+            }
+        }
+        let contentHtml = mdBody;
+        try {
+            const { marked } = require('marked');
+            contentHtml = marked.parse(mdBody);
+        } catch(e) {
+            console.error('marked parse fallback:', e.message);
+        }
+        return {
+            id: slug,
+            slug: slug,
+            title: meta.title || slug,
+            meta_title: meta.metaTitle || meta.title,
+            meta_description: meta.metaDescription || '',
+            category: meta.category || 'General',
+            reading_time: meta.readingTime || '6 min read',
+            created_at: meta.date || '2026-10-31',
+            updated_at: meta.date || '2026-10-31',
+            image_path: meta.ogImage || '/og-image.png',
+            tags: meta.tags || '',
+            content: contentHtml,
+            status: 'published',
+            excerpt: meta.metaDescription || ''
+        };
+    } catch(err) {
+        console.error('Error loading markdown post:', err.message);
+        return null;
+    }
+}
+
+function getAllMarkdownPosts() {
+    try {
+        const dir = path.join(__dirname, 'content/blog');
+        if (!fs.existsSync(dir)) return [];
+        const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+        const posts = [];
+        for (const file of files) {
+            const slug = file.replace(/\.md$/, '');
+            const post = loadMarkdownPost(slug);
+            if (post) posts.push(post);
+        }
+        return posts;
+    } catch(e) {
+        return [];
+    }
+}
 
 // Helper to fetch and render blog listing
 async function handleBlogListing(req, res, pageParam, categoryParam) {
@@ -317,6 +388,22 @@ app.get('/article', async (req, res) => {
 app.get('/blog/:slug', async (req, res) => {
     const siteUrl = 'https://sabbirhasan.com';
     const slug = req.params.slug;
+
+    // Check local markdown seed articles first (offline / instant SSR)
+    const mdPost = loadMarkdownPost(slug);
+    if (mdPost) {
+        const html = renderArticleHtml({
+            post: mdPost,
+            relatedPosts: getAllMarkdownPosts().filter(p => p.slug !== slug),
+            previousPost: null,
+            nextPost: null,
+            siteUrl,
+            authorImage: '/uploads/sabbir-secondary-blue.webp'
+        });
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+        return res.send(html);
+    }
 
     try {
         const [rows] = await db.query(
@@ -493,6 +580,31 @@ function sendHtmlWithTracking(req, res, filePath) {
 // Dedicated Clean Pages
 app.get('/resume', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/resume.html'));
+});
+
+// Core Freelance Service Pages
+app.get('/social-media-marketing', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/social-media-marketing.html'));
+});
+
+app.get('/graphic-design', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/graphic-design.html'));
+});
+
+app.get('/logo-design', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/logo-design.html'));
+});
+
+app.get('/digital-marketing', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/digital-marketing.html'));
+});
+
+app.get('/networking', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/networking.html'));
+});
+
+app.get('/portfolio', (req, res) => {
+    sendHtmlWithTracking(req, res, path.join(__dirname, 'public/portfolio.html'));
 });
 
 app.get('/about', (req, res) => {
@@ -1247,7 +1359,7 @@ app.post('/api/contact', upload.none(), async (req, res) => {
             from: `"Sabbir Hasan" <${process.env.EMAIL_USER}>`, 
             to: sender_email,
             subject: `Thank you for reaching out, ${sender_name}!`,
-            text: `Hi ${sender_name},\n\nThank you for visiting my portfolio and reaching out! \n\nI have received your message and will get back to you as soon as possible.\n\nBest regards,\nSabbir Hasan\nIT & Web Specialist`,
+            text: `Hi ${sender_name},\n\nThank you for visiting my portfolio and reaching out! \n\nI have received your message and will get back to you as soon as possible.\n\nBest regards,\nSabbir Hasan\nFreelance Digital Marketer & Graphic Designer\nhttps://sabbirhasan.com`,
             html: `
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 40px 0; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); overflow: hidden;">
@@ -2525,6 +2637,19 @@ app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal server error' });
         }
+    }
+});
+
+
+// 404 Fallback Handler
+app.use((req, res) => {
+    if (req.accepts('html')) {
+        res.status(404);
+        sendHtmlWithTracking(req, res, path.join(__dirname, 'public/404.html'));
+    } else if (req.accepts('json')) {
+        res.status(404).json({ error: 'Not found' });
+    } else {
+        res.status(404).type('txt').send('404 Not Found');
     }
 });
 

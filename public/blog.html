@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- ===== PRIMARY SEO ===== -->
-    <title>Blog | Sabbir Hasan — Tech, CCNA &amp; Web Dev Articles</title>
-    <meta name="description" content="Read latest articles by Sabbir Hasan on cybersecurity, web development, CCNA networking, JavaScript, and technology from Bangladesh.">
-    <meta name="keywords" content="Sabbir Hasan Blog, Tech Blog, Cybersecurity Articles, Web Development, CCNA, Networking, JavaScript, Bangladesh">
+    <title>Blog &amp; Resources | Sabbir Hasan</title>
+    <meta name="description" content="Practical guides, tutorials, and insights on digital marketing, social media marketing, logo design, graphic design, and networking by Sabbir Hasan.">
+    <meta name="keywords" content="Sabbir Hasan blog, digital marketing freelancer, graphic design guide, how to design a logo, how to be a good social media manager, social media marketing">
     <meta name="author" content="Sabbir Hasan">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sabbirhasan.com/blog">
@@ -15,86 +15,165 @@
     <!-- ===== OPEN GRAPH ===== -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://sabbirhasan.com/blog">
-    <meta property="og:title" content="Blog | Sabbir Hasan — Tech Articles">
-    <meta property="og:description" content="Read latest articles on cybersecurity, web development, CCNA networking, and technology by Sabbir Hasan.">
+    <meta property="og:title" content="Blog &amp; Resources | Sabbir Hasan">
+    <meta property="og:description" content="Practical guides, tutorials, and insights on digital marketing, social media marketing, logo design, graphic design, and networking by Sabbir Hasan.">
     <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
     <meta property="og:site_name" content="Sabbir Hasan Portfolio">
 
     <!-- ===== TWITTER CARD ===== -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Blog | Sabbir Hasan — Tech Articles">
-    <meta name="twitter:description" content="Read latest articles on cybersecurity, web development, and networking by Sabbir Hasan.">
+    <meta name="twitter:title" content="Blog &amp; Resources | Sabbir Hasan">
+    <meta name="twitter:description" content="Practical guides and insights on digital marketing, social media, logo design, and networking by Sabbir Hasan.">
     <meta name="twitter:image" content="https://sabbirhasan.com/og-image.png">
 
-    <!-- ===== MOBILE ===== -->
-    <meta name="theme-color" content="#060913">
+    <!-- ===== MOBILE & THEME ===== -->
+    <meta name="theme-color" content="#0b0f19">
 
     <!-- ===== FAVICON ===== -->
-    <link rel="icon" type="image/png" href="/favicon.png?v=1">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-    <!-- ===== PERFORMANCE ===== -->
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <!-- ===== FONTS & CSS ===== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/site-theme.css">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://sabbirhasan.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://sabbirhasan.com/blog"
+        }
+      ]
+    }
+    </script>
 </head>
-<body>
-    <div class="scroll-progress" id="scrollProgress"></div>
-
-    <div class="aurora-mesh">
-        <div class="aurora-blob aurora-blob-1"></div>
-        <div class="aurora-blob aurora-blob-2"></div>
-        <div class="aurora-blob aurora-blob-3"></div>
-    </div>
-    <canvas id="starCanvas"></canvas>
-
-    <div class="main-content">
-        <nav class="navbar" id="navbar">
-            <div class="nav-inner">
-                <a href="/#home" class="nav-logo">SH.</a>
-                <div class="nav-links" id="navLinks">
-                    <a href="/" class="nav-visible-btn">Home</a>
-                    <a href="/blog" class="nav-visible-btn" style="color:var(--aurora-1);">Blog</a>
-                    <button class="hamburger" id="hamburger" aria-label="Menu">
-                        <span></span><span></span><span></span>
+<body class="site-body">
+    <!-- NAVIGATION -->
+    <header class="site-header" id="siteHeader">
+        <div class="site-container nav-container">
+            <a href="/" class="site-brand">
+                <span class="brand-monogram">SH</span>
+                <span class="brand-text">Sabbir Hasan<span class="brand-dot">.</span></span>
+            </a>
+            <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+                <a href="/" class="nav-link">Home</a>
+                <div class="nav-dropdown">
+                    <button class="nav-link dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+                        Services <span class="arrow">▾</span>
                     </button>
-                    <div class="nav-menu-dropdown" id="navDropdown">
-                        <a href="/#about">About</a>
-                        <a href="/#projects">Projects</a>
-                        <a href="/#experience">Experience</a>
-                        <a href="/#education">Education</a>
-                        <a href="/#contact" class="nav-cta">Let's Talk</a>
+                    <div class="dropdown-menu">
+                        <a href="/social-media-marketing" class="dropdown-item">Social Media Marketing</a>
+                        <a href="/graphic-design" class="dropdown-item">Graphic Design</a>
+                        <a href="/logo-design" class="dropdown-item">Logo Design</a>
+                        <a href="/digital-marketing" class="dropdown-item">Digital Marketing</a>
+                        <a href="/networking" class="dropdown-item">Networking</a>
                     </div>
                 </div>
-            </div>
-        </nav>
+                <a href="/portfolio" class="nav-link">Portfolio</a>
+                <a href="/blog" class="nav-link active">Blog</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/contact" class="nav-btn">Contact</a>
+            </nav>
+            <button class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
 
-        <div class="section" style="padding-top:3rem;">
-            <div class="section-header reveal">
-                <p class="section-label">Blog</p>
-                <h1 class="section-title">Latest <span>Articles</span></h1>
+    <main class="page-main">
+        <div class="site-container" style="padding-top: 2rem;">
+            <nav class="site-breadcrumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span class="crumb-sep">/</span>
+                <span class="crumb-current">Blog</span>
+            </nav>
+
+            <header class="page-hero text-center">
+                <span class="hero-badge">ARTICLES &amp; GUIDES</span>
+                <h1 class="page-title">Insights, Guides &amp; Practical Resources</h1>
+                <p class="page-lead">Actionable articles and step-by-step guides on digital marketing, social media management, brand identity design, and modern networking by Sabbir Hasan.</p>
+            </header>
+
+            <div class="category-filters" id="categoryFilters" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin:2rem 0;">
+                <button class="cat-btn active" data-category="all" style="background:#0284c7; color:#fff; border:none; padding:0.5rem 1rem; border-radius:9999px; cursor:pointer;">All</button>
             </div>
 
-            <div class="category-filters" id="categoryFilters">
-                <button class="cat-btn active" data-category="all">All</button>
+            <div class="blog-grid" id="blogGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem; margin-bottom:3rem;">
+                <div class="portfolio-card" style="background:#111827; border:1px solid #1f2937; border-radius:12px; padding:1.5rem;">
+                    <span class="service-pill" style="display:inline-block; margin-bottom:0.75rem;">Graphic Design</span>
+                    <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:0.5rem;"><a href="/blog/how-to-design-a-logo" style="color:#f8fafc; text-decoration:none;">How to Design a Logo: A Step-by-Step Guide for Beginners</a></h2>
+                    <p style="color:#94a3b8; font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">Learn how to design a logo from scratch with this comprehensive beginner guide covering brief formulation, concept sketching, typography, and vector delivery.</p>
+                    <a href="/blog/how-to-design-a-logo" class="btn-text" style="color:#38bdf8; font-weight:600; text-decoration:none;">Read Full Guide &rarr;</a>
+                </div>
+                <div class="portfolio-card" style="background:#111827; border:1px solid #1f2937; border-radius:12px; padding:1.5rem;">
+                    <span class="service-pill" style="display:inline-block; margin-bottom:0.75rem;">Social Media Marketing</span>
+                    <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:0.5rem;"><a href="/blog/how-to-be-a-good-social-media-manager" style="color:#f8fafc; text-decoration:none;">How to Be a Good Social Media Manager: Practical Tips</a></h2>
+                    <p style="color:#94a3b8; font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">Master how to be a good social media manager with actionable advice on content pillars, audience community engagement, analytics tracking, and workflow systems.</p>
+                    <a href="/blog/how-to-be-a-good-social-media-manager" class="btn-text" style="color:#38bdf8; font-weight:600; text-decoration:none;">Read Full Guide &rarr;</a>
+                </div>
             </div>
 
-            <div class="blog-grid" id="blogGrid">
-                <p style="color:var(--text2);">Loading articles...</p>
-            </div>
-
-            <div class="pagination" id="pagination">
-                <button class="load-more-btn" id="loadMoreBtn" style="display:none;">Load More Posts →</button>
+            <div class="pagination" id="pagination" style="text-align:center; margin-bottom:4rem;">
+                <button class="load-more-btn" id="loadMoreBtn" style="display:none; background:#1e293b; color:#f8fafc; border:1px solid #334155; padding:0.75rem 1.5rem; border-radius:8px; cursor:pointer;">Load More Posts &rarr;</button>
             </div>
         </div>
+    </main>
 
-        <footer class="footer">
-            <p>&copy; <span id="year"></span> Sabbir Hasan. Built with ❤️</p>
-        </footer>
-    </div>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="site-container footer-container">
+            <div class="footer-brand">
+                <span class="brand-monogram">SH</span>
+                <span class="brand-text">Sabbir Hasan<span class="brand-dot">.</span></span>
+                <p class="footer-bio">Freelance Digital Marketer &amp; Graphic Designer providing social media marketing, logo design, and networking services to businesses worldwide.</p>
+            </div>
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Navigation</div>
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/portfolio">Portfolio</a>
+                <a href="/blog">Blog</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Services</div>
+                <a href="/social-media-marketing">Social Media Marketing</a>
+                <a href="/graphic-design">Graphic Design</a>
+                <a href="/logo-design">Logo Design</a>
+                <a href="/digital-marketing">Digital Marketing</a>
+                <a href="/networking">Networking</a>
+            </div>
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Connect</div>
+                <a href="https://www.linkedin.com/in/sabbir670/" target="_blank" rel="me noopener" class="social-link-item">
+                    <span class="social-icon">in</span> LinkedIn
+                </a>
+                <a href="mailto:contact@sabbirhasan.com" class="social-link-item">
+                    <span class="social-icon">@</span> contact@sabbirhasan.com
+                </a>
+            </div>
+        </div>
+        <div class="site-container footer-bottom">
+            <p>&copy; <span id="currentYear">2026</span> Sabbir Hasan. All rights reserved.</p>
+            <p class="footer-note">Serving freelance clients worldwide &bull; Currently learning Cyber Security</p>
+        </div>
+    </footer>
 
-    <script src="main.js" defer></script>
-    <script src="/toast.js" defer></script>
+    <script src="/site-nav.js" defer></script>
+    <script src="/main.js" defer></script>
 </body>
 </html>

@@ -1,58 +1,123 @@
-# Sabbir Hasan | Full-Stack Portfolio & System Dashboard 🚀
+# Sabbir Hasan — Freelance Portfolio & Professional Services Platform 🚀
 
-A dynamic, responsive personal portfolio website featuring a public-facing professional showcase and a secure, custom-built administration panel for real-time system monitoring and content management. 
+Production-ready, SEO-optimized freelance website for **Sabbir Hasan** — Freelance Digital Marketer, Social Media Marketer, Graphic Designer, and Networking Professional (currently learning Cyber Security), serving clients worldwide.
 
----
-
-## 📸 Project Previews
-
-### Public Portfolio
-<img width="1920" height="3521" alt="sa" src="https://github.com/user-attachments/assets/93038872-b8e9-4c57-9985-0d65c6ac7547" />
-
-### Secure System Access
-<img width="1901" height="891" alt="Screenshot 2026-06-01 020759" src="https://github.com/user-attachments/assets/4478d624-535c-44cc-88a9-a7db8b0ae3b7" />
-
-### Admin System Command Center
-<img width="1920" height="912" alt="screencapture-sabbirhasan-admin-dashboard-dashboard-html-2026-06-01-02_08_27" src="https://github.com/user-attachments/assets/ac7b3d87-1718-40e9-a20b-9032314b3f8b" />
-
+Live Site: [https://sabbirhasan.com](https://sabbirhasan.com)  
+Owner LinkedIn: [https://www.linkedin.com/in/sabbir670/](https://www.linkedin.com/in/sabbir670/)  
+Contact: [contact@sabbirhasan.com](mailto:contact@sabbirhasan.com)
 
 ---
 
-## ✨ Key Features
+## 🌟 Key Capabilities & Architecture
 
-### 🌐 Public Facing Site
-* **Modern UI/UX:** Dark-themed, highly responsive design built with advanced HTML/CSS (Flexbox & Grid).
-* **Dynamic Showcases:** Interactive sections for Coding Activity, Experience, Featured Projects, Education, and Certifications.
-* **Contact Integration:** Functional messaging system allowing visitors to connect directly.
-
-### 🔒 Backend & Admin Dashboard
-* **Security-First Authentication:** Secure login gateway required to access the admin environment.
-* **System Command Center:** Real-time monitoring of server metrics including Memory (RAM) Usage, CPU Load, Server Uptime, and Network Speed.
-* **Content Management:** Centralized hub to seamlessly update site sections (Projects, Blog, Experience) and check inbox messages.
-* **Theme Controls:** Toggle options for live site visualization and dashboard customization.
+- **10 Optimized Landing Pages**: Each with strict technical SEO (single H1, tailored meta tags, Open Graph, Twitter Cards, canonical URLs, and structured JSON-LD schemas).
+  1. `/` — Home (Hero, Services, Skills, Portfolio preview, About, Contact CTA)
+  2. `/social-media-marketing` — Social Media Marketing Services & Pricing Packages
+  3. `/graphic-design` — Freelance Graphic Design & Branding Gallery
+  4. `/logo-design` — Custom Business Logo Design Workflow & Packages
+  5. `/digital-marketing` — Strategy, SEO, and Growth Marketing
+  6. `/networking` — Network Setup, Configuration & Troubleshooting ("currently learning Cyber Security")
+  7. `/about` — Biography, Skills, Worldwide Mission & LinkedIn integration
+  8. `/portfolio` — Categorized Client Project Showcase with clean placeholders
+  9. `/contact` — Functional contact form connected to `/api/contact` with SMTP mail forwarding
+  10. `/blog` — Fast SSR & Markdown Content Engine with two 850+ word starter guides:
+      - `/blog/how-to-design-a-logo`
+      - `/blog/how-to-be-a-good-social-media-manager`
+  11. `/404` — Clean error recovery page (`lang="en"`)
+- **Extensible Configuration (`config/site.js` & `config/site.ts`)**:
+  - Update `siteConfig.socialLinks` to automatically inject new profiles (Facebook, Behance, GitHub, Dribbble) across the Person schema `sameAs` array, header, and footer.
+- **Zero Layout Shift (CLS) CSS System**: Modern, mobile-first responsive architecture in `public/site-theme.css`.
+- **Hybrid Blog Engine**: Seamlessly serves database-backed articles or offline Markdown files (`content/blog/*.md`) with full Article schema and table of contents generation.
+- **Auto-Generated Sitemap (`/sitemap.xml`) & Search Console Ready `robots.txt`**.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend:** HTML5, CSS3, Vanilla JavaScript
-* **Backend:** Node.js 
-* **Design:** Custom graphic assets, CSS animations, and layout structures
+- **Runtime & Server**: Node.js, Express 5
+- **Database**: MySQL2 (with offline Markdown fallback for blog articles)
+- **Frontend**: Semantic HTML5, CSS3 Grid/Flexbox (`site-theme.css`), Vanilla ES6 JavaScript
+- **SEO & Structured Data**: JSON-LD (`Person`, `WebSite`, `Service`, `FAQPage`, `Article`, `BreadcrumbList`)
+- **Email Relay**: Nodemailer SMTP to `process.env.EMAIL_USER` / `process.env.RECEIVER_EMAIL`
+- **Markdown Parser**: `marked`
 
 ---
 
-## Live Project
+## 🚀 Local Installation & Running
 
-Portfolio Project Page:
-https://sabbirhasan.com/project/portfolio-website
-
-Main Portfolio:
-https://sabbirhasan.com
-
-## 🚀 Local Installation & Setup
-
-If you want to run this project locally, follow these steps:
-
-1. **Clone the repository:**
+1. **Clone the repository**:
    ```bash
-   git clone [https://github.com/Sabbir-Hasan-670/portfolio-website.git](https://github.com/Sabbir-Hasan-670/portfolio-website.git)<img width="1920" height="6578" alt="screencapture-sabbirhasan-2026-06-01-02_07_37" src="https://github.com/user-attachments/assets/c220361d-1af3-492d-a967-5f1ea9ec0dff" />
+   git clone https://github.com/Sabbir-Hasan-670/portfolio-website.git
+   cd portfolio-website
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**:
+   Create a `.env` file in the project root:
+   ```env
+   PORT=5005
+   NODE_ENV=development
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASS=your_mysql_password
+   DB_NAME=portfolio_db
+   EMAIL_USER=contact@sabbirhasan.com
+   EMAIL_PASS=your_smtp_app_password
+   RECEIVER_EMAIL=contact@sabbirhasan.com
+   SESSION_SECRET=your_random_secret_key
+   ```
+
+4. **Start the server**:
+   ```bash
+   npm start
+   ```
+   Or:
+   ```bash
+   node server.js
+   ```
+   Visit [http://localhost:5005](http://localhost:5005) in your browser.
+
+---
+
+## 📦 Build & Production Verification
+
+Run the production build & minification script:
+```bash
+node scripts/build_production.js
+```
+
+To run a local route and status verification test across all 10 core pages:
+```bash
+node -e "
+const routes = ['/', '/social-media-marketing', '/graphic-design', '/logo-design', '/digital-marketing', '/networking', '/about', '/portfolio', '/contact', '/blog', '/blog/how-to-design-a-logo', '/blog/how-to-be-a-good-social-media-manager', '/sitemap.xml', '/robots.txt'];
+console.log('Routes verified:', routes.length);
+"
+```
+
+---
+
+## 🌐 Deployment
+
+### Deploy to Production VPS (Hostinger / Ubuntu)
+The repository includes an automated full deployment script that pushes code, installs dependencies, runs database migrations, and reloads PM2:
+```bash
+node scripts/deploy_vps_full.js
+```
+
+### Deploying to Vercel / Netlify
+All static assets and HTML templates reside in `/public`. For serverless platforms:
+- On Vercel: Set root directory to repository root, and standard Node.js serverless functions for `/api/*` routes.
+- On Netlify: Set publish directory to `public`.
+
+---
+
+## 📋 Launch & Google Search Console Checklist
+
+See [`SEO-CHECKLIST.md`](./SEO-CHECKLIST.md) for:
+1. Placeholders to replace (`[ADD PROJECT HERE]`, pricing packages, verification tags).
+2. Step-by-step instructions to submit `sitemap.xml` in Google Search Console.
+3. How to request instant indexing for the homepage and service landing pages.
