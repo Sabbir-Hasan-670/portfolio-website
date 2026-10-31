@@ -124,6 +124,64 @@ function processCodeBlocks(content) {
 /**
  * Render Complete Blog Listing Page HTML
  */
+
+const CATEGORY_EDITORIAL = {
+    'digital-marketing': {
+        eyebrow: 'DIGITAL MARKETING STRATEGY & GROWTH',
+        title: 'Digital Marketing &amp; Social Media Strategy Guides',
+        description: 'Explore in-depth articles, actionable case studies, and industry frameworks on digital marketing, organic search engine optimization (SEO), performance advertising, and cross-platform brand growth. Authored by Sabbir Hasan, these guides help small businesses, founders, and marketing professionals execute high-ROI digital campaigns.',
+        guide: `
+            <section class="category-guide-section" style="max-width: 960px; margin: 3rem auto 0; padding: 2.25rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; font-family: 'DM Sans', sans-serif;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--lime, #c8ff00); letter-spacing: 1px; margin-bottom: 0.5rem;">// TOPIC GUIDE &amp; OVERVIEW</div>
+                <h2 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; color: #f1f5f9; margin-bottom: 1rem;">Mastering Modern Digital Marketing &amp; Audience Acquisition</h2>
+                <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
+                    In today's algorithmic landscape, digital marketing requires a multi-disciplinary balance between creative storytelling, technical search engine optimization, and rigorous data analytics. From organic content distribution on LinkedIn, Facebook, and Instagram to paid funnel optimization and conversion rate experiments, these publications deliver actionable, battle-tested methodologies.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-top: 1.25rem;">
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🎯 Audience Targeting &amp; Persona Mapping</h3>
+                        <p>Learn how to identify high-intent demographic segments, conduct competitor keyword intelligence, and craft messaging that resonates with specific buyer personas.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">📊 Analytics &amp; Conversion Attribution</h3>
+                        <p>Track multi-channel user journeys using Google Analytics 4, server-side event telemetry, and custom conversion funnels to maximize return on advertising spend (ROAS).</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🚀 Content Distribution &amp; Viral Loops</h3>
+                        <p>Frameworks for repurposing core assets into short-form video scripts, carousel presentations, infographics, and email newsletter automations.</p>
+                    </div>
+                </div>
+            </section>`
+    },
+    'ai-social-media-manager': {
+        eyebrow: 'AI-DRIVEN SOCIAL WORKFLOWS & AUTOMATION',
+        title: 'AI Social Media Management &amp; Automated Growth',
+        description: 'Discover how modern social media managers leverage artificial intelligence, workflow automation tools, and predictive analytics to scale content production, boost engagement, and maintain cohesive brand voice across global social networks.',
+        guide: `
+            <section class="category-guide-section" style="max-width: 960px; margin: 3rem auto 0; padding: 2.25rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; font-family: 'DM Sans', sans-serif;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--lime, #c8ff00); letter-spacing: 1px; margin-bottom: 0.5rem;">// ROLE DEEP-DIVE &amp; AUTOMATION STACK</div>
+                <h2 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; color: #f1f5f9; margin-bottom: 1rem;">The Role of the Modern AI Social Media Manager</h2>
+                <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
+                    The evolution of generative AI and automated analytics has transformed social media management from manual scheduling into a high-leverage strategic discipline. An AI social media manager combines prompt engineering, dynamic asset generation, automated copy refinement, and sentiment monitoring to manage multiple brand channels efficiently without sacrificing creative quality.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-top: 1.25rem;">
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🤖 Generative Copy &amp; Prompt Workflows</h3>
+                        <p>Build custom system prompts to maintain consistent brand tone of voice, generate high-performing hooks, and optimize hashtags for each platform's algorithm.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">📈 Performance Prediction &amp; Sentiment Analysis</h3>
+                        <p>Analyze engagement signals and audience comments with natural language processing to gauge customer sentiment and proactively adapt content calendars.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">⚡ Automated Publishing &amp; Asset Resizing</h3>
+                        <p>Streamline asset pipeline using headless tools, automatic WebP compression, and cross-platform API dispatchers for Facebook, Instagram, LinkedIn, and X.</p>
+                    </div>
+                </div>
+            </section>`
+    }
+};
+
 function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, currentCategory, categories, siteUrl }) {
     const displayCategory = currentCategory ? currentCategory.split(/[- ]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : null;
     const catSlug = currentCategory ? slugifyCategory(currentCategory) : null;
@@ -321,7 +379,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             <header class="blog-hero-header reveal active">
                 <div class="blog-eyebrow"><span class="blog-dot"></span> ${displayCategory ? 'CATEGORY ARCHIVE' : 'ENGINEERING NOTES'}</div>
                 <h1 class="blog-hero-title">${displayCategory ? escapeHtml(displayCategory) + ' <span>Articles</span>' : 'Technical <span>Articles</span> &amp; Guides'}</h1>
-                <p class="blog-hero-desc">${displayCategory ? 'Practical tutorials and lab breakdowns filed under ' + escapeHtml(displayCategory) + '.' : 'CCNA network guides, cybersecurity defense, Linux administration, and full-stack engineering notes.'}</p>
+                <p class="blog-hero-desc">${displayCategory ? (catSlug && CATEGORY_EDITORIAL[catSlug] ? CATEGORY_EDITORIAL[catSlug].description : 'Practical tutorials, strategic insights, and field notes filed under ' + escapeHtml(displayCategory) + '.') : 'Practical field guides on Cisco enterprise networking, cybersecurity defenses, Linux administration, and modern digital marketing strategies. Authored by Sabbir Hasan from real-world production systems and hands-on laboratory experience.'}</p>
             </header>
 
             <!-- SEARCH & FILTERS -->
@@ -349,6 +407,8 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
                 ${paginationHtml}
             </div>
         
+            ${catSlug && CATEGORY_EDITORIAL[catSlug] ? CATEGORY_EDITORIAL[catSlug].guide : ''}
+
             <!-- EDITORIAL PUBLICATION SCOPE (TOPICAL AUTHORITY) -->
             <section class="blog-editorial-scope" style="max-width: 960px; margin: 3rem auto 0; padding: 2.5rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; font-family: 'DM Sans', sans-serif;">
                 <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--lime, #c8ff00); letter-spacing: 1px; margin-bottom: 0.5rem;">// EDITORIAL PUBLICATION SCOPE</div>
@@ -380,6 +440,14 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
                     <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
                         <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🔒 Network Access &amp; Subnets</h3>
                         <p>Step-by-step guides on IPv4 VLSM subnetting, CIDR prefix calculations, DHCP relay agents, and stateful perimeter firewall rule sets.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">📈 Digital Marketing &amp; SMM</h3>
+                        <p>Actionable tactics for social media marketing, organic audience growth, viral content loops, and analytics tracking across Facebook, Instagram, and LinkedIn.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🎨 Graphic &amp; Logo Design</h3>
+                        <p>Design principles for corporate brand identity, minimalist logo design, visual hierarchy, vector graphics, and high-converting marketing creatives.</p>
                     </div>
                 </div>
             </section>
@@ -422,74 +490,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
     <script src="/main.js?v=4" defer></script>
     <script src="/toast.js" defer></script>
-    <script>
-    // Live client-side search enhancement
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('blogSearchInput');
-        const resultsBox = document.getElementById('liveSearchResults');
-        const blogGrid = document.getElementById('blogGrid');
-        const paginationWrapper = document.getElementById('paginationWrapper');
-        const spinner = document.getElementById('searchSpinner');
-        let debounceTimer;
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(debounceTimer);
-                const q = e.target.value.trim();
-                if (q.length < 2) {
-                    resultsBox.style.display = 'none';
-                    resultsBox.innerHTML = '';
-                    blogGrid.style.display = 'grid';
-                    if (paginationWrapper) paginationWrapper.style.display = 'flex';
-                    if (spinner) spinner.style.display = 'none';
-                    return;
-                }
-
-                if (spinner) spinner.style.display = 'inline-block';
-
-                debounceTimer = setTimeout(async () => {
-                    try {
-                        const res = await fetch('/api/blog/search?q=' + encodeURIComponent(q));
-                        const data = await res.json();
-                        if (spinner) spinner.style.display = 'none';
-
-                        if (data && data.length > 0) {
-                            resultsBox.innerHTML = '<h3>Search Results for "' + q + '" (' + data.length + ')</h3><div class="blog-grid">' + data.map(post => \`
-                                <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
-                                    <a href="/blog/\${post.slug}" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
-                                        <img src="\${post.image_path || '/og-image.png'}" alt="\${post.title}" class="blog-img" loading="lazy">
-                                    </a>
-                                    <div class="blog-body">
-                                        <div class="blog-meta-bar">
-                                            <span class="blog-category">\${post.category || 'Tech'}</span>
-                                            <span class="blog-reading-time">⏱️ \${post.reading_time || '4 min read'}</span>
-                                        </div>
-                                        <h3 class="blog-title"><a href="/blog/\${post.slug}">\${post.title}</a></h3>
-                                        <p class="blog-excerpt">\${post.excerpt || ''}</p>
-                                        <div class="blog-footer-row">
-                                            <span class="blog-date">📅 \${post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
-                                            <a href="/blog/\${post.slug}" class="read-more">Read Article <span>→</span></a>
-                                        </div>
-                                    </div>
-                                </article>
-                            \`).join('') + '</div>';
-                            resultsBox.style.display = 'block';
-                            blogGrid.style.display = 'none';
-                            if (paginationWrapper) paginationWrapper.style.display = 'none';
-                        } else {
-                            resultsBox.innerHTML = '<div class="empty-state"><p>No articles matching "<strong>' + q + '</strong>".</p></div>';
-                            resultsBox.style.display = 'block';
-                            blogGrid.style.display = 'none';
-                            if (paginationWrapper) paginationWrapper.style.display = 'none';
-                        }
-                    } catch(err) {
-                        if (spinner) spinner.style.display = 'none';
-                    }
-                }, 300);
-            });
-        }
-    });
-    </script>
+    <script src="/blog-search.js?v=2" defer></script>
 
 </body>
 </html>`;

@@ -232,13 +232,16 @@ app.get('/sitemap.xml', async (req, res) => {
     ];
     try {
         const [posts] = await db.query('SELECT slug, id, updated_at, created_at, category FROM blog_posts WHERE status="published" AND deleted_at IS NULL AND LOWER(category) NOT IN ("gaming", "sports") ORDER BY created_at DESC');
-        if (posts && posts.length >= 5) {
+        if (posts && posts.length > 0) {
             urls.push({ loc: `${host}/blog`, priority: '0.9', changefreq: 'weekly', lastmod: '2026-10-31' });
             posts.forEach(post => {
                 const slug = post.slug || post.id;
                 const dateToUse = post.updated_at || post.created_at;
                 const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : '2026-10-31';
                 urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
+            });
+            ['digital-marketing', 'ai-social-media-manager', 'social-media-marketing', 'graphic-design', 'networking'].forEach(c => {
+                urls.push({ loc: `${host}/blog/category/${c}`, priority: '0.7', changefreq: 'weekly', lastmod: '2026-10-31' });
             });
         }
     } catch (e) { /* DB fallback */ }
