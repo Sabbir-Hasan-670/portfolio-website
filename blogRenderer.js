@@ -174,7 +174,19 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
                 </div>
             </div>
         </article>`;
-    }).join('') : `<div class="empty-state"><p>No published articles found in this category.</p><a href="/blog" class="action-btn">View All Articles</a></div>`;
+    }).join('') : `
+        <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 4rem 1.5rem; background: rgba(10, 14, 28, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; margin: 1rem 0 3rem; backdrop-filter: blur(12px);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 14px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); color: #38bdf8; font-size: 1.75rem; margin-bottom: 1.25rem;">
+                📝
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.75rem; font-family: 'Syne', sans-serif;">Technical Articles Coming Soon</h2>
+            <p style="color: #94a3b8; max-width: 520px; margin: 0 auto 1.75rem; font-size: 0.95rem; line-height: 1.6;">
+                In-depth field notes on Cisco CCNA networking, Linux server administration, and cybersecurity defense are currently being drafted. Stay tuned for new publications!
+            </p>
+            <a href="/" style="display: inline-flex; align-items: center; gap: 8px; padding: 0.75rem 1.5rem; background: rgba(200, 255, 0, 0.1); border: 1px solid #c8ff00; border-radius: 8px; color: #c8ff00; text-decoration: none; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; transition: all 0.2s ease;">
+                ← Return to Home
+            </a>
+        </div>`;
 
     // Pagination links
     let paginationHtml = '';
@@ -301,7 +313,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             </header>
 
             <!-- SEARCH & FILTERS -->
-            <div class="blog-controls-wrapper">
+            <div class="blog-controls-wrapper" ${totalPosts === 0 ? 'style="display:none;"' : ''}>
                 <div class="search-box-container">
                     <span class="search-icon">🔍</span>
                     <input type="search" id="blogSearchInput" placeholder="Search articles by title, topic, or keyword..." aria-label="Search articles" autocomplete="off">
