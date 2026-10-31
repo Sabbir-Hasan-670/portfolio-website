@@ -27,12 +27,9 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
+      "@type": "WebPage",
       "name": "Developer Utilities",
       "url": "https://sabbirhasan.com/tools/dev-utilities",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript",
       "description": "Client-side utilities for JSON formatting, Base64 conversion, and URL encoding.",
       "author": {
         "@type": "Person",
@@ -40,10 +37,11 @@
         "name": "Sabbir Hasan",
         "url": "https://sabbirhasan.com/"
       },
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      "publisher": {
+        "@type": "Person",
+        "@id": "https://sabbirhasan.com/#person",
+        "name": "Sabbir Hasan",
+        "url": "https://sabbirhasan.com/"
       }
     }
     </script>
@@ -279,6 +277,8 @@
                     <p style="margin-bottom:0.6rem;"><strong>JSON (JavaScript Object Notation):</strong> Formatted according to RFC 8259 specifications, supporting nested objects, arrays, string primitives, numeric values, booleans, and null types with automatic syntax tree validation.</p>
                     <p style="margin-bottom:0.6rem;"><strong>Base64 Data Encoding:</strong> Complies with RFC 4648 standard base64 alphabet, utilizing padding characters (=) where necessary for accurate binary-to-text representation across networks.</p>
                     <p><strong>Percent-Encoding (URL Encoding):</strong> Adheres to RFC 3986 for uniform resource identifiers, ensuring reserved characters are safely encoded as UTF-8 hex byte sequences.</p>
+
+                    <p style="margin-top:0.6rem;"><strong>Diagnostic Logging &amp; Validation:</strong> Input data is never sent to a remote API or stored in local browser cookies. Formatting, tree validation, and Base64 padding calculations execute synchronously with instant clipboard interaction.</p>
                 </div>
             </section>
         </main>
