@@ -6,6 +6,7 @@
 # Standard Crawlers
 User-agent: *
 Allow: /
+Allow: /api/github-graph
 Disallow: /admin
 Disallow: /admin/
 Disallow: /login
