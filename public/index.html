@@ -1375,54 +1375,54 @@
         <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2.5rem;">
             <p style="font-family:'JetBrains Mono',monospace; color:var(--lime); font-size:0.85rem; letter-spacing:1px; margin-bottom:0.5rem;">// TECHNICAL FAQ &amp; OVERVIEW</p>
             <h2 style="font-family:'Syne',sans-serif; color:var(--text1); font-size:1.8rem; margin-bottom:1.5rem;">Engineering Methodology &amp; Working Standards</h2>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.8rem; color:var(--text2); font-size:0.92rem; line-height:1.7;">
+                                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.8rem; color:var(--text2); font-size:0.92rem; line-height:1.7;">
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Network Infrastructure Architecture</h3>
-                    <p>Every network follows standard Cisco models. Systems use Core, Distribution, and Access layers. Connections use link aggregation with LACP. Gateways use HSRP and VRRP to prevent single points of failure. VLANs divide local networks into safe zones. Access Control Lists inspect packets to keep traffic fast and secure.</p>
+                    <p>Every network follows standard Cisco models. Systems use Core, Distribution, and Access layers. Connections use link aggregation with LACP for higher bandwidth. Gateways use HSRP and VRRP to prevent single points of failure. VLANs divide local networks into safe zones. Access Control Lists inspect packets to keep traffic fast and secure. Topologies are tested in Cisco Packet Tracer before deployment.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Systems Defense &amp; Infrastructure Hardening</h3>
-                    <p>Security is built into systems from the start. Servers use modern TLS 1.3 ciphers. HTTP Strict Transport Security is active with HSTS preloading. Content Security Policy headers block cross-site scripting. Rate limits protect public APIs from abuse. Database queries use parameters to block SQL injection risks.</p>
+                    <p>Security is built into systems from the start. Servers use modern TLS 1.3 ciphers for all traffic. HTTP Strict Transport Security is active with HSTS preloading. Content Security Policy headers block cross-site scripting attacks. Rate limits protect public APIs from automated bot abuse. Database queries use parameters to block SQL injection risks. Periodic port audits verify that only required ports remain open.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Full-Stack Software Engineering</h3>
-                    <p>Web applications focus on clean code and quick responses. Backends run on Node.js with SQL databases. Connection pools keep database lookups fast. Input checks validate all client requests. Frontends stay light with zero extra bloat. Pages render fast on mobile phones and desktop computers.</p>
+                    <p>Web applications focus on clean code and quick responses. Backends run on Node.js with structured SQL databases. Connection pools keep database lookups fast and reliable. Input checks validate all client requests before processing. Frontends stay light with zero extra script bloat. Pages render fast on mobile phones, tablets, and desktop computers.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Relational Database Architecture</h3>
-                    <p>Databases follow clean relational design rules. Storage engines enforce strict ACID transactions. Every table uses explicit primary keys and foreign keys. Composite indexes speed up common lookups. Multi-table steps use automatic rollbacks. This model keeps user and system records accurate.</p>
+                    <p>Databases follow clean relational design rules in third normal form. Storage engines enforce strict ACID transactions. Every table uses explicit primary keys and foreign keys for data integrity. Composite indexes speed up common search lookups. Multi-table steps use automatic rollbacks on errors. This model keeps user and system records accurate.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Continuous Integration &amp; Deployment</h3>
-                    <p>Code updates run through automatic checks before release. Linters check script quality and format. Deployments use automated Git hooks. PM2 process managers restart apps with zero downtime. Nginx reverse proxies route web traffic. Brotli and gzip compress web files for fast loading.</p>
+                    <p>Code updates run through automatic checks before release. Linters check script quality, syntax, and formatting. Deployments use automated Git hooks for seamless updates. PM2 process managers restart apps with zero downtime. Nginx reverse proxies route web traffic securely. Brotli and gzip compress web files for fast loading speeds.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Client-Side Privacy &amp; Tooling Architecture</h3>
-                    <p>All developer tools on this website run inside your browser. Subnet calculators and CIDR tools never send data to remote servers. All JSON formatting happens on your local device. Private IP blocks and tokens stay safe. Your technical data stays completely private.</p>
+                    <p>All developer tools on this website run inside your browser. Subnet calculators and CIDR tools never send data to remote servers. All JSON formatting happens on your local device CPU. Private IP blocks, network masks, and tokens stay safe. Your technical data stays completely private and secure.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">High Availability &amp; Edge Performance Tuning</h3>
-                    <p>Fast global page speed relies on reverse proxy caching. Servers use HTTP/2 multiplexing for quick asset delivery. Static images use modern WebP formats. DNS prefetching speeds up external connections. Clean code without heavy libraries keeps server response times sub-second.</p>
+                    <p>Fast global page speed relies on reverse proxy caching. Servers use HTTP/2 multiplexing for quick asset delivery. Static images use modern WebP formats to save data. DNS prefetching speeds up external resource connections. Clean code without heavy libraries keeps server response times sub-second worldwide.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Web Accessibility &amp; Semantic Standards</h3>
-                    <p>Web pages use standard W3C semantic HTML5 elements. Proper landmarks and ARIA roles guide screen readers. Clear heading structures help users navigate content. Focus outlines support keyboard users. The site layout complies with WCAG 2.1 AA accessibility guidelines.</p>
+                    <p>Web pages use standard W3C semantic HTML5 elements throughout. Proper landmarks and ARIA roles guide screen readers effectively. Clear heading structures help users navigate content smoothly. Focus outlines support keyboard-only users with full visibility. The site layout complies with WCAG 2.1 AA accessibility guidelines.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Security Auditing &amp; Telemetry Monitoring</h3>
-                    <p>Live servers undergo regular technical security audits. Scans check HTTP security headers and SSL certificates. DNSSEC protects domain lookups from spoofing. Server logs record access times and traffic rates. Active monitoring identifies unusual spikes to keep services stable.</p>
+                    <p>Live servers undergo regular technical security audits. Scans check HTTP security headers, SSL certificates, and cipher strength. DNSSEC protects domain lookups from spoofing and redirection. Server logs record access times, errors, and traffic rates. Active monitoring identifies unusual spikes to keep services stable.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Protocol Inspection &amp; Packet Flow Analysis</h3>
-                    <p>Network diagnostics inspect real packet data. Diagnostic steps check TCP handshakes and sequence numbers. Tests verify MTU path discovery across routers. Ping and traceroute checks measure round-trip latency. Packet inspection ensures clean frame delivery across switches.</p>
+                    <p>Network diagnostics inspect real packet data using Wireshark. Diagnostic steps check TCP handshakes, window size, and sequence numbers. Tests verify MTU path discovery across connected routers. Ping and traceroute checks measure round-trip latency accurately. Packet inspection ensures clean frame delivery across switches.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">DNS Architecture &amp; Deliverability Standards</h3>
-                    <p>Domain name routing runs on fast authoritative nameservers. Automated DNSSEC keys prevent DNS cache poisoning. Records map A and AAAA addresses with low TTL. Email domains use strict SPF, DKIM, and DMARC policies. These rules prevent email spoofing and ensure message delivery.</p>
+                    <p>Domain name routing runs on fast authoritative nameservers. Automated DNSSEC keys prevent DNS cache poisoning and man-in-the-middle attacks. Records map A and AAAA addresses with low TTL for fast updates. Email domains use strict SPF, DKIM, and DMARC policies. These rules prevent email spoofing and ensure message delivery.</p>
                 </div>
                 <div>
                     <h3 style="color:var(--text1); font-size:1.05rem; margin-bottom:0.4rem;">Search Engineering &amp; Generative Discovery</h3>
-                    <p>This platform follows modern search engine guidelines. Pages include rich Schema.org Person and WebSite JSON-LD graphs. Automatic XML sitemaps guide web search bots. A clean llms.txt file helps AI search engines index site content. Every page uses unique titles and meta descriptions.</p>
+                    <p>This platform follows modern search engine guidelines and standards. Pages include rich Schema.org Person and WebSite JSON-LD graphs. Automatic XML sitemaps guide web search bots across all sections. A clean llms.txt file helps AI search engines index site content accurately. Every page uses unique titles, canonical tags, and meta descriptions.</p>
                 </div>
             </div></div>
         </div>
