@@ -246,7 +246,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/blog-v7.css?v=4">
+    <link rel="stylesheet" href="/blog-v7.min.css?v=5">
 
     <!-- BreadcrumbList Schema -->
     <script type="application/ld+json">
@@ -336,6 +336,41 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             <div class="pagination-wrapper" id="paginationWrapper">
                 ${paginationHtml}
             </div>
+        
+            <!-- EDITORIAL PUBLICATION SCOPE (TOPICAL AUTHORITY) -->
+            <section class="blog-editorial-scope" style="max-width: 960px; margin: 3rem auto 0; padding: 2.5rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; font-family: 'DM Sans', sans-serif;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--lime, #c8ff00); letter-spacing: 1px; margin-bottom: 0.5rem;">// EDITORIAL PUBLICATION SCOPE</div>
+                <h2 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; color: #f1f5f9; margin-bottom: 1rem;">Engineering Curriculum &amp; Field Notes</h2>
+                <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem;">
+                    This technical publication covers practical computer networking, defensive cybersecurity, full-stack systems architecture, and Linux server administration. Each upcoming article is written from real-world laboratory exercises, verified Packet Tracer topologies, and production deployment experience.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🌐 Cisco CCNA &amp; Routing</h3>
+                        <p>Detailed breakdowns of OSPF dynamic routing, 802.1Q VLAN segmentation, inter-VLAN routing, and Access Control Lists using Cisco Packet Tracer simulations.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🛡️ Cybersecurity &amp; Defense</h3>
+                        <p>Field guides on Linux server hardening, port scanning analysis with Nmap, OWASP web application defense, and secure credential governance.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">⚡ Full-Stack &amp; Databases</h3>
+                        <p>Architectural walkthroughs of Node.js micro-services, MySQL relational schemas, ACID transaction handling, and client-side web performance.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">⚙️ Linux Admin &amp; DevOps</h3>
+                        <p>Hands-on tutorials for Ubuntu server deployment, PM2 process management, Nginx reverse proxy routing, and SSL certificate lifecycles.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">📡 Packet Flow &amp; Telemetry</h3>
+                        <p>Packet analysis routines with Wireshark, evaluating TCP sequence numbers, latency discovery, MTU path limits, and frame transmission across networks.</p>
+                    </div>
+                    <div style="padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h3 style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 0.4rem; font-family: 'Syne', sans-serif;">🔒 Network Access &amp; Subnets</h3>
+                        <p>Step-by-step guides on IPv4 VLSM subnetting, CIDR prefix calculations, DHCP relay agents, and stateful perimeter firewall rule sets.</p>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- EXECUTIVE SITE FOOTER -->
@@ -569,7 +604,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/blog-v7.css?v=4">
+    <link rel="stylesheet" href="/blog-v7.min.css?v=5">
 
     <!-- ===== STRUCTURED DATA: Article & Breadcrumbs ===== -->
     <script type="application/ld+json">
