@@ -2332,6 +2332,8 @@ app.post('/api/admin/blog/approve-all', requireAuth, async (req, res) => {
 // =========================================================================
 // WORD DOCUMENT (.DOCX) IMPORT & CONTENT OPTIMIZER FOR BLOG
 // =========================================================================
+const recentWordPublishes = new Map();
+
 function optimizeWordHtml(rawHtml) {
     if (!rawHtml) return '';
     let html = rawHtml;
@@ -2453,7 +2455,7 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
             return res.status(400).json({ error: 'The uploaded Word document appears to be empty.' });
         }
 
-        // Title Extraction
+        // Title Extraction: User input has absolute priority
         let title = (req.body.title || '').trim();
         if (!title) {
             const h1Match = rawHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
@@ -2461,10 +2463,10 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
                 title = stripHtml(h1Match[1]).trim();
                 rawHtml = rawHtml.replace(h1Match[0], '').trim();
             } else {
-                const pMatch = rawHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-                if (pMatch && stripHtml(pMatch[1]).trim().length > 0 && stripHtml(pMatch[1]).trim().length < 100) {
-                    title = stripHtml(pMatch[1]).trim();
-                    rawHtml = rawHtml.replace(pMatch[0], '').trim();
+                const h2Match = rawHtml.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+                if (h2Match && stripHtml(h2Match[1]).trim().length < 120) {
+                    title = stripHtml(h2Match[1]).trim();
+                    rawHtml = rawHtml.replace(h2Match[0], '').trim();
                 } else {
                     title = path.basename(req.file.originalname, ext).replace(/[-_]+/g, ' ').trim();
                 }
@@ -2479,9 +2481,14 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
         const tags = (req.body.tags || '').trim();
         const customSlug = (req.body.custom_slug || '').trim();
         const finalSlug = await ensureUniqueSlug(customSlug || title);
-        const excerpt = generateExcerpt(htmlContent);
-        const readingTime = calculateReadingTime(htmlContent);
-        const metaTitle = `${title} | Sabbir Hasan`;
+
+        // Excerpt & Meta Description: User provided takes absolute priority
+        const userMetaDesc = (req.body.meta_description || req.body.excerpt || '').trim();
+        const excerpt = userMetaDesc || generateExcerpt(htmlContent);
+
+        // Meta Title: User provided takes absolute priority
+        const userMetaTitle = (req.body.meta_title || '').trim();
+        const metaTitle = userMetaTitle || `${title} | Sabbir Hasan`;
         const metaDesc = excerpt;
         const status = req.body.status || 'published';
 
@@ -2505,7 +2512,7 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
                     excerpt,
                     meta_title: metaTitle,
                     meta_description: metaDesc,
-                    reading_time: readingTime,
+                    reading_time: calculateReadingTime(htmlContent),
                     content: htmlContent,
                     cover_image: coverImage,
                     images_count: extractedImages.length
@@ -2513,7 +2520,31 @@ app.post('/api/admin/blog/import-word', requireAuth, upload.single('word_file'),
             });
         }
 
+        // Duplicate Publish Prevention: block duplicate calls within 5 seconds for same slug
+        const publishKey = `${req.session?.adminId || 'admin'}_${finalSlug}`;
+        const lastTime = recentWordPublishes.get(publishKey);
+        if (lastTime && (Date.now() - lastTime < 5000)) {
+            console.warn(`[Word Import] Duplicate publish ignored for slug: ${finalSlug}`);
+            return res.json({
+                success: true,
+                duplicateIgnored: true,
+                message: 'Article already published (duplicate click ignored).',
+                slug: finalSlug,
+                title: title,
+                imagesCount: extractedImages.length,
+                savedPercentage
+            });
+        }
+        recentWordPublishes.set(publishKey, Date.now());
+        if (recentWordPublishes.size > 100) {
+            const now = Date.now();
+            for (const [k, v] of recentWordPublishes) {
+                if (now - v > 10000) recentWordPublishes.delete(k);
+            }
+        }
+
         // Action: direct publish
+        const readingTime = calculateReadingTime(htmlContent);
         const [insertResult] = await db.query(
             `INSERT INTO blog_posts (title, slug, category, content, image_path, status, excerpt, meta_title, meta_description, tags, reading_time)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,

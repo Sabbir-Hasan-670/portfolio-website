@@ -648,22 +648,28 @@
                         <div class="admin-field" style="grid-column: 1 / -1;">
                             <label style="color: #f1f5f9; font-weight: 600;">Select Word Document (.docx) <span style="color: #ef4444;">*</span></label>
                             <input type="file" id="word-file" name="word_file" accept=".docx" required class="file-input" style="padding: 10px; border-color: rgba(56, 189, 248, 0.4); background: rgba(0,0,0,0.25);">
-                            <small style="color: #64748b; font-size: 0.78rem; display: block; margin-top: 4px;">Supports all standard Microsoft Word .docx files. No need to upload images separately — every embedded photo is saved &amp; linked automatically.</small>
+                            <small style="color: #64748b; font-size: 0.78rem; display: block; margin-top: 4px;">Supports all standard Microsoft Word .docx files. Every embedded photo is saved, compressed to WebP &amp; linked automatically.</small>
+                        </div>
+
+                        <div class="admin-field" style="grid-column: 1 / -1;">
+                            <label style="color: #38bdf8; font-weight: 600;">Article Title (Optional - Type exact title you want)</label>
+                            <input type="text" id="word-title" name="title" placeholder="e.g. How to Be a Good Social Media Manager (if empty, uses Word heading or filename)" autocomplete="off" style="border-color: rgba(56, 189, 248, 0.5); font-size: 0.98rem; padding: 10px;">
+                            <small style="color: #94a3b8; font-size: 0.78rem; display: block; margin-top: 4px;">Enter your title here so the system uses your exact title instead of guessing from text.</small>
                         </div>
 
                         <div class="admin-field">
                             <label>Custom URL Slug (Optional)</label>
-                            <input type="text" id="word-slug" name="custom_slug" placeholder="e.g. cisco-ccna-study-notes (auto-generated if empty)" autocomplete="off">
-                        </div>
-
-                        <div class="admin-field">
-                            <label>Focus Keywords / Tags</label>
-                            <input type="text" id="word-tags" name="tags" placeholder="e.g. Cisco, CCNA, Networking, VLAN" autocomplete="off">
+                            <input type="text" id="word-slug" name="custom_slug" placeholder="e.g. how-to-be-a-good-social-media-manager (auto-generated if empty)" autocomplete="off">
                         </div>
 
                         <div class="admin-field">
                             <label>Category</label>
-                            <input type="text" id="word-category" name="category" value="Networking" placeholder="e.g. Networking, Cybersecurity" autocomplete="off" required>
+                            <input type="text" id="word-category" name="category" value="Networking" placeholder="e.g. Networking, Marketing, Tech" autocomplete="off" required>
+                        </div>
+
+                        <div class="admin-field">
+                            <label>Focus Keywords / Tags</label>
+                            <input type="text" id="word-tags" name="tags" placeholder="e.g. Social Media, Branding, Marketing" autocomplete="off">
                         </div>
 
                         <div class="admin-field">
@@ -675,6 +681,16 @@
                             </select>
                         </div>
 
+                        <div class="admin-field" style="grid-column: 1 / -1;">
+                            <label style="color: #94a3b8; font-weight: 600;">SEO Meta Title (Optional)</label>
+                            <input type="text" id="word-meta-title" name="meta_title" placeholder="e.g. How to Be a Good Social Media Manager | Sabbir Hasan" autocomplete="off">
+                        </div>
+
+                        <div class="admin-field" style="grid-column: 1 / -1;">
+                            <label style="color: #94a3b8; font-weight: 600;">SEO Meta Description / Excerpt (Optional)</label>
+                            <textarea id="word-meta-desc" name="meta_description" rows="2" placeholder="e.g. Learn actionable strategies and daily responsibilities to become a successful social media manager." style="width: 100%; border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.9rem;"></textarea>
+                        </div>
+
                         <div style="grid-column: 1 / -1; display: flex; gap: 12px; margin-top: 5px; flex-wrap: wrap;">
                             <button type="button" id="btn-word-publish" onclick="window.handleWordImport('publish')" class="action-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; font-weight: 700; padding: 11px 24px; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;">
                                 <span>🚀</span> Direct 1-Click Publish from Word
@@ -682,8 +698,7 @@
                             <button type="button" id="btn-word-preview" onclick="window.handleWordImport('preview')" class="action-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #e2e8f0; padding: 11px 20px; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;">
                                 <span>📝</span> Extract &amp; Load into Editor Below
                             </button>
-                        </div>
-                    </form>
+                        </div></form>
                     <div id="word-import-status" style="display: none; margin-top: 15px; padding: 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5;"></div>
                 </div>
 
@@ -1415,7 +1430,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="/admin/dashboard/dashboard.js?v=word_opt_v3"></script>
+    <script src="/admin/dashboard/dashboard.js?v=word_opt_v4"></script>
     <script src="/toast.js"></script>
 
 

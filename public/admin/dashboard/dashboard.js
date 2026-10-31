@@ -1211,8 +1211,14 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAdminBlogs();
 
     // DIRECT WORD (.DOCX) IMPORT & CONTENT OPTIMIZER
+    let isWordImporting = false;
     window.handleWordImport = async function(action) {
-        console.log('[Word Import] Triggered action:', action);
+        if (isWordImporting) {
+            console.warn('[Word Import] Duplicate click prevented by lock');
+            return;
+        }
+        isWordImporting = true;
+
         const fileInput = document.getElementById('word-file');
         const wordStatusDiv = document.getElementById('word-import-status');
         const btnWordPublish = document.getElementById('btn-word-publish');
@@ -1227,6 +1233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            isWordImporting = false;
             notify('Please select a .docx Word document first.', 'error');
             if (fileInput) fileInput.focus();
             return;
@@ -1234,22 +1241,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const file = fileInput.files[0];
         if (!file.name.toLowerCase().endsWith('.docx')) {
+            isWordImporting = false;
             notify('Invalid format. Only Microsoft Word (.docx) documents are supported.', 'error');
             return;
         }
 
         const formData = new FormData();
         formData.append('word_file', file);
+        formData.append('title', document.getElementById('word-title')?.value || '');
         formData.append('custom_slug', document.getElementById('word-slug')?.value || '');
-        formData.append('tags', document.getElementById('word-tags')?.value || '');
         formData.append('category', document.getElementById('word-category')?.value || 'Networking');
+        formData.append('tags', document.getElementById('word-tags')?.value || '');
         formData.append('status', document.getElementById('word-status')?.value || 'published');
+        formData.append('meta_title', document.getElementById('word-meta-title')?.value || '');
+        formData.append('meta_description', document.getElementById('word-meta-desc')?.value || '');
         formData.append('action', action);
 
         const origPublishHtml = btnWordPublish ? btnWordPublish.innerHTML : '';
         const origPreviewHtml = btnWordPreview ? btnWordPreview.innerHTML : '';
-        if (btnWordPublish) btnWordPublish.disabled = true;
-        if (btnWordPreview) btnWordPreview.disabled = true;
+        if (btnWordPublish) {
+            btnWordPublish.disabled = true;
+            btnWordPublish.style.opacity = '0.7';
+            btnWordPublish.style.pointerEvents = 'none';
+        }
+        if (btnWordPreview) {
+            btnWordPreview.disabled = true;
+            btnWordPreview.style.opacity = '0.7';
+            btnWordPreview.style.pointerEvents = 'none';
+        }
 
         if (action === 'publish' && btnWordPublish) {
             btnWordPublish.innerHTML = '<span>⏳</span> Compressing & Publishing...';
@@ -1329,30 +1348,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             if (btnWordPublish) {
                 btnWordPublish.disabled = false;
+                btnWordPublish.style.opacity = '1';
+                btnWordPublish.style.pointerEvents = 'auto';
                 btnWordPublish.innerHTML = origPublishHtml;
             }
             if (btnWordPreview) {
                 btnWordPreview.disabled = false;
+                btnWordPreview.style.opacity = '1';
+                btnWordPreview.style.pointerEvents = 'auto';
                 btnWordPreview.innerHTML = origPreviewHtml;
             }
+            setTimeout(() => {
+                isWordImporting = false;
+            }, 1000);
         }
     };
-
-    const wordFormEl = document.getElementById('word-import-form');
-    if (wordFormEl) {
-        wordFormEl.addEventListener('submit', (e) => {
-            e.preventDefault();
-            window.handleWordImport('publish');
-        });
-    }
-    document.getElementById('btn-word-publish')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.handleWordImport('publish');
-    });
-    document.getElementById('btn-word-preview')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.handleWordImport('preview');
-    });
 
     document.getElementById('blog-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
