@@ -3,6 +3,12 @@
  * Part of SabbirHasan.com SEO & Performance Architecture
  */
 
+
+function slugifyCategory(cat) {
+    if (!cat) return 'tech';
+    return String(cat).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -42,7 +48,12 @@ function formatIsoDate(dateStr) {
  */
 function stripFirstH1(content) {
     if (!content) return '';
-    return content.replace(/^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+    // Strip leading H1 that duplicates the title
+    let clean = content.replace(/^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+    // Convert ANY remaining <h1> inside article content into <h2>
+    // This strictly guarantees ONLY ONE <h1> tag exists on the page (the main headline)
+    clean = clean.replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/gi, '<h2$1>$2</h2>');
+    return clean;
 }
 
 /**
@@ -115,9 +126,10 @@ function processCodeBlocks(content) {
  */
 function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, currentCategory, categories, siteUrl }) {
     const displayCategory = currentCategory ? currentCategory.split(/[- ]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : null;
+    const catSlug = currentCategory ? slugifyCategory(currentCategory) : null;
 
-    const canonicalUrl = currentCategory
-        ? (currentPage > 1 ? `${siteUrl}/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${currentPage}` : `${siteUrl}/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}`)
+    const canonicalUrl = catSlug
+        ? (currentPage > 1 ? `${siteUrl}/blog/category/${catSlug}/page/${currentPage}` : `${siteUrl}/blog/category/${catSlug}`)
         : (currentPage > 1 ? `${siteUrl}/blog/page/${currentPage}` : `${siteUrl}/blog`);
 
     const pageTitle = displayCategory 
@@ -129,17 +141,17 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
         : `Read latest technical articles by Sabbir Hasan on CCNA networking, cybersecurity, full-stack web development, and Linux administration from Bangladesh.`;
 
     const prevPageUrl = currentPage > 1
-        ? (currentCategory ? `/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${currentPage - 1}` : `/blog/page/${currentPage - 1}`)
+        ? (catSlug ? `/blog/category/${catSlug}/page/${currentPage - 1}` : `/blog/page/${currentPage - 1}`)
         : null;
 
     const nextPageUrl = currentPage < totalPages
-        ? (currentCategory ? `/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${currentPage + 1}` : `/blog/page/${currentPage + 1}`)
+        ? (catSlug ? `/blog/category/${catSlug}/page/${currentPage + 1}` : `/blog/page/${currentPage + 1}`)
         : null;
 
     const categoryPillsHtml = `
         <a href="/blog" class="cat-pill ${!currentCategory ? 'active' : ''}">All Articles</a>
         ${categories.map(c => `
-            <a href="/blog/category/${encodeURIComponent(c.category.toLowerCase())}" class="cat-pill ${currentCategory && currentCategory.toLowerCase() === c.category.toLowerCase() ? 'active' : ''}">
+            <a href="/blog/category/${slugifyCategory(c.category)}" class="cat-pill ${catSlug && catSlug === slugifyCategory(c.category) ? 'active' : ''}">
                 ${escapeHtml(c.category)} <span class="cat-count">(${c.count})</span>
             </a>
         `).join('')}
@@ -161,7 +173,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             </a>
             <div class="blog-body">
                 <div class="blog-meta-bar">
-                    <a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}" class="blog-category" itemprop="articleSection">${postCategory}</a>
+                    <a href="/blog/category/${slugifyCategory(post.category || 'tech')}" class="blog-category" itemprop="articleSection">${postCategory}</a>
                     <span class="blog-reading-time">⏱️ ${readingTime}</span>
                 </div>
                 <h2 class="blog-title" itemprop="headline">
@@ -196,8 +208,8 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
             ${prevPageUrl ? `<a href="${prevPageUrl}" class="page-btn prev-btn" rel="prev" aria-label="Previous Page">← Previous</a>` : `<span class="page-btn disabled" aria-hidden="true">← Previous</span>`}
             <div class="page-numbers">
                 ${Array.from({ length: totalPages }, (_, i) => i + 1).map(p => {
-                    const pageHref = currentCategory
-                        ? (p === 1 ? `/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}` : `/blog/category/${encodeURIComponent(currentCategory.toLowerCase())}/page/${p}`)
+                    const pageHref = catSlug
+                        ? (p === 1 ? `/blog/category/${catSlug}` : `/blog/category/${catSlug}/page/${p}`)
                         : (p === 1 ? `/blog` : `/blog/page/${p}`);
                     return `<a href="${pageHref}" class="page-number ${p === currentPage ? 'active' : ''}" ${p === currentPage ? 'aria-current="page"' : ''}>${p}</a>`;
                 }).join('')}
@@ -216,7 +228,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <title>${pageTitle}</title>
     <meta name="description" content="${escapeHtml(pageDesc)}">
     <meta name="author" content="Sabbir Hasan">
-    ${(currentPage > 1 || Boolean(currentCategory)) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
+    ${(currentPage > 1) ? '<meta name="robots" content="noindex, follow">' : '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">'}
     <link rel="canonical" href="${canonicalUrl}">
     ${prevPageUrl ? `<link rel="prev" href="${siteUrl}${prevPageUrl}">` : ''}
     ${nextPageUrl ? `<link rel="next" href="${siteUrl}${nextPageUrl}">` : ''}
@@ -488,8 +500,18 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
  */
 function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextPost = null, siteUrl, authorImage = '' }) {
     const postSlug = escapeHtml(post.slug || post.id);
-    const postTitle = escapeHtml(post.title || 'Untitled Article');
-    const metaTitle = escapeHtml(post.meta_title || `${post.title} | Sabbir Hasan`);
+    const rawPostTitle = (post.title || 'Untitled Article').trim();
+    const postTitle = escapeHtml(rawPostTitle);
+
+    let calculatedTitle = (post.meta_title && post.meta_title.trim()) || '';
+    if (!calculatedTitle) {
+        calculatedTitle = `${rawPostTitle} | Sabbir Hasan`;
+    } else if (calculatedTitle.toLowerCase() === rawPostTitle.toLowerCase()) {
+        calculatedTitle = `${calculatedTitle} | Sabbir Hasan`;
+    } else if (!calculatedTitle.toLowerCase().includes('sabbir hasan')) {
+        calculatedTitle = `${calculatedTitle} | Sabbir Hasan`;
+    }
+    const metaTitle = escapeHtml(calculatedTitle);
     const metaDesc = escapeHtml(post.meta_description || post.excerpt || stripHtml(post.content).slice(0, 160));
     const canonicalUrl = `${siteUrl}/blog/${postSlug}`;
     const category = escapeHtml(post.category || 'Technology');
@@ -653,7 +675,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
           "@type": "ListItem",
           "position": 3,
           "name": "${category.replace(/"/g, '\\"')}",
-          "item": "${siteUrl}/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}"
+          "item": "${siteUrl}/blog/category/${slugifyCategory(post.category || 'tech')}"
         },
         {
           "@type": "ListItem",
@@ -714,7 +736,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                         <li><span class="sep">/</span></li>
                         <li><a href="/blog">Blog</a></li>
                         <li><span class="sep">/</span></li>
-                        <li><a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}">${category}</a></li>
+                        <li><a href="/blog/category/${slugifyCategory(post.category || 'tech')}">${category}</a></li>
                     </ol>
                 </nav>
             </div>
@@ -723,7 +745,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                 <!-- ARTICLE HERO HEADER -->
                 <header class="article-header">
                     <div class="article-category-badge-wrap">
-                        <a href="/blog/category/${encodeURIComponent(post.category ? post.category.toLowerCase() : 'tech')}" class="blog-category">
+                        <a href="/blog/category/${slugifyCategory(post.category || 'tech')}" class="blog-category">
                             <span class="cat-dot"></span>${category}
                         </a>
                         <span class="reading-time-pill">⏱️ ${readingTime}</span>
@@ -807,7 +829,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                     </div>
                 </div>
 
-                ${tags.length ? `<div class="article-tags" aria-label="Article tags">${tags.map(tag => `<a href="/blog/category/${encodeURIComponent(tag.toLowerCase())}">#${escapeHtml(tag)}</a>`).join('')}</div>` : ''}
+                ${tags.length ? `<div class="article-tags" aria-label="Article tags">${tags.map(tag => `<a href="/blog/category/${slugifyCategory(tag)}">#${escapeHtml(tag)}</a>`).join('')}</div>` : ''}
 
                 <!-- AUTHOR BIO CARD (Double-Bezel Hardware Architecture) -->
                 <section class="author-bio-card" itemprop="author" itemscope itemtype="https://schema.org/Person">
@@ -1099,6 +1121,7 @@ module.exports = {
     renderArticleHtml,
     stripHtml,
     stripFirstH1,
+    slugifyCategory,
     formatDate,
     processHeadingsAndToc,
     processCodeBlocks

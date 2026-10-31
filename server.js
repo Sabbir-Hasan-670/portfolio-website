@@ -281,15 +281,35 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
     const page = Math.max(1, parseInt(pageParam || req.query.page || '1', 10));
     const offset = (page - 1) * limit;
 
+    let normalizedCategory = categoryParam ? String(categoryParam).trim() : null;
+
+    // 301 Redirect any legacy category URLs with spaces or %20 to clean hyphenated slug
+    if (normalizedCategory && normalizedCategory.includes(' ')) {
+        const cleanSlug = normalizedCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const pageSuffix = page > 1 ? `/page/${page}` : '';
+        return res.redirect(301, `/blog/category/${cleanSlug}${pageSuffix}`);
+    }
+
     try {
         let countQuery = 'SELECT COUNT(*) as total FROM blog_posts WHERE status = "published" AND deleted_at IS NULL';
         let postsQuery = 'SELECT id, title, slug, category, excerpt, content, image_path, reading_time, created_at, updated_at FROM blog_posts WHERE status = "published" AND deleted_at IS NULL';
         let queryParams = [];
 
-        if (categoryParam) {
-            countQuery += ' AND LOWER(category) = LOWER(?)';
-            postsQuery += ' AND LOWER(category) = LOWER(?)';
-            queryParams.push(categoryParam);
+        if (normalizedCategory) {
+            const catSlug = normalizedCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const catSpaced = normalizedCategory.replace(/-/g, ' ');
+            const tagLike = `%${catSpaced}%`;
+
+            const filterCondition = ` AND (
+                LOWER(category) = LOWER(?)
+                OR LOWER(category) = LOWER(?)
+                OR LOWER(REPLACE(category, ' ', '-')) = LOWER(?)
+                OR LOWER(tags) LIKE LOWER(?)
+                OR FIND_IN_SET(?, LOWER(tags))
+            )`;
+            countQuery += filterCondition;
+            postsQuery += filterCondition;
+            queryParams.push(normalizedCategory, catSpaced, catSlug, tagLike, catSpaced);
         }
 
         postsQuery += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
@@ -297,11 +317,6 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
         const [countRes] = await db.query(countQuery, queryParams);
         const totalPosts = countRes[0]?.total || 0;
         const totalPages = Math.max(1, Math.ceil(totalPosts / limit));
-
-        // Return real 404 if non-existent category has 0 posts
-        if (categoryParam && totalPosts === 0) {
-            return res.status(404).send('<!DOCTYPE html><html><head><title>Category Not Found | Sabbir Hasan Blog</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Category Not Found</h1><p style="color:#94a3b8;">No published articles exist in this category.</p><a href="/blog" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Blog</a></body></html>');
-        }
 
         // Return real 404 if pagination page exceeds totalPages (for page > 1)
         if (page > 1 && page > totalPages) {
@@ -316,7 +331,7 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
             totalPosts,
             currentPage: page,
             totalPages,
-            currentCategory: categoryParam || null,
+            currentCategory: normalizedCategory || null,
             categories,
             siteUrl
         });
@@ -334,7 +349,7 @@ async function handleBlogListing(req, res, pageParam, categoryParam) {
                 totalPosts: 0,
                 currentPage: 1,
                 totalPages: 1,
-                currentCategory: categoryParam || null,
+                currentCategory: normalizedCategory || null,
                 categories: [],
                 siteUrl
             });
@@ -592,17 +607,51 @@ app.get('/projects', (req, res) => {
     sendHtmlWithTracking(req, res, path.join(__dirname, 'public/projects.html'));
 });
 
+app.get('/project', (req, res) => res.redirect(301, '/projects'));
+
 app.get('/project/:slug', async (req, res) => {
     const slug = req.params.slug;
     try {
         const [rows] = await db.query(
-            'SELECT id, title, slug FROM projects WHERE (slug = ? OR id = ?) AND is_visible = 1 LIMIT 1',
+            `SELECT id, title, slug, description, thumbnail_url, tech_stack, demo_url, repo_url 
+             FROM projects WHERE (slug = ? OR id = ?) AND is_visible = 1 LIMIT 1`,
             [slug, isNaN(slug) ? 0 : parseInt(slug, 10)]
         );
         if (rows.length === 0) {
             return res.status(404).send('<!DOCTYPE html><html><head><title>Project Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Project Not Found</h1><p style="color:#94a3b8;">The project you are looking for does not exist or has been removed.</p><a href="/projects" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Projects</a></body></html>');
         }
-        sendHtmlWithTracking(req, res, path.join(__dirname, 'public/project.html'));
+        const project = rows[0];
+        const canonicalUrl = `https://sabbirhasan.com/project/${encodeURIComponent(project.slug || slug)}`;
+        const projectTitle = project.title ? `${project.title} | Sabbir Hasan` : 'Project Case Study | Sabbir Hasan';
+        const projectDesc = project.description 
+            ? String(project.description).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 160)
+            : 'Explore this engineering project by Sabbir Hasan - network engineer, web developer and digital marketer.';
+        const ogImage = project.thumbnail_url || 'https://sabbirhasan.com/og-image.png';
+
+        const htmlFilePath = path.join(__dirname, 'public/project.html');
+        let html = fs.readFileSync(htmlFilePath, 'utf8');
+
+        html = html
+            .replace(/\{\{PROJECT_TITLE\}\}/g, projectTitle.replace(/&/g, '&amp;').replace(/"/g, '&quot;'))
+            .replace(/\{\{PROJECT_DESCRIPTION\}\}/g, projectDesc.replace(/&/g, '&amp;').replace(/"/g, '&quot;'))
+            .replace(/\{\{PROJECT_CANONICAL\}\}/g, canonicalUrl)
+            .replace(/\{\{PROJECT_IMAGE_META\}\}/g, `<meta property="og:image" content="${ogImage}">\n    <meta name="twitter:image" content="${ogImage}">`)
+            .replace(/\{\{PROJECT_SCHEMA\}\}/g, JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "CreativeWork",
+                "name": project.title || 'Project',
+                "description": projectDesc,
+                "url": canonicalUrl,
+                "author": { "@type": "Person", "name": "Sabbir Hasan", "url": "https://sabbirhasan.com" },
+                "image": ogImage
+            }))
+            .replace(/\{\{PROJECT_NAME\}\}/g, (project.title || '').replace(/&/g, '&amp;'))
+            .replace(/\{\{PROJECT_IMAGE_ATTRIBUTES\}\}/g, `src="${ogImage}" alt="${(project.title || 'Project').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`);
+
+        let finalHtml = injectTrackingIntoHtml(html, req);
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+        res.send(finalHtml);
     } catch (e) {
         return res.status(404).send('<!DOCTYPE html><html><head><title>Project Not Found | Sabbir Hasan</title><link rel="stylesheet" href="/style.css"></head><body style="text-align:center; padding:5rem 1rem; font-family:sans-serif; background:#060913; color:#fff;"><h1>404 — Project Not Found</h1><p style="color:#94a3b8;">The project you are looking for does not exist.</p><a href="/projects" style="display:inline-block; margin-top:1.5rem; color:#c8ff00; text-decoration:none; font-weight:700;">← Back to Projects</a></body></html>');
     }
@@ -681,6 +730,24 @@ app.use(session({
     saveUninitialized: false,
     cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
 }));
+
+
+// ==========================================
+// 🛡️ ADMIN DIRECTORY ROUTES (Prevents default-src 'none' redirect bounce)
+// ==========================================
+app.get(['/admin/dashboard', '/admin/dashboard/'], (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        return res.sendFile(path.join(__dirname, 'public/admin/dashboard/dashboard.html'));
+    }
+    return res.redirect('/admin/login');
+});
+
+app.get(['/admin/login', '/admin/login/'], (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        return res.redirect('/admin/dashboard');
+    }
+    return res.sendFile(path.join(__dirname, 'public/admin/login.html'));
+});
 
 const requireAuth = (req, res, next) => {
     if (req.session && req.session.isAuthenticated) next();
