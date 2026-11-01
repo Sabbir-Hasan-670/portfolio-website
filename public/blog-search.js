@@ -1,65 +1,19 @@
-// Live client-side search enhancement
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('blogSearchInput');
-    const resultsBox = document.getElementById('liveSearchResults');
-    const blogGrid = document.getElementById('blogGrid');
-    const paginationWrapper = document.getElementById('paginationWrapper');
-    const spinner = document.getElementById('searchSpinner');
-    let debounceTimer;
-
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            const q = e.target.value.trim();
-            if (q.length < 2) {
-                if (resultsBox) { resultsBox.style.display = 'none'; resultsBox.innerHTML = ''; }
-                if (blogGrid) blogGrid.style.display = 'grid';
-                if (paginationWrapper) paginationWrapper.style.display = 'flex';
-                if (spinner) spinner.style.display = 'none';
-                return;
-            }
-
-            if (spinner) spinner.style.display = 'inline-block';
-
-            debounceTimer = setTimeout(async () => {
-                try {
-                    const res = await fetch('/api/blog/search?q=' + encodeURIComponent(q));
-                    const data = await res.json();
-                    if (spinner) spinner.style.display = 'none';
-
-                    if (data && data.length > 0) {
-                        resultsBox.innerHTML = '<h3>Search Results for "' + q + '" (' + data.length + ')</h3><div class="blog-grid">' + data.map(post => `
+document.addEventListener("DOMContentLoaded",()=>{const o=document.getElementById("blogSearchInput"),t=document.getElementById("liveSearchResults"),n=document.getElementById("blogGrid"),l=document.getElementById("paginationWrapper"),a=document.getElementById("searchSpinner");let r;o&&o.addEventListener("input",c=>{clearTimeout(r);const i=c.target.value.trim();if(i.length<2){t&&(t.style.display="none",t.innerHTML=""),n&&(n.style.display="grid"),l&&(l.style.display="flex"),a&&(a.style.display="none");return}a&&(a.style.display="inline-block"),r=setTimeout(async()=>{try{const s=await(await fetch("/api/blog/search?q="+encodeURIComponent(i))).json();a&&(a.style.display="none"),s&&s.length>0?(t.innerHTML='<h3>Search Results for "'+i+'" ('+s.length+')</h3><div class="blog-grid">'+s.map(e=>`
                             <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
-                                <a href="/blog/${post.slug}" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
-                                    <img src="${post.image_path || '/og-image.png'}" alt="${post.title}" class="blog-img" loading="lazy">
+                                <a href="/blog/${e.slug}" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
+                                    <img src="${e.image_path||"/og-image.png"}" alt="${e.title}" class="blog-img" loading="lazy">
                                 </a>
                                 <div class="blog-body">
                                     <div class="blog-meta-bar">
-                                        <span class="blog-category">${post.category || 'Tech'}</span>
-                                        <span class="blog-reading-time">⏱️ ${post.reading_time || '4 min read'}</span>
+                                        <span class="blog-category">${e.category||"Tech"}</span>
+                                        <span class="blog-reading-time">\u23F1\uFE0F ${e.reading_time||"4 min read"}</span>
                                     </div>
-                                    <h3 class="blog-title"><a href="/blog/${post.slug}">${post.title}</a></h3>
-                                    <p class="blog-excerpt">${post.excerpt || ''}</p>
+                                    <h3 class="blog-title"><a href="/blog/${e.slug}">${e.title}</a></h3>
+                                    <p class="blog-excerpt">${e.excerpt||""}</p>
                                     <div class="blog-footer-row">
-                                        <span class="blog-date">📅 ${post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
-                                        <a href="/blog/${post.slug}" class="read-more">Read Article <span>→</span></a>
+                                        <span class="blog-date">\u{1F4C5} ${e.created_at?new Date(e.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"Recent"}</span>
+                                        <a href="/blog/${e.slug}" class="read-more">Read Article <span>\u2192</span></a>
                                     </div>
                                 </div>
                             </article>
-                        `).join('') + '</div>';
-                        resultsBox.style.display = 'block';
-                        if (blogGrid) blogGrid.style.display = 'none';
-                        if (paginationWrapper) paginationWrapper.style.display = 'none';
-                    } else {
-                        resultsBox.innerHTML = '<div class="empty-state"><p>No articles matching "<strong>' + q + '</strong>".</p></div>';
-                        resultsBox.style.display = 'block';
-                        if (blogGrid) blogGrid.style.display = 'none';
-                        if (paginationWrapper) paginationWrapper.style.display = 'none';
-                    }
-                } catch(err) {
-                    if (spinner) spinner.style.display = 'none';
-                }
-            }, 300);
-        });
-    }
-});
+                        `).join("")+"</div>",t.style.display="block",n&&(n.style.display="none"),l&&(l.style.display="none")):(t.innerHTML='<div class="empty-state"><p>No articles matching "<strong>'+i+'</strong>".</p></div>',t.style.display="block",n&&(n.style.display="none"),l&&(l.style.display="none"))}catch(d){a&&(a.style.display="none")}},300)})});

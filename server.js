@@ -240,7 +240,15 @@ app.get('/sitemap.xml', async (req, res) => {
                 const lastmod = dateToUse ? new Date(dateToUse).toISOString().split('T')[0] : '2026-10-31';
                 urls.push({ loc: `${host}/blog/${slug}`, priority: '0.7', changefreq: 'monthly', lastmod });
             });
-            ['digital-marketing', 'ai-social-media-manager', 'social-media-marketing', 'graphic-design', 'networking'].forEach(c => {
+            const publishedCategorySlugs = new Set();
+            posts.forEach(p => {
+                if (p.category) {
+                    publishedCategorySlugs.add(p.category.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
+                }
+            });
+            publishedCategorySlugs.add('ai-social-media-manager');
+
+            publishedCategorySlugs.forEach(c => {
                 urls.push({ loc: `${host}/blog/category/${c}`, priority: '0.7', changefreq: 'weekly', lastmod: '2026-10-31' });
             });
         }

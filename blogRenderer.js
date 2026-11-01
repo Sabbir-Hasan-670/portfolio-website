@@ -490,7 +490,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
     <script src="/main.js?v=4" defer></script>
     <script src="/toast.js" defer></script>
-    <script src="/blog-search.js?v=2" defer></script>
+    <script src="/blog-search.min.js?v=3" defer></script>
 
 </body>
 </html>`;
