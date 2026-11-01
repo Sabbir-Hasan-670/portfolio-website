@@ -316,7 +316,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/blog-v7.min.css?v=5">
+    <link rel="stylesheet" href="/blog-v7.min.css?v=6">
 
     <!-- BreadcrumbList Schema -->
     <script type="application/ld+json">
@@ -469,6 +469,11 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
                         <span class="copy-sep">·</span>
                         <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
                     </p>
+                    <div class="blog-footer-topics" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Featured Topics:</span>
+                        <a href="/blog/category/digital-marketing" style="color: #94a3b8; font-size: 0.78rem; text-decoration: none; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s ease;">Digital Marketing</a>
+                        <a href="/blog/category/ai-social-media-manager" style="color: #94a3b8; font-size: 0.78rem; text-decoration: none; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s ease;">AI Social Media Manager</a>
+                    </div>
                 </div>
 
                 <div class="blog-footer-right">
@@ -490,7 +495,7 @@ function renderBlogListingHtml({ posts, totalPosts, currentPage, totalPages, cur
 
     <script src="/main.js?v=4" defer></script>
     <script src="/toast.js" defer></script>
-    <script src="/blog-search.min.js?v=3" defer></script>
+    <script src="/blog-search.min.js?v=4" defer></script>
 
 </body>
 </html>`;
@@ -627,7 +632,7 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/blog-v7.min.css?v=5">
+    <link rel="stylesheet" href="/blog-v7.min.css?v=6">
 
     <!-- ===== STRUCTURED DATA: Article & Breadcrumbs ===== -->
     <script type="application/ld+json">
@@ -927,6 +932,11 @@ function renderArticleHtml({ post, relatedPosts = [], previousPost = null, nextP
                         <span class="copy-sep">·</span>
                         <span class="copy-desc">Autonomous Networks, Cloud &amp; High-Scale Engineering</span>
                     </p>
+                    <div class="blog-footer-topics" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase;">Featured Topics:</span>
+                        <a href="/blog/category/digital-marketing" style="color: #94a3b8; font-size: 0.78rem; text-decoration: none; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s ease;">Digital Marketing</a>
+                        <a href="/blog/category/ai-social-media-manager" style="color: #94a3b8; font-size: 0.78rem; text-decoration: none; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s ease;">AI Social Media Manager</a>
+                    </div>
                 </div>
 
                 <div class="blog-footer-right">
