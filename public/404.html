@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Sabbir Hasan</title>
+    <meta name="description" content="The page you requested could not be found. Explore Sabbir Hasan's portfolio, digital marketing services, network architecture labs, or technical blog.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://sabbirhasan.com/404">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="404 - Page Not Found | Sabbir Hasan">
+    <meta property="og:description" content="The page you requested could not be found. Explore Sabbir Hasan's portfolio, services, or technical blog.">
+    <meta property="og:url" content="https://sabbirhasan.com/404">
+    <meta property="og:image" content="https://sabbirhasan.com/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Fonts & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        .error-page-wrapper {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        .error-card {
+            max-width: 680px;
+            width: 100%;
+            background: rgba(16, 22, 36, 0.7);
+            border: 1px solid rgba(240, 238, 232, 0.12);
+            border-radius: 20px;
+            padding: 3.5rem 2.5rem;
+            text-align: center;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(216, 167, 69, 0.08);
+        }
+        .error-code-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #d8a745;
+            background: rgba(216, 167, 69, 0.1);
+            border: 1px solid rgba(216, 167, 69, 0.3);
+            padding: 6px 16px;
+            border-radius: 100px;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+        .error-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            color: #f0eee8;
+            line-height: 1.15;
+            margin: 0 0 1rem;
+        }
+        .error-title span {
+            color: #d8a745;
+        }
+        .error-desc {
+            color: #9ba6b4;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            max-width: 520px;
+            margin: 0 auto 2.5rem;
+        }
+        .error-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .error-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .error-btn-primary {
+            background: #d8a745;
+            color: #060913;
+            border: 1px solid #d8a745;
+        }
+        .error-btn-primary:hover {
+            background: #f5c065;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(216, 167, 69, 0.3);
+        }
+        .error-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f0eee8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .error-btn-secondary:hover {
+            border-color: #d8a745;
+            color: #d8a745;
+            transform: translateY(-2px);
+        }
+        .error-quick-links {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .error-quick-links a {
+            color: #7db9c6;
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            transition: color 0.2s ease;
+        }
+        .error-quick-links a:hover {
+            color: #f0eee8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="error-page-body">
+    <!-- NAVIGATION -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">SH.</a>
+            <div class="nav-links" id="navLinks">
+                <a href="/" class="nav-visible-btn">Home</a>
+                <a href="/about" class="nav-visible-btn">About</a>
+                <a href="/resume" class="nav-visible-btn">Resume</a>
+                <a href="/blog" class="nav-visible-btn">Blog</a>
+                <a href="/tools" class="nav-visible-btn">Tools</a>
+                <a href="/contact" class="nav-cta">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="error-page-wrapper">
+        <div class="error-card">
+            <div class="error-code-badge">
+                <span>⚠️ HTTP 404</span>
+                <span>•</span>
+                <span>PAGE NOT FOUND</span>
+            </div>
+            <h1 class="error-title">Destination <span>Unavailable</span></h1>
+            <p class="error-desc">
+                The resource or path you navigated to doesn't exist, has been moved, or is temporarily unavailable. Let's get you back on track.
+            </p>
+            <div class="error-actions">
+                <a href="/" class="error-btn error-btn-primary">
+                    ← Return to Homepage
+                </a>
+                <a href="/blog" class="error-btn error-btn-secondary">
+                    Browse Blog Articles
+                </a>
+            </div>
+            <div class="error-quick-links">
+                <a href="/digital-marketing">Digital Marketing</a>
+                <a href="/social-media-marketing">Social Media Marketing</a>
+                <a href="/tools">Interactive Tools</a>
+                <a href="/contact">Get in Touch</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; <span id="year">2026</span> Sabbir Hasan. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/blog">Blog</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/main.js" defer></script>
+</body>
+</html>

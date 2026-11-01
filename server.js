@@ -184,6 +184,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
     }
 }));
 
+// Explicit Favicon Route with long-term caching
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/favicon.ico'), {
+        maxAge: '30d',
+        headers: {
+            'Content-Type': 'image/x-icon',
+            'Cache-Control': 'public, max-age=2592000, immutable'
+        }
+    });
+});
+
+
 // llms.txt — for AI search engines & LLMs (GEO)
 app.get('/llms.txt', (req, res) => {
     res.set('Content-Type', 'text/plain; charset=utf-8');
@@ -2957,6 +2969,21 @@ app.post('/api/n8n/blog', rateLimit(60000, 30), async (req, res) => {
             res.status(500).json({ error: 'Internal server error' });
         }
     }
+});
+
+
+// Catch-all 404 handler for unmatched routes
+app.use((req, res) => {
+    res.status(404);
+    if (req.accepts('html')) {
+        res.sendFile(path.join(__dirname, 'public/404.html'));
+        return;
+    }
+    if (req.accepts('json')) {
+        res.json({ error: 'Resource not found' });
+        return;
+    }
+    res.type('txt').send('404 Not Found');
 });
 
 const PORT = process.env.PORT || 5005;
